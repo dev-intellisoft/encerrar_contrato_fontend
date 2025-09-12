@@ -1,0 +1,55 @@
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+import '../../../controllers/dashboard_controller.dart';
+import '../../../widgets/logo.dart';
+
+class DashboardPage extends GetView<DashboardController> {
+  const DashboardPage({super.key});
+  @override
+  Widget build(BuildContext context) {
+    final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.getSolicitations();
+    });
+    return Scaffold(
+        appBar: AppBar(
+          leading: null,
+          title:  Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Logo(),
+              SizedBox(
+                width:  200,
+                height: 35,
+                child: TextFormField(
+                  decoration: InputDecoration(
+                    labelText: 'Buscar',
+                    hintText: 'Digite para buscar',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
+                ),
+              )
+            ]
+          ),
+          backgroundColor: Color.fromRGBO(255, 131, 33, 1.0),
+          actions: [
+            IconButton(
+              onPressed: () => _scaffoldKey.currentState?.openEndDrawer(),
+              icon: Icon(Icons.person_3_rounded),
+            ),
+          ],
+        ),
+        body:Obx(() => controller.loading.value ? Center(child: CircularProgressIndicator()) : controller.solicitations.isEmpty ? Center(child: Text('Nenhuma solicitação encontrada')) : ListView(
+          children: controller.solicitations.map((solicitation) {
+            return ListTile(
+              title: Text(solicitation.customer!.name!),
+              subtitle: Text(solicitation.address!.street!),
+            );
+    }).toList(),
+        ))
+    );
+  }
+}
