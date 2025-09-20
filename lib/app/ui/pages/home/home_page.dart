@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:encerrar_contrato/app/widgets/agencya.dart';
 import 'package:encerrar_contrato/app/widgets/agencyb.dart';
 import 'package:encerrar_contrato/app/widgets/logo.dart';
@@ -9,12 +7,12 @@ import 'package:get/get.dart';
 import 'package:encerrar_contrato/app/routes/app_pages.dart';
 import 'package:flutter/material.dart';
 import 'package:encerrar_contrato/app/controllers/home_controller.dart';
-import 'package:encerrar_contrato/app/models/solicitation_model.dart';
-import 'package:get_storage/get_storage.dart';
-
+import '../../../models/solicitation_model.dart';
 import '../../../widgets/done.dart';
+import '../../../widgets/drawer.dart';
 import '../../../widgets/pending.dart';
 import '../../../widgets/processing.dart';
+import '../../../widgets/solicitation_tile.dart';
 
 class HomePage extends GetView<HomeController> {
   const HomePage({super.key});
@@ -34,37 +32,7 @@ class HomePage extends GetView<HomeController> {
           ),
         ],
       ),
-      endDrawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            DrawerHeader(
-              decoration: BoxDecoration(color: Colors.blue),
-              child: Text('Drawer Header'),
-            ),
-            ListTile(
-              title: Text('Item 1'),
-              onTap: () {
-                Get.back();
-              },
-            ),
-            ListTile(
-              title: Text('Item 2'),
-              onTap: () {
-                Get.back();
-              },
-            ),
-
-            ListTile(
-              title: Text('Logout'),
-              onTap: () {
-                GetStorage().remove('token');
-                Get.offAllNamed(Routes.LOGIN);
-              },
-            ),
-          ],
-        ),
-      ),
+      endDrawer: DrawerWidget(),
       body: Column(
         children: [
           Column(
@@ -123,10 +91,8 @@ class HomePage extends GetView<HomeController> {
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(30),
                         borderSide: BorderSide(color: Colors.lightBlue, width: 2),
-                        // side: BorderSide(color: Colors.black, width: 1),
                       ),
                         prefixIcon: SearchIcon(),
-
                       ),
                     ),
                   ),
@@ -151,84 +117,45 @@ class HomePage extends GetView<HomeController> {
                 child: Obx(() => controller.loading.value?Center(child: CircularProgressIndicator(),):ListView(
                   children: controller.solicitations.isEmpty? [Center(child: Text('Nenhum solicitação!'),)]: controller.solicitations.where(
                           (s) => s.customer!.name!.toLowerCase().contains(controller.search.value.toLowerCase())
-                  ).map((s) {
-                    return GestureDetector(
-                      onTap: () {
-                        Get.dialog(AlertDialog(
-                          title: Text('Detalhes do contrato'),
-                          content: Container(
-                            height: 300,
-                            child: Column(
-                              children: [
-                                Text('${s.customer!.name}'),
-                                Text('${s.customer!.email}'),
-                                Text('${s.customer!.phone}'),
-                                Text('${s.customer!.cpf}'),
-                                Text('${s.address!.street}, ${s.address!.number} ${s.address!.complement}'),
-                                Text('${s.address!.neighborhood}, ${s.address!.city}, ${s.address!.state}'),
-                                if(s.status == SolicitationStatus.done)
-                                  Row(
-                                    children: [
-                                      Text('Encerrado'),
-                                      Done(),
-                                    ],
-                                  )
-                                else if(s.status == SolicitationStatus.processing)
-                                  Row(
-                                    children: [
-                                      Text('Em andamento'),
-                                      Processing(),
-                                    ],
-                                  )
-                                else
-                                  Row(
-                                    children: [
-                                      Text('Pendente'),
-                                      Pending(),
-                                    ],
-                                  ),
-                              ],
-                            ),
-                          ),
-                        ));
-                      },
-                      child: Container(
-                        height: 50,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.rectangle,
-                          color: Color(0xFF138ED7),
-                          border: Border.all(color: Color(0xFF171717), width: 1.5),
-                        ),
-                        margin: EdgeInsets.symmetric(vertical: 5),
-                        child: Row(
+                  ).map((s) => SolicitationTile(solicitation: s, onTap: (solicitation) {
+                    Get.dialog(AlertDialog(
+                      title: Text('Detalhes do contrato'),
+                      content: Container(
+                        height: 300,
+                        child: Column(
                           children: [
-                            s.status == SolicitationStatus.done ? Done() :  SolicitationStatus.processing == s.status?Processing():  Pending(),
-                            Expanded(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                            Text('${solicitation.customer!.name}'),
+                            Text('${solicitation.customer!.email}'),
+                            Text('${solicitation.customer!.phone}'),
+                            Text('${solicitation.customer!.cpf}'),
+                            Text('${solicitation.address!.street}, ${solicitation.address!.number} ${solicitation.address!.complement}'),
+                            Text('${solicitation.address!.neighborhood}, ${solicitation.address!.city}, ${solicitation.address!.state}'),
+                            if(solicitation.status == SolicitationStatus.done)
+                              Row(
                                 children: [
-                                  Text('${s.customer!.name}' , style: TextStyle(color: Colors.white),),
-                                  Text(
-                                    '${s.address!.street}, ${s.address!.number}, ${s.address!.state}',
-                                    style: TextStyle(fontSize: 12, color: Colors.white,),
-                                  ),
+                                  Text('Encerrado'),
+                                  Done(),
                                 ],
                               )
-                            ),
-                            Row(
-                              children: [
-                                if(s.agency == 'a')
-                                  AgencyALogo()
-                                else if(s.agency == 'b')
-                                  AgencyBLogo()
-                              ]
-                            )
+                            else if(solicitation.status == SolicitationStatus.processing)
+                              Row(
+                                children: [
+                                  Text('Em andamento'),
+                                  Processing(),
+                                ],
+                              )
+                            else
+                              Row(
+                                children: [
+                                  Text('Pendente'),
+                                  Pending(),
+                                ],
+                              ),
                           ],
                         ),
-                      )
-                    );
-                  }).toList(),
+                      ),
+                    ));
+                  },)).toList(),
                 ),
                 ),
               ),

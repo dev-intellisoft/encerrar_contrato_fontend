@@ -33,4 +33,18 @@ class SolicitationServices {
     }
     throw Exception('Failed to create solicitation');
   }
+  Future<Solicitation> startSolicitation(BigInt id) async {
+    var response = await dio.put('/solicitations/${id}/start');
+    if (response.statusCode == 200) {
+      return Solicitation.fromJson(response.data);
+    }
+    throw Exception('Failed to start solicitation');
+  }
+  Future<Solicitation> endSolicitation(BigInt id) async {
+    var response = await dio.put('/solicitations/${id}/end');
+    if (response.statusCode == 200) {
+      return Solicitation.fromJson(response.data);
+    }
+    throw Exception('Failed to end solicitation');
+  }
 }
