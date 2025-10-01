@@ -269,54 +269,71 @@ class SolicitationPage extends GetView<SolicitationController> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(children: [
-                  Checkbox(value: controller.water.value, onChanged: (value) => controller.water.value = !controller.water.value),
+                  Checkbox(value: controller.solicitation.value.water, onChanged: (value) => controller.solicitation.update((s) => s!.water = !s.water)),
                   Text('Agua')
                 ],),
                 Container(
-                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.black,
-                        width: 2,
-                      ),
-                      borderRadius: BorderRadius.circular(25),
-                    ),
-                    child: Text('Informa a empresa prestadora do serviço', style: TextStyle(fontSize: 12, color: Color.fromRGBO(
-                        181, 181, 181, 1.0),),)
-                ),
-                Row( children: [
-                  Checkbox(value: controller.electricity.value, onChanged: (value) => controller.electricity.value = !controller.electricity.value),
-                  Text('Luz')
-                ],),
-                Container(
-                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.black,
-                        width: 2,
-                      ),
-                      borderRadius: BorderRadius.circular(25),
-                    ),
-                    child: Text('Informa a empresa prestadora do serviço', style: TextStyle(fontSize: 12, color: Color.fromRGBO(
-                        181, 181, 181, 1.0),),)
+                  width: 300,
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  child:        TextFormField(
+                      onChanged: (text) => controller.solicitation.update((s) => s!.waterCarrier = text),
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25),
+                          borderSide: BorderSide(
+                            color: Colors.black,
+                            width: 1,
+                          ),
+                        ),
+                        labelText: 'Informa a empresa prestadora do serviço',
+                      )
+                  ),
                 ),
 
                 Row( children: [
-                  Checkbox(value: controller.gas.value, onChanged: (value) => controller.gas.value = !controller.gas.value),
+                  Checkbox(value: controller.solicitation.value.power, onChanged: (value) => controller.solicitation.update((s) => s!.power = !s.power)),
+                  Text('Energia')
+                ],),
+                Container(
+                  width: 300,
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  child:        TextFormField(
+                      onChanged: (text) => controller.solicitation.update((s) => s!.powerCarrier = text),
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25),
+                          borderSide: BorderSide(
+                            color: Colors.black,
+                            width: 1,
+                          ),
+                        ),
+                        labelText: 'Informa a empresa prestadora do serviço',
+                      )
+                  ),
+                ),
+
+
+                Row( children: [
+                  Checkbox(value: controller.solicitation.value.gas, onChanged: (value) => controller.solicitation.update((s) => s!.gas = !s.gas)),
                   Text('Gas')
                 ],),
                 Container(
-                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.black,
-                        width: 2,
-                      ),
-                      borderRadius: BorderRadius.circular(25),
-                    ),
-                    child: Text('Informa a empresa prestadora do serviço', style: TextStyle(fontSize: 12, color: Color.fromRGBO(
-                        181, 181, 181, 1.0),),)
-                ),
+                  width: 300,
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  child:        TextFormField(
+                      onChanged: (text) => controller.solicitation.update((s) => s!.gasCarrier = text),
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25),
+                          borderSide: BorderSide(
+                            color: Colors.black,
+                            width: 1,
+                          ),
+                        ),
+                        labelText: 'Informa a empresa prestadora do serviço',
+                      )
+                  )
+                )
               ],
             ),
           ),

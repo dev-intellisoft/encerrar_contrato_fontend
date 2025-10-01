@@ -27,8 +27,6 @@ class ApiInterceptor extends Interceptor {
     }
 
     Get.snackbar('Erro', err.response?.data);
-
-    print(err.response?.data);
     // Tratar erros globais
     super.onError(err, handler);
   }

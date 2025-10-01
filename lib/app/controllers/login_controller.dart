@@ -15,7 +15,12 @@ class LoginController extends GetxController {
     try {
       accessToken.value = await service.login(user.value.email!, user.value.password!);
       GetStorage().write('token', accessToken.value.toJson());
-      Get.offAllNamed(Routes.HOME);
+      user.value = await service.me();
+      GetStorage().write('user', user.value.toJson());
+      if(user.value.agency == 'encerrar' || user.value.agency == '') {
+        return Get.offAllNamed(Routes.DASHBOARD);
+      }
+      return Get.offAllNamed(Routes.HOME);
     } catch (e) {
       Get.snackbar('Error', e.toString());
     }
@@ -28,7 +33,7 @@ class LoginController extends GetxController {
   Future<void> checkSession() async {
     try {
       user.value = await service.checkSession();
-      if (!(user.value.id! > BigInt.zero)) {
+      if (!(user.value.id! != "")) {
         throw Exception('No session');
       }
       if(user.value.agency == 'encerrar' || user.value.agency == '') {

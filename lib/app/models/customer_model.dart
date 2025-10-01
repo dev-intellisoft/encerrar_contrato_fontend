@@ -1,5 +1,5 @@
 class Customer {
-  BigInt? id;
+  String? id;
   String? name;
   String? cpf;
   String? birthDate;
@@ -28,7 +28,7 @@ class Customer {
 
   factory Customer.fromJson(Map<String, dynamic> map) {
     return Customer(
-      id: BigInt.tryParse('${map['id']}')??BigInt.zero,
+      id: map['id'],
       name: map['name'],
       cpf: map['cpf'],
       email: map['email'],

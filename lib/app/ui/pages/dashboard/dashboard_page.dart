@@ -63,67 +63,71 @@ class DashboardPage extends GetView<DashboardController> {
                 ],
               ),
             ),
-            Container(
+            SizedBox(
               width: 400,
               child: Column(
                 children: [
                   Text('Casa a ser atendido'),
-                  Obx(() => controller.solicitation.value!.id! > BigInt.zero ? Expanded(
-                    child: Column(
-                        children:[
-                          Text('Cliente'),
-                          SizedBox(height: 10,),
-                          TextFormField(
-                            initialValue: controller.solicitation.value?.customer!.name,
-                            decoration: InputDecoration(
-                              labelText: 'Nome',
-                              hintText: 'Digite o nome',
-                            ),
-                            readOnly: true,
+                  Obx(() => controller.solicitation.value!.id != null &&controller.solicitation.value!.id! != ''  ?Column(
+                      children:[
+                        Text('Cliente'),
+                        SizedBox(height: 10,),
+                        TextFormField(
+                          initialValue: controller.solicitation.value?.customer!.name,
+                          decoration: InputDecoration(
+                            labelText: 'Nome',
+                            hintText: 'Digite o nome',
                           ),
-                          SizedBox(height: 10,),
-                          TextFormField(initialValue: controller.solicitation.value?.customer!.cpf, decoration: InputDecoration(labelText: 'CPF/CNPJ', hintText: 'Digite o CPF/CNPJ'), readOnly: true,),
-                          SizedBox(height: 10,),
-                          TextFormField(initialValue: controller.solicitation.value?.customer!.email, decoration: InputDecoration(labelText: 'Email', hintText: 'Digite o email'), readOnly: true,),
-                          SizedBox(height: 10,),
-                          TextFormField(initialValue: controller.solicitation.value?.customer!.phone, decoration: InputDecoration(labelText: 'Telefone', hintText: 'Digite o telefone'), readOnly: true,),
-                          SizedBox(height: 10,),
-                          Text('Endereço'),
-                          SizedBox(height: 10,),
-                          Row(children: [
-                            Expanded(child: TextFormField(initialValue: controller.solicitation.value?.address!.street, decoration: InputDecoration(labelText: 'Rua', hintText: 'Digite a rua'), readOnly: true,),),
+                          readOnly: true,
+                        ),
+                        SizedBox(height: 10,),
+                        TextFormField(initialValue: controller.solicitation.value?.customer!.cpf, decoration: InputDecoration(labelText: 'CPF/CNPJ', hintText: 'Digite o CPF/CNPJ'), readOnly: true,),
+                        SizedBox(height: 10,),
+                        TextFormField(initialValue: controller.solicitation.value?.customer!.email, decoration: InputDecoration(labelText: 'Email', hintText: 'Digite o email'), readOnly: true,),
+                        SizedBox(height: 10,),
+                        TextFormField(initialValue: controller.solicitation.value?.customer!.phone, decoration: InputDecoration(labelText: 'Telefone', hintText: 'Digite o telefone'), readOnly: true,),
+                        SizedBox(height: 10,),
+                        Text('Endereço'),
+                        SizedBox(height: 10,),
+                        Row(children: [
+                          Expanded(child: TextFormField(initialValue: controller.solicitation.value?.address!.street, decoration: InputDecoration(labelText: 'Rua', hintText: 'Digite a rua'), readOnly: true,),),
+                          Container(
+                            width: 100,
+                            margin: EdgeInsets.only(left: 10),
+                            child: TextFormField(initialValue: controller.solicitation.value?.address!.number, decoration: InputDecoration(labelText: 'Número', hintText: 'Digite o número'), readOnly: true,),
+                          )
+                        ]),
+                        SizedBox(height: 10,),
+                        TextFormField(initialValue: controller.solicitation.value?.address!.neighborhood, decoration: InputDecoration(labelText: 'Bairro', hintText: 'Digite o bairro'), readOnly: true,),
+                        SizedBox(height: 10,),
+                        Row(
+                          children: [
+                            Expanded(child:  TextFormField(initialValue: controller.solicitation.value?.address!.city, decoration: InputDecoration(labelText: 'Cidade', hintText: 'Digite a cidade'), readOnly: true,),),
                             Container(
                               width: 100,
                               margin: EdgeInsets.only(left: 10),
-                              child: TextFormField(initialValue: controller.solicitation.value?.address!.number, decoration: InputDecoration(labelText: 'Número', hintText: 'Digite o número'), readOnly: true,),
+                              child:  TextFormField(initialValue: controller.solicitation.value?.address!.state, decoration: InputDecoration(labelText: 'Estado', hintText: 'Digite o estado'), readOnly: true,),
                             )
-                          ]),
-                          SizedBox(height: 10,),
-                          TextFormField(initialValue: controller.solicitation.value?.address!.neighborhood, decoration: InputDecoration(labelText: 'Bairro', hintText: 'Digite o bairro'), readOnly: true,),
-                          SizedBox(height: 10,),
-                          Row(
-                            children: [
-                             Expanded(child:  TextFormField(initialValue: controller.solicitation.value?.address!.city, decoration: InputDecoration(labelText: 'Cidade', hintText: 'Digite a cidade'), readOnly: true,),),
-                             Container(
-                               width: 100,
-                               margin: EdgeInsets.only(left: 10),
-                               child:  TextFormField(initialValue: controller.solicitation.value?.address!.state, decoration: InputDecoration(labelText: 'Estado', hintText: 'Digite o estado'), readOnly: true,),
-                             )
-                            ],
-                          ),
-                          SizedBox(height: 10,),
-                          TextFormField(initialValue: controller.solicitation.value?.address!.zipCode, decoration: InputDecoration(labelText: 'CEP', hintText: 'Digite o cep'), readOnly: true,),
-                          SizedBox(height: 10,),
-                          if(controller.solicitation.value!.status == SolicitationStatus.pending)
-                            ElevatedButton(onPressed: () => controller.startSolicitation(), child: Text('Iniciar atendimento'))
-                          else if(controller.solicitation.value!.status == SolicitationStatus.processing)
-                            ElevatedButton(onPressed: () => controller.endSolicitation(), child: Text('Concluir atendimento'), style: ButtonStyle(backgroundColor: MaterialStatePropertyAll(Colors.green)),),
-                          SizedBox(height: 10,),
-                          controller.solicitation.value!.status == SolicitationStatus.done ? Text('Concluido')
-                              : controller.solicitation.value!.status == SolicitationStatus.processing ? Text('Em andamento')
-                              : Text('Nao iniciado')
-                        ]
-                    ),
+                          ],
+                        ),
+                        SizedBox(height: 10,),
+                        TextFormField(initialValue: controller.solicitation.value?.address!.zipCode, decoration: InputDecoration(labelText: 'CEP', hintText: 'Digite o cep'), readOnly: true,),
+                        SizedBox(height: 10,),
+                        if (controller.solicitation.value!.gas)
+                          Text('Serviço de gás; Empresa: ${controller.solicitation.value!.gasCarrier}'),
+                        if(controller.solicitation.value!.water)
+                          Text(' Serviço de agua; Empresa: ${controller.solicitation.value!.waterCarrier}'),
+                        if(controller.solicitation.value!.power)
+                          Text('Serviço de eletricidade; Empresa: ${controller.solicitation.value!.powerCarrier}'),
+                        if(controller.solicitation.value!.status == SolicitationStatus.pending)
+                          ElevatedButton(onPressed: () => controller.startSolicitation(), child: Text('Iniciar atendimento'))
+                        else if(controller.solicitation.value!.status == SolicitationStatus.processing)
+                          ElevatedButton(onPressed: () => controller.endSolicitation(), child: Text('Concluir atendimento'), style: ButtonStyle(backgroundColor: MaterialStatePropertyAll(Colors.green)),),
+                        SizedBox(height: 10,),
+                        controller.solicitation.value!.status == SolicitationStatus.done ? Text('Concluido')
+                            : controller.solicitation.value!.status == SolicitationStatus.processing ? Text('Em andamento')
+                            : Text('Nao iniciado')
+                      ]
                   ):Center(child: Text('Nenhuma solicitação selecionada')))
                 ],
               ),

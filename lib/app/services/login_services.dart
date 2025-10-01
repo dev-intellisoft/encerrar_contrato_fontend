@@ -26,7 +26,16 @@ class LoginServices {
     if(response.statusCode == 200) {
       return AccessToken.fromJson(response.data);
     }
+    print(response.data);
     throw Exception('Failed to login');
+  }
+
+  Future<User> me() async {
+    var response = await dio.get('/users/me');
+    if(response.statusCode == 200) {
+      return User.fromJson(response.data);
+    }
+    throw Exception('Failed to get user');
   }
 
   Future<User> checkSession() async {

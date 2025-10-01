@@ -13,12 +13,6 @@ class SolicitationController extends GetxController {
   SolicitationServices services = Get.find<SolicitationServices>();
 
   RxBool agreement = false.obs;
-  RxBool water = false.obs;
-  RxBool electricity = false.obs;
-  RxBool gas = false.obs;
-  RxBool internet = false.obs;
-  RxBool phone = false.obs;
-  RxBool tv = false.obs;
 
   RxString cep = ''.obs;
 

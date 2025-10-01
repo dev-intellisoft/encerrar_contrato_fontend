@@ -45,7 +45,7 @@ class AppPages {
     GetPage(
       name: Routes.DASHBOARD,
       page: () => const DashboardPage(),
-      binding: DashboardBinding(),
+      bindings: [DashboardBinding(), CustomerBinding(), SolicitationBinding()],
     ),
   ];
 }

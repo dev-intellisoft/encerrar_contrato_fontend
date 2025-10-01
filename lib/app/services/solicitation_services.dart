@@ -10,6 +10,7 @@ class SolicitationServices {
   SolicitationServices(this.dio);
   Future<List<Solicitation>> getSolicitations() async {
     var response = await dio.get('/solicitations');
+
     if(response.statusCode == 200) {
       return (response.data as List).map((e) => Solicitation.fromJson(e)).toList();
     }
@@ -25,22 +26,22 @@ class SolicitationServices {
   }
 
   Future<Solicitation> createSolicitation(Solicitation solicitation) async {
-    var data = json.encode(solicitation.toJson(),
-        toEncodable: (value) => value is BigInt ? value.toInt() : value);
+    var data = json.encode(solicitation.toJson());
     var response = await dio.post('/solicitations', data: data);
     if (response.statusCode == 201) {
       return Solicitation.fromJson(response.data);
     }
     throw Exception('Failed to create solicitation');
   }
-  Future<Solicitation> startSolicitation(BigInt id) async {
+  Future<Solicitation> startSolicitation(String id) async {
     var response = await dio.put('/solicitations/${id}/start');
     if (response.statusCode == 200) {
+      print(response.data);
       return Solicitation.fromJson(response.data);
     }
     throw Exception('Failed to start solicitation');
   }
-  Future<Solicitation> endSolicitation(BigInt id) async {
+  Future<Solicitation> endSolicitation(String id) async {
     var response = await dio.put('/solicitations/${id}/end');
     if (response.statusCode == 200) {
       return Solicitation.fromJson(response.data);

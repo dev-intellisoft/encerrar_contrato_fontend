@@ -5,7 +5,7 @@ import 'address_model.dart';
 enum SolicitationStatus { pending, processing, done }
 
 class Solicitation {
-  BigInt? id;
+  String? id;
   Customer? customer;
   Address? address;
   String? title;
@@ -15,6 +15,20 @@ class Solicitation {
   DateTime? updatedAt;
   String? services;
   String? agency;
+  String? gasCarrier;
+  String? waterCarrier;
+  String? powerCarrier;
+  bool water;
+  bool gas;
+  bool power;
+
+
+  // GasCarrier   string   `json:"gas_carrier"`
+  // WaterCarrier string   `json:"water_carrier"`
+  // PowerCarrier string   `json:"power_carrier"`
+  // Water        bool     `json:"water" gorm:"default:false"`
+  // Gas          bool     `json:"gas" gorm:"default:false"`
+  // Power        bool     `json:"power" gorm:"default:false"`
 
   Solicitation({
     this.id,
@@ -27,12 +41,18 @@ class Solicitation {
     this.updatedAt,
     this.services,
     this.agency,
+    this.gasCarrier,
+    this.waterCarrier,
+    this.powerCarrier,
+    this.water = false,
+    this.gas = false,
+    this.power = false,
   });
 
   Map<String, dynamic> toJson() {
     return {
-      'id': BigInt.tryParse('$id')??BigInt.zero,
-      'customer_id':customer != null ? customer!.id:BigInt.zero,
+      'id': id,
+      'customer_id':customer != null ? customer!.id:"",
       'title': title,
       'customer':customer!.toJson(),
       'address':address!.toMap(),
@@ -42,12 +62,18 @@ class Solicitation {
       'services': services,
       'createdAt': createdAt,
       'updatedAt': updatedAt,
+      'gas_carrier': gasCarrier,
+      'water_carrier': waterCarrier,
+      'power_carrier': powerCarrier,
+      'water': water,
+      'gas': gas,
+      'power': power,
     };
   }
 
   factory Solicitation.fromJson(Map<String, dynamic> map) {
     return Solicitation(
-      id: BigInt.tryParse('${map['id']}')??BigInt.zero,
+      id: map['id'],
       customer: Customer.fromJson(map['customer']),
       address: Address.fromMap(map['address']),
       title: map['title'],
@@ -55,6 +81,12 @@ class Solicitation {
       status: SolicitationStatus.values[map['status']],
       services: map['services'],
       agency: map['agency'],
+      gasCarrier: map['gas_carrier'],
+      waterCarrier: map['water_carrier'],
+      powerCarrier: map['power_carrier'],
+      water: map['water'],
+      gas: map['gas'],
+      power: map['power'],
     );
   }
 

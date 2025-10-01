@@ -1,5 +1,5 @@
 class Address {
-  BigInt? id;
+  String? id;
   String? street;
   String? number;
   String? complement;
@@ -37,7 +37,7 @@ class Address {
 
   factory Address.fromMap(Map<String, dynamic> map) {
     return Address(
-      id: BigInt.tryParse('${map['id']}')??BigInt.zero,
+      id: map['id'],
       street: map['street'],
       number: map['number'],
       complement: map['complement'],
@@ -50,7 +50,6 @@ class Address {
   }
 
   factory Address.fromViaCEP(Map<String, dynamic> map) {
-    print(map);
     return Address(
       zipCode: map['cep'],
       street: map['logradouro'],

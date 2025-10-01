@@ -1,5 +1,5 @@
 class User {
-  BigInt? id;
+  String? id;
   String? firstName;
   String? lastName;
   String? email;
@@ -19,7 +19,7 @@ class User {
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      id: BigInt.tryParse('${json['id']}')??BigInt.zero,
+      id: json['id'],
       firstName: json['first_name'],
       lastName: json['last_name'],
       email: json['email'],
