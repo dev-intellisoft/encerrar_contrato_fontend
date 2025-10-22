@@ -54,7 +54,43 @@ class HomePage extends GetView<HomeController> {
                 style: TextStyle(color: Color.fromRGBO(61, 196, 250, 1.0)),
               ),
               Container( margin:EdgeInsets.symmetric(vertical: 5), child: ElevatedButton(
-                onPressed: () => Get.toNamed(Routes.SOLICITATION),
+                // onPressed: () => Get.toNamed(Routes.SOLICITATION),
+                onPressed: () => Get.dialog(AlertDialog(
+                  title: Text('Detalhes do contrato'),
+                  content: Container(
+                    height: 250,
+                    width:400,
+                    child: Column(
+                      children: [
+                        Text('Enviar link por e-mail'),
+                        TextField(
+                          onChanged: (value) => controller.name.value = value,
+                          decoration: InputDecoration(
+                            labelText: 'Nome',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              borderSide: BorderSide(color: Colors.black, width: 1),
+                            ),
+                          ),
+                        ),
+                        TextFormField(
+                          onChanged: (value) => controller.email.value = value,
+                          decoration: InputDecoration(
+                            labelText: 'E-mail',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              borderSide: BorderSide(color: Colors.black, width: 1),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 10,),
+                        ElevatedButton(
+                          onPressed: controller.sendEmail,
+                          child: Text('Enviar'),
+                        ),
+                      ],
+                    )
+                  ))),
                 style: ButtonStyle(
                   backgroundColor: WidgetStatePropertyAll<Color>(Color.fromRGBO(255, 131, 33, 1.0)),
                   shape: WidgetStatePropertyAll<RoundedRectangleBorder>(

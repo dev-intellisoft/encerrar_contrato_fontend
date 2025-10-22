@@ -12,7 +12,9 @@ class HomeController extends GetxController {
   RxBool loading = false.obs;
   RxList<Solicitation> solicitations = <Solicitation>[].obs;
   RxString search = ''.obs;
-
+  RxString email = ''.obs;
+  RxBool loadingEmail = false.obs;
+  RxString name = ''.obs;
   RxString agency = 'agencya'.obs;
 
   @override
@@ -36,6 +38,15 @@ class HomeController extends GetxController {
       Get.snackbar('Error', e.toString());
     }
     loading.value = false;
+  }
+
+  Future<void> sendEmail() async {
+    try {
+      await services.sendEmail(email.value, name.value);
+      Get.snackbar('Success', 'Email enviado com sucesso');
+    } catch(e) {
+      Get.snackbar('Error', e.toString());
+    }
   }
 
 
