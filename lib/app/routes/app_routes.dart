@@ -8,4 +8,5 @@ abstract class Routes {
   static const CUSTOMER = '/customer';
   static const HISTORY = '/history';
   static const SOLICITATION = '/solicitation';
+  static const AGENCIES = '/agencies';
 }

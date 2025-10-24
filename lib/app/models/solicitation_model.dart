@@ -1,3 +1,5 @@
+import 'package:encerrar_contrato/app/models/pix_model.dart';
+
 import 'customer_model.dart';
 
 import 'address_model.dart';
@@ -21,6 +23,7 @@ class Solicitation {
   bool water;
   bool gas;
   bool power;
+  PIX? pix;
 
 
   // GasCarrier   string   `json:"gas_carrier"`
@@ -47,6 +50,7 @@ class Solicitation {
     this.water = false,
     this.gas = false,
     this.power = false,
+    this.pix,
   });
 
   Map<String, dynamic> toJson() {
@@ -68,6 +72,7 @@ class Solicitation {
       'water': water,
       'gas': gas,
       'power': power,
+      'pix': pix?.toJson(),
     };
   }
 
@@ -87,7 +92,7 @@ class Solicitation {
       water: map['water'],
       gas: map['gas'],
       power: map['power'],
+      pix: map['pix'] != null?PIX.fromJson(map['pix']):null,
     );
   }
-
 }

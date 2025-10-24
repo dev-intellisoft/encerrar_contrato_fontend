@@ -1,7 +1,9 @@
 import 'package:get/get.dart';
+import '../bindings/agencies_binding.dart';
 import '../bindings/customer_binding.dart';
 import '../bindings/dashboard_controller.dart';
 import '../bindings/solicitation_binding.dart';
+import '../ui/pages/agengies/agencies_pages.dart';
 import '../ui/pages/dashboard/dashboard_page.dart';
 import '../ui/pages/login/login_page.dart';
 import '../bindings/login_binding.dart';
@@ -47,5 +49,6 @@ class AppPages {
       page: () => const DashboardPage(),
       bindings: [DashboardBinding(), CustomerBinding(), SolicitationBinding()],
     ),
+    GetPage(name: Routes.AGENCIES, page: () => AgencyPage(), binding:AgenciesBinding() )
   ];
 }

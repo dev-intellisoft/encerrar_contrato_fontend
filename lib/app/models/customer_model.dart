@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class Customer {
   String? id;
   String? name;
@@ -16,13 +18,14 @@ class Customer {
   });
 
   Map<String, dynamic> toJson() {
+    String bd = birthDate!.split('/').reversed.join('-');
     return {
       'id': id,
       'name': name,
       'cpf': cpf,
       'email': email,
       'phone': phone,
-      'birthDate': birthDate,
+      'birth_date': bd,
     };
   }
 

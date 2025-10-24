@@ -8,6 +8,7 @@ import '../services/registration_services.dart';
 class RegisterController extends GetxController {
   RegistrationServices services = Get.find<RegistrationServices>();
   Rx<Solicitation> solicitation = Solicitation(customer: Customer(), address: Address()).obs;
+  RxBool isLoading = false.obs;
   RxString cep = ''.obs;
 
   bool isValidCEP(String cep) {
@@ -39,11 +40,16 @@ class RegisterController extends GetxController {
   }
 
   Future<void> register() async {
+    Get.back();
     try {
-      await services.register(solicitation.value);
+      isLoading.value = true;
+      solicitation.value = await services.register(solicitation.value);
+      print(solicitation.value.toJson());
       Get.snackbar('Success', 'Solicitação criada com sucesso');
     } catch(e) {
       Get.snackbar('Error', e.toString());
+    } finally {
+      isLoading.value = false;
     }
   }
 

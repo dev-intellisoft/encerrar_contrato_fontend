@@ -17,8 +17,9 @@ class DrawerWidget extends StatelessWidget {
             child: Text('Drawer Header'),
           ),
           ListTile(
-            title: Text('Item 1'),
+            title: Text('Imobilárias'),
             onTap: () {
+              Get.offNamed(Routes.AGENCIES);
               Get.back();
             },
           ),

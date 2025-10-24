@@ -30,7 +30,6 @@ class RegistrationServices {
     var data = json.encode(solicitation.toJson());
     var response = await dio.post('/registration', data: data);
     if (response.statusCode == 201) {
-      print(response.data);
       return Solicitation.fromJson(response.data);
     }
     throw Exception('Failed to create solicitation');
