@@ -125,92 +125,100 @@ class RegisterPage extends GetView<RegisterController> {
                     )
                 ),),
 
-              Container(
-                margin: EdgeInsets.all(10),
-                child: TextFormField(
-                    inputFormatters: [
-                      MaskTextInputFormatter(
-                        mask: '###.###.###-##',
-                        filter: {"#": RegExp(r'[0-9]')}, // only digits allowed
-                      )
-                    ],
-                    onChanged: (text) => controller.solicitation.value.customer!.cpf = text,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(25),
-                        borderSide: BorderSide(
-                          color: Colors.black,
-                          width: 1,
-                        ),
-                      ),
-                      labelText: 'CPF',
-                    )
-                ),
+              Row(
+                children: [
+                  Expanded(child: Container(
+                    margin: EdgeInsets.all(10),
+                    child: TextFormField(
+                        inputFormatters: [
+                          MaskTextInputFormatter(
+                            mask: '###.###.###-##',
+                            filter: {"#": RegExp(r'[0-9]')}, // only digits allowed
+                          )
+                        ],
+                        onChanged: (text) => controller.solicitation.value.customer!.cpf = text,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(25),
+                            borderSide: BorderSide(
+                              color: Colors.black,
+                              width: 1,
+                            ),
+                          ),
+                          labelText: 'CPF',
+                        )
+                    ),
+                  )),
+                  Expanded(child: Container(
+                    margin: EdgeInsets.all(10),
+                    child: TextFormField(
+                        inputFormatters: [
+                          MaskTextInputFormatter(
+                            mask: '##/##/####',
+                            filter: {"#": RegExp(r'[0-9]')}, // only digits allowed
+                          )
+                        ],
+                        onChanged: (text) => controller.solicitation.value.customer!.birthDate = text,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(25),
+                            borderSide: BorderSide(
+                              color: Colors.black,
+                              width: 1,
+                            ),
+                          ),
+                          labelText: 'Data de nascimento',
+                        )
+                    ),
+                  )),
+                ],
               ),
+              
+              Row(
+                children: [
+                  Expanded(child: Container(
+                    margin: EdgeInsets.all(10),
+                    child: TextFormField(
+                        inputFormatters: [
+                          FilteringTextInputFormatter.deny(RegExp(r'[^a-zA-Z0-9@.]+')),
+                        ],
 
-              Container(
-                margin: EdgeInsets.all(10),
-                child: TextFormField(
-                    inputFormatters: [
-                      MaskTextInputFormatter(
-                        mask: '##/##/####',
-                        filter: {"#": RegExp(r'[0-9]')}, // only digits allowed
-                      )
-                    ],
-                    onChanged: (text) => controller.solicitation.value.customer!.birthDate = text,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(25),
-                        borderSide: BorderSide(
-                          color: Colors.black,
-                          width: 1,
-                        ),
-                      ),
-                      labelText: 'Data de nascimento',
-                    )
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.all(10),
-                child: TextFormField(
-                    inputFormatters: [
-                      FilteringTextInputFormatter.deny(RegExp(r'[^a-zA-Z0-9@.]+')),
-                    ],
-
-                    onChanged: (text) => controller.solicitation.value.customer!.email = text,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(25),
-                        borderSide: BorderSide(
-                          color: Colors.black,
-                          width: 1,
-                        ),
-                      ),
-                      labelText: 'Email',
-                    )
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.all(10),
-                child: TextFormField(
-                    inputFormatters: [
-                      MaskTextInputFormatter(
-                        mask: '(##) #####-####',
-                        filter: {"#": RegExp(r'[0-9]')}, // only digits allowed
-                      )
-                    ],
-                    onChanged: (text) => controller.solicitation.value.customer!.phone = text,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(25),
-                        borderSide: BorderSide(
-                          color: Colors.black,
-                          width: 1,
-                        ),
-                      ),
-                      labelText: 'Telefone(Whatsapp)',
-                    )
-                ),
+                        onChanged: (text) => controller.solicitation.value.customer!.email = text,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(25),
+                            borderSide: BorderSide(
+                              color: Colors.black,
+                              width: 1,
+                            ),
+                          ),
+                          labelText: 'Email',
+                        )
+                    ),
+                  )),
+                  Expanded(child: Container(
+                    margin: EdgeInsets.all(10),
+                    child: TextFormField(
+                        inputFormatters: [
+                          MaskTextInputFormatter(
+                            mask: '(##) #####-####',
+                            filter: {"#": RegExp(r'[0-9]')}, // only digits allowed
+                          )
+                        ],
+                        onChanged: (text) => controller.solicitation.value.customer!.phone = text,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(25),
+                            borderSide: BorderSide(
+                              color: Colors.black,
+                              width: 1,
+                            ),
+                          ),
+                          labelText: 'Telefone(Whatsapp)',
+                        )
+                    ),
+                  )),
+                ],
               ),
 
               Text('Endereço:'),
@@ -434,7 +442,8 @@ class RegisterPage extends GetView<RegisterController> {
                   ),
                   padding: WidgetStatePropertyAll<EdgeInsetsGeometry>(EdgeInsets.symmetric(vertical: 15, horizontal: 20)),
                 ), child: Text('ENVIAR INFORMAÇÕES'),
-              )
+              ),
+              SizedBox(height: 100,)
 
             ],
           );

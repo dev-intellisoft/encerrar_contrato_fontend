@@ -60,36 +60,41 @@ class HomePage extends GetView<HomeController> {
                   content: Container(
                     height: 250,
                     width:400,
-                    child: Column(
-                      children: [
-                        Text('Enviar link por e-mail'),
-                        TextField(
-                          onChanged: (value) => controller.name.value = value,
-                          decoration: InputDecoration(
-                            labelText: 'Nome',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(20),
-                              borderSide: BorderSide(color: Colors.black, width: 1),
+                    child: Obx(() {
+                      if(controller.loading.value) {
+                        return Center(child: CircularProgressIndicator(),);
+                      }
+                      return Column(
+                        children: [
+                          Text('Enviar link por e-mail'),
+                          TextField(
+                            onChanged: (value) => controller.name.value = value,
+                            decoration: InputDecoration(
+                              labelText: 'Nome',
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(20),
+                                borderSide: BorderSide(color: Colors.black, width: 1),
+                              ),
                             ),
                           ),
-                        ),
-                        TextFormField(
-                          onChanged: (value) => controller.email.value = value,
-                          decoration: InputDecoration(
-                            labelText: 'E-mail',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(20),
-                              borderSide: BorderSide(color: Colors.black, width: 1),
+                          TextFormField(
+                            onChanged: (value) => controller.email.value = value,
+                            decoration: InputDecoration(
+                              labelText: 'E-mail',
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(20),
+                                borderSide: BorderSide(color: Colors.black, width: 1),
+                              ),
                             ),
                           ),
-                        ),
-                        SizedBox(height: 10,),
-                        ElevatedButton(
-                          onPressed: controller.sendEmail,
-                          child: Text('Enviar'),
-                        ),
-                      ],
-                    )
+                          SizedBox(height: 10,),
+                          ElevatedButton(
+                            onPressed: controller.sendEmail,
+                            child: Text('Enviar'),
+                          ),
+                        ],
+                      );
+                    })
                   ))),
                 style: ButtonStyle(
                   backgroundColor: WidgetStatePropertyAll<Color>(Color.fromRGBO(255, 131, 33, 1.0)),
