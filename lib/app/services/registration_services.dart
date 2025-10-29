@@ -34,4 +34,13 @@ class RegistrationServices {
     }
     throw Exception('Failed to create solicitation');
   }
+
+  Future<Solicitation> transfer(Solicitation soliciation) async {
+    var data = json.encode(soliciation.toJson());
+    var response  = await dio.post("/transfer", data:data);
+    if(response.statusCode == 201) {
+      Solicitation.fromJson(response.data);
+    }
+    throw Exception("Failed to create solicitation");
+  }
 }
