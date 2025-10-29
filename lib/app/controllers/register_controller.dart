@@ -6,6 +6,9 @@ import '../models/solicitation_model.dart';
 import '../services/registration_services.dart';
 
 class RegisterController extends GetxController {
+
+  RxString service = ''.obs;
+
   RegistrationServices services = Get.find<RegistrationServices>();
   Rx<Solicitation> solicitation = Solicitation(customer: Customer(), address: Address()).obs;
   RxBool isLoading = false.obs;
@@ -51,6 +54,11 @@ class RegisterController extends GetxController {
     } finally {
       isLoading.value = false;
     }
+  }
+
+
+  Future<void> transfer() async {
+
   }
 
 }
