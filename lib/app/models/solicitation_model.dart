@@ -24,14 +24,10 @@ class Solicitation {
   bool gas;
   bool power;
   PIX? pix;
-
-
-  // GasCarrier   string   `json:"gas_carrier"`
-  // WaterCarrier string   `json:"water_carrier"`
-  // PowerCarrier string   `json:"power_carrier"`
-  // Water        bool     `json:"water" gorm:"default:false"`
-  // Gas          bool     `json:"gas" gorm:"default:false"`
-  // Power        bool     `json:"power" gorm:"default:false"`
+  String paymentType = "pix";
+  String paymentStatus = "pending";
+  String service = "close";
+  String? agencyId;
 
   Solicitation({
     this.id,
@@ -51,6 +47,10 @@ class Solicitation {
     this.gas = false,
     this.power = false,
     this.pix,
+    this.paymentType = "pix",
+    this.paymentStatus = "pending",
+    this.service = "close",
+    this.agencyId
   });
 
   Map<String, dynamic> toJson() {
@@ -73,6 +73,10 @@ class Solicitation {
       'gas': gas,
       'power': power,
       'pix': pix?.toJson(),
+      'payment_type': paymentType,
+      'payment_status':paymentStatus,
+      'service':service,
+      'agency_id':agencyId
     };
   }
 
@@ -93,6 +97,10 @@ class Solicitation {
       gas: map['gas'],
       power: map['power'],
       pix: map['pix'] != null?PIX.fromJson(map['pix']):null,
+      paymentType: map['payment_type'],
+      paymentStatus: map['payment_status'],
+      service: map['service'],
+      agencyId: map['agency_id'],
     );
   }
 }
