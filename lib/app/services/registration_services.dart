@@ -28,7 +28,7 @@ class RegistrationServices {
 
   Future<Solicitation> register(Solicitation solicitation) async {
     var data = json.encode(solicitation.toJson());
-    var response = await dio.post('/registration', data: data);
+    var response = await dio.post('/registration/${solicitation.agencyId}', data: data);
     if (response.statusCode == 201) {
       return Solicitation.fromJson(response.data);
     }
