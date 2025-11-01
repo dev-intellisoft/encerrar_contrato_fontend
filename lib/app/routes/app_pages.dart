@@ -35,7 +35,11 @@ class AppPages {
     ),
     GetPage(
       name: Routes.REGISTER,
-      page: () => const RegisterPage(),
+      page: () {
+        String debugAgencyId = "355e77c5-e612-43fa-9335-dab552158527";
+        String agencyId = Get.parameters['agency_id'] ?? debugAgencyId;
+        return  RegisterPage(agencyId:agencyId);
+      },
       binding: RegisterBinding(),
       transition: Transition.noTransition,
     ),

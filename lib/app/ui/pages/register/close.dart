@@ -14,7 +14,6 @@ class CloseForm extends GetView<RegisterController> {
         Row(
           children: [LogoImobiliaria(),],
         ),
-        Center(child: Text('Solicitação de encerramento de contrato', style: TextStyle(fontSize: 18, ),),),
         SizedBox(height: 20,),
         Text('Preencha os campos solicitados:'),
 

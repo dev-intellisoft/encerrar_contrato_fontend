@@ -32,6 +32,7 @@ class Address {
       'state': state,
       'country': country,
       'zipCode': zipCode,
+      'zip_code': zipCode,
     };
   }
 
@@ -45,7 +46,7 @@ class Address {
       city: map['city'],
       state: map['state'],
       country: map['country'],
-      zipCode: map['zipCode'],
+      zipCode: map['zipCode']??map['zip_code'],
     );
   }
 

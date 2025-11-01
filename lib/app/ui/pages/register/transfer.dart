@@ -16,7 +16,6 @@ class TransferForm extends GetView<RegisterController> {
           children: [LogoImobiliaria(),],
         ),
 
-        Center(child: Text('Solicitação de transferencia de titularidade', style: TextStyle(fontSize: 18, ),),),
         SizedBox(height: 20,),
         Text('Dados do atual titular:'),
 

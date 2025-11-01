@@ -1,3 +1,5 @@
+import 'package:encerrar_contrato/app/models/asaas_credit_card.dart';
+import 'package:encerrar_contrato/app/models/asaas_credit_card_holder_info.dart';
 import 'package:encerrar_contrato/app/models/pix_model.dart';
 
 import 'customer_model.dart';
@@ -28,6 +30,8 @@ class Solicitation {
   String paymentStatus = "pending";
   String service = "close";
   String? agencyId;
+  ASAASCreditCardHolderInfo? creditCardHolderInfo;
+  ASAASCreditCard? creditCard;
 
   Solicitation({
     this.id,
@@ -50,7 +54,9 @@ class Solicitation {
     this.paymentType = "pix",
     this.paymentStatus = "pending",
     this.service = "close",
-    this.agencyId
+    this.agencyId,
+    this.creditCardHolderInfo,
+    this.creditCard
   });
 
   Map<String, dynamic> toJson() {
@@ -76,7 +82,9 @@ class Solicitation {
       'payment_type': paymentType,
       'payment_status':paymentStatus,
       'service':service,
-      'agency_id':agencyId
+      'agency_id':agencyId,
+      'credit_card_holder_info':creditCardHolderInfo,
+      'credit_card':creditCard
     };
   }
 
@@ -101,6 +109,8 @@ class Solicitation {
       paymentStatus: map['payment_status'],
       service: map['service'],
       agencyId: map['agency_id'],
+      creditCardHolderInfo: map['credit_card_holder_info'],
+      creditCard: map['credit_card']
     );
   }
 }

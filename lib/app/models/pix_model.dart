@@ -64,3 +64,63 @@ class PIX {
     return 'PixResponse(success: $success, payload: ${payload.substring(0, payload.length > 40 ? 40 : payload.length)}..., expirationDate: $expirationDate)';
   }
 }
+
+class PIXResponse {
+  bool? success;
+  String? encodedImage;
+  String? payload;
+  DateTime? expirationDate;
+  String? description;
+
+  PIXResponse({
+    this.success,
+    this.encodedImage,
+    this.payload,
+    this.expirationDate,
+    this.description,
+  });
+
+  PIXResponse copyWith({
+    bool? success,
+    String? encodedImage,
+    String? payload,
+    DateTime? expirationDate,
+    String? description,
+  }) {
+    return PIXResponse(
+      success: success ?? this.success,
+      encodedImage: encodedImage ?? this.encodedImage,
+      payload: payload ?? this.payload,
+      expirationDate: expirationDate ?? this.expirationDate,
+      description: description ?? this.description,
+    );
+  }
+
+  factory PIXResponse.fromJson(Map<String, dynamic> json) {
+    DateTime? parsedDate;
+    final raw = json['expirationDate'];
+    if (raw != null && raw is String && raw.isNotEmpty) {
+      try {
+        parsedDate = DateTime.parse(raw);
+      } catch (_) {
+        parsedDate = null;
+      }
+    }
+
+    return PIXResponse(
+      success: json['success'] as bool? ?? false,
+      encodedImage: json['encodedImage'] as String? ?? '',
+      payload: json['payload'] as String? ?? '',
+      expirationDate: parsedDate,
+      description: json['description'] as String? ?? '',
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    'success': success,
+    'encodedImage': encodedImage,
+    'payload': payload,
+    'expirationDate': expirationDate?.toUtc().toIso8601String() ?? '',
+    'description': description,
+  };
+}
