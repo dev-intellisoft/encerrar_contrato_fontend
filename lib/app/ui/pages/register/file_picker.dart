@@ -12,9 +12,12 @@ class FilePickerField extends StatefulWidget {
 
 class _FilePickerFieldState extends State<FilePickerField> {
   Future<void> _pickFile() async {
-    final result = await FilePicker.platform.pickFiles();
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
+    print("==================>");
+    print(result);
 
     if (result != null && result.files.isNotEmpty) {
+      print(result);
       final file = result.files.single;
       setState(() {
         widget.controller.text = file.name; // Mostra o nome no campo
@@ -35,4 +38,3 @@ class _FilePickerFieldState extends State<FilePickerField> {
     );
   }
 }
-

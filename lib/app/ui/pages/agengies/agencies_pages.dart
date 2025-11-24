@@ -57,8 +57,8 @@ class AgencyPage extends GetView<AgencyController> {
           itemBuilder: (context, index) {
             final agency = controller.agencies[index];
             return ListTile(
-              title: Text(agency.name),
-              subtitle: Text(agency.login),
+              title: Text(agency.name!),
+              subtitle: Text(agency.login!),
               onTap: () => Get.to(() => AgencyViewPage(agency: agency)),
               trailing: IconButton(
                 icon: const Icon(Icons.delete, color: Colors.red),

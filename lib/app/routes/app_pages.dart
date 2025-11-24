@@ -36,9 +36,8 @@ class AppPages {
     GetPage(
       name: Routes.REGISTER,
       page: () {
-        String debugAgencyId = "355e77c5-e612-43fa-9335-dab552158527";
-        String agencyId = Get.parameters['agency_id'] ?? debugAgencyId;
-        return  RegisterPage(agencyId:agencyId);
+        String? agencyId = Get.parameters['agency_id']; // ?? debugAgencyId;
+        return RegisterPage(agencyId: agencyId!);
       },
       binding: RegisterBinding(),
       transition: Transition.noTransition,
@@ -53,6 +52,10 @@ class AppPages {
       page: () => const DashboardPage(),
       bindings: [DashboardBinding(), CustomerBinding(), SolicitationBinding()],
     ),
-    GetPage(name: Routes.AGENCIES, page: () => AgencyPage(), binding:AgenciesBinding() )
+    GetPage(
+      name: Routes.AGENCIES,
+      page: () => AgencyPage(),
+      binding: AgenciesBinding(),
+    ),
   ];
 }

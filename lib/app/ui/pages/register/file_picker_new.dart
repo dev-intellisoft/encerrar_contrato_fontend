@@ -1,27 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 
-class FilePickerField extends StatefulWidget {
-  final TextEditingController controller;
+class FilePickerFieldNew extends StatefulWidget {
+  final TextEditingController? controller;
   final InputDecoration? decoration;
-  const FilePickerField({super.key, required this.controller, this.decoration});
+  final Function(PlatformFile)? onFilePicked;
+
+  const FilePickerFieldNew({
+    Key? key,
+    this.controller,
+    this.decoration,
+    this.onFilePicked,
+  }) : super(key: key);
 
   @override
-  State<FilePickerField> createState() => _FilePickerFieldState();
+  State<FilePickerFieldNew> createState() => _FilePickerFieldNewState();
 }
 
-class _FilePickerFieldState extends State<FilePickerField> {
+class _FilePickerFieldNewState extends State<FilePickerFieldNew> {
+  PlatformFile? _file;
+
   Future<void> _pickFile() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles();
-
+    final result = await FilePicker.platform.pickFiles();
     if (result != null && result.files.isNotEmpty) {
-      final file = result.files.single;
       setState(() {
-        widget.controller.text = file.name; // Mostra o nome no campo
+        _file = result.files.single;
+        widget.controller?.text = _file!.name;
       });
-
-      // Aqui você pode usar file.path para enviar o arquivo
-      print('Arquivo selecionado: ${file.path}');
+      if (widget.onFilePicked != null) {
+        widget.onFilePicked!(_file!);
+      }
     }
   }
 
@@ -29,10 +37,14 @@ class _FilePickerFieldState extends State<FilePickerField> {
   Widget build(BuildContext context) {
     return TextFormField(
       controller: widget.controller,
-      readOnly: true, // evita digitação manual
-      decoration: widget.decoration,
-      onTap: _pickFile, // também abre o seletor ao clicar no campo
+      readOnly: true,
+      decoration:
+          widget.decoration ??
+          const InputDecoration(
+            labelText: 'Select a file',
+            suffixIcon: Icon(Icons.attach_file),
+          ),
+      onTap: _pickFile,
     );
   }
 }
-

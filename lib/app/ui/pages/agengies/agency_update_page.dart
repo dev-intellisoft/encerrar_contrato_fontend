@@ -13,13 +13,15 @@ class AgencyUpdatePage extends GetView<AgencyController> {
   final nameCtrl = TextEditingController();
   final loginCtrl = TextEditingController();
   final passCtrl = TextEditingController();
+
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
-    nameCtrl.text = agency.name;
-    loginCtrl.text = agency.login;
-    passCtrl.text = agency.password;
+    nameCtrl.text = agency.name!;
+    loginCtrl.text = agency.login!;
+    passCtrl.text = agency.password!;
+
 
     return Scaffold(
       key: _scaffoldKey,

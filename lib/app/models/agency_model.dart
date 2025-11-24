@@ -1,16 +1,20 @@
+import 'dart:io';
+
 class Agency {
   String? id;
-  String name;
-  String image;
-  String login;
-  String password;
+  String? name;
+  String? image;
+  String? login;
+  String? password;
+  File? file;
 
   Agency({
     this.id,
-    required this.name,
-    required this.image,
-    required this.login,
-    required this.password,
+    this.name,
+    this.image,
+    this.login,
+    this.password,
+    this.file
   });
 
   factory Agency.fromJson(Map<String, dynamic> json) => Agency(
@@ -19,6 +23,7 @@ class Agency {
     image: json['image'] ?? '',
     login: json['login'],
     password: json['password'],
+    file: json['file']
   );
 
   Map<String, dynamic> toJson() => {
@@ -27,5 +32,6 @@ class Agency {
     'image': image,
     'login': login,
     'password': password,
+    'file': file
   };
 }

@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../controllers/agency_controller.dart';
-import '../../../models/agency_model.dart';
 import '../../../widgets/drawer.dart';
 import '../../../widgets/logo.dart';
 
 class AgencyCreatePage extends GetView<AgencyController> {
-  final nameCtrl = TextEditingController();
-  final loginCtrl = TextEditingController();
-  final passCtrl = TextEditingController();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
@@ -48,21 +44,32 @@ class AgencyCreatePage extends GetView<AgencyController> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            TextField(controller: nameCtrl, decoration: const InputDecoration(labelText: 'Name')),
-            TextField(controller: loginCtrl, decoration: const InputDecoration(labelText: 'Login')),
-            TextField(controller: passCtrl, decoration: const InputDecoration(labelText: 'Password')),
+            Container(
+              margin: EdgeInsets.symmetric(vertical: 10),
+              child: TextField(
+                onChanged: (text) => controller.agency.update((a) => a!.name = text),
+                decoration: const InputDecoration(labelText: 'Name')),
+            ),
+            Container(
+              margin: EdgeInsets.symmetric(vertical: 10),
+              child: TextField(
+                onChanged: (text) => controller.agency.update((a) => a!.login = text),
+                decoration: const InputDecoration(labelText: 'Login')),),
+            Container(
+              margin: EdgeInsets.symmetric(vertical: 10),
+              child: TextField(
+                onChanged: (text) => controller.agency.update((a) => a!.password = text),
+                decoration: const InputDecoration(labelText: 'Password')),
+            ),
+            Container(
+              margin: EdgeInsets.symmetric(vertical: 10),
+              child: TextField(
+                onTap: controller.pickFile,
+                decoration: const InputDecoration(labelText: 'Logo')),
+            ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () async {
-                final newAgency = Agency(
-                  name: nameCtrl.text,
-                  image: '',
-                  login: loginCtrl.text,
-                  password: passCtrl.text,
-                );
-                await controller.addAgency(newAgency);
-                Get.back();
-              },
+              onPressed: controller.addAgency,
               child: const Text('Save'),
             ),
           ],
