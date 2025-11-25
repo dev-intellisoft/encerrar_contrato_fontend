@@ -12,6 +12,9 @@ import '../bindings/home_binding.dart';
 import '../ui/pages/register/register_page.dart';
 import '../bindings/register_binding.dart';
 import '../ui/pages/solicitation/solicitation_page.dart';
+import '../ui/pages/services/services_page.dart';
+import '../bindings/services_binding.dart';
+import '../ui/pages/services/services_create_page.dart';
 
 part 'app_routes.dart';
 
@@ -56,6 +59,16 @@ class AppPages {
       name: Routes.AGENCIES,
       page: () => AgencyPage(),
       binding: AgenciesBinding(),
+    ),
+    GetPage(
+      name: Routes.SERVICES,
+      page: () => ServicesPage(),
+      binding: ServicesBinding(),
+    ),
+    GetPage(
+      name: Routes.SERVICES_CREATE,
+      page: () => ServicesCreatePage(),
+      binding: ServicesBinding(),
     ),
   ];
 }

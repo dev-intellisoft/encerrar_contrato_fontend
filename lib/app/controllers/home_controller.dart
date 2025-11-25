@@ -1,11 +1,7 @@
-import 'dart:convert';
 import 'package:encerrar_contrato/app/services/solicitation_services.dart';
 import 'package:get/get.dart';
 import 'package:encerrar_contrato/app/models/solicitation_model.dart';
 import 'package:encerrar_contrato/app/utils/helpers.dart';
-
-import '../routes/app_pages.dart';
-
 
 class HomeController extends GetxController {
   final SolicitationServices services = Get.find<SolicitationServices>();
@@ -25,7 +21,7 @@ class HomeController extends GetxController {
 
   Future<void> checkAgency() async {
     String? agency = await getAgency();
-    if(agency != null) {
+    if (agency != null) {
       this.agency.value = agency;
     }
   }
@@ -34,7 +30,7 @@ class HomeController extends GetxController {
     loading.value = true;
     try {
       solicitations.value = await services.getSolicitations();
-    } catch(e) {
+    } catch (e) {
       Get.snackbar('Error', e.toString());
     }
     loading.value = false;
@@ -45,13 +41,10 @@ class HomeController extends GetxController {
       loading.value = true;
       await services.sendEmail(email.value, name.value);
       Get.snackbar('Success', 'Email enviado com sucesso');
-    } catch(e) {
+    } catch (e) {
       Get.snackbar('Error', e.toString());
     } finally {
-      loading.value  = false;
+      loading.value = false;
     }
   }
-
-
 }
-

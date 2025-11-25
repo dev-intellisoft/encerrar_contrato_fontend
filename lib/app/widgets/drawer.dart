@@ -24,8 +24,9 @@ class DrawerWidget extends StatelessWidget {
             },
           ),
           ListTile(
-            title: Text('Item 2'),
+            title: Text('Serviços'),
             onTap: () {
+              Get.offNamed(Routes.SERVICES);
               Get.back();
             },
           ),

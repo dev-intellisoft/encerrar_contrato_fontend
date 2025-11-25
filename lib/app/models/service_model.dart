@@ -1,9 +1,11 @@
 class Service {
-  final String id;
-  final String name;
-  final String description;
-  final int price;
-  final String type;
+  String id;
+  String name;
+  String description;
+  int price;
+  String type;
+  String companyName;
+  bool selected;
 
   Service({
     required this.id,
@@ -11,6 +13,8 @@ class Service {
     required this.description,
     required this.price,
     required this.type,
+    required this.companyName,
+    this.selected = false,
   });
 
   factory Service.fromJson(Map<String, dynamic> json) {
@@ -20,6 +24,8 @@ class Service {
       description: json['description'] as String,
       price: json['price'] as int,
       type: json['type'] as String,
+      companyName: json['company_name'] ?? '',
+      selected: json['selected'] ?? false,
     );
   }
 
@@ -30,6 +36,28 @@ class Service {
       'description': description,
       'price': price,
       'type': type,
+      'company_name': companyName,
+      'selected': selected,
     };
+  }
+
+  Service copyWith({
+    String? id,
+    String? name,
+    String? description,
+    int? price,
+    String? type,
+    String? companyName,
+    bool? selected,
+  }) {
+    return Service(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      price: price ?? this.price,
+      type: type ?? this.type,
+      companyName: companyName ?? this.companyName,
+      selected: selected ?? this.selected,
+    );
   }
 }

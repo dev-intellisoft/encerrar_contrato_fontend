@@ -15,34 +15,33 @@ class TransferForm extends GetView<RegisterController> {
     });
     return Obx(
       () => Expanded(
-        child: ListView(
-          children: [
-            Row(children: [LogoImobiliaria()]),
+        child: Container(
+          margin: EdgeInsets.all(10),
+          child: ListView(
+            children: [
+              Row(children: [LogoImobiliaria()]),
 
-            SizedBox(height: 20),
-            Text('Dados do atual titular:'),
+              SizedBox(height: 20),
+              Text('Dados do atual titular:'),
 
-            Container(
-              margin: EdgeInsets.all(10),
-              child: TextFormField(
-                onChanged: (text) =>
-                    controller.solicitation.value.customer!.name = text,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(25),
-                    borderSide: BorderSide(color: Colors.black, width: 1),
+              Container(
+                margin: EdgeInsets.symmetric(vertical: 10),
+                child: TextFormField(
+                  onChanged: (text) =>
+                      controller.solicitation.value.customer!.name = text,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(25),
+                      borderSide: BorderSide(color: Colors.black, width: 1),
+                    ),
+                    hintText: 'Digite seu nome completo',
+                    labelText: 'Nome completo',
                   ),
-                  hintText: 'Digite seu nome completo',
-                  labelText: 'Nome completo',
                 ),
               ),
-            ),
-
-            Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    margin: EdgeInsets.all(10),
+              Row(
+                children: [
+                  Expanded(
                     child: TextFormField(
                       inputFormatters: [
                         MaskTextInputFormatter(
@@ -63,10 +62,8 @@ class TransferForm extends GetView<RegisterController> {
                       ),
                     ),
                   ),
-                ),
-                Expanded(
-                  child: Container(
-                    margin: EdgeInsets.all(10),
+                  SizedBox(width: 10),
+                  Expanded(
                     child: TextFormField(
                       inputFormatters: [
                         MaskTextInputFormatter(
@@ -88,15 +85,13 @@ class TransferForm extends GetView<RegisterController> {
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
 
-            Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    margin: EdgeInsets.all(10),
+              SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(
                     child: TextFormField(
                       inputFormatters: [
                         FilteringTextInputFormatter.deny(
@@ -115,10 +110,8 @@ class TransferForm extends GetView<RegisterController> {
                       ),
                     ),
                   ),
-                ),
-                Expanded(
-                  child: Container(
-                    margin: EdgeInsets.all(10),
+                  SizedBox(width: 10),
+                  Expanded(
                     child: TextFormField(
                       inputFormatters: [
                         MaskTextInputFormatter(
@@ -139,285 +132,329 @@ class TransferForm extends GetView<RegisterController> {
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
-
-            Text('Endereço:'),
-            Container(
-              margin: EdgeInsets.all(10),
-              child: TextFormField(
-                inputFormatters: [
-                  MaskTextInputFormatter(
-                    mask: '##.###-###',
-                    filter: {"#": RegExp(r'[0-9]')}, // only digits allowed
-                  ),
-                ],
-                onChanged: controller.setCep,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(25),
-                    borderSide: BorderSide(color: Colors.black, width: 1),
-                  ),
-                  labelText: 'CEP',
-                ),
-              ),
-            ),
-            Container(
-              margin: EdgeInsets.all(10),
-              child: TextFormField(
-                controller: TextEditingController(
-                  text: controller.solicitation.value.address?.street,
-                ),
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(25),
-                    borderSide: BorderSide(color: Colors.black, width: 1),
-                  ),
-                  labelText: 'Rua',
-                ),
-              ),
-            ),
-            Container(
-              margin: EdgeInsets.all(10),
-              child: TextFormField(
-                controller: TextEditingController(
-                  text: controller.solicitation.value.address?.neighborhood,
-                ),
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(25),
-                    borderSide: BorderSide(color: Colors.black, width: 1),
-                  ),
-                  labelText: 'Bairro',
-                ),
-              ),
-            ),
-            Container(
-              margin: EdgeInsets.all(10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  SizedBox(
-                    width: 150,
-                    child: TextFormField(
-                      onChanged: (text) => controller.solicitation.update(
-                        (s) => s!.address!.number = text,
-                      ),
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(25),
-                          borderSide: BorderSide(color: Colors.black, width: 1),
-                        ),
-                        labelText: 'Número',
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 150,
-                    child: TextFormField(
-                      controller: TextEditingController(
-                        text: controller.solicitation.value.address?.state,
-                      ),
-                      onChanged: (text) => controller.solicitation.update(
-                        (s) => s!.address!.state = text,
-                      ),
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(25),
-                          borderSide: BorderSide(color: Colors.black, width: 1),
-                        ),
-                        labelText: 'UF',
-                      ),
-                    ),
-                  ),
                 ],
               ),
-            ),
 
-            Text('Dados do novo titular'),
-
-            Container(
-              margin: EdgeInsets.all(10),
-              child: FilePickerFieldNew(
-                controller: TextEditingController(),
-                decoration: InputDecoration(label: Text("Foto do documento")),
-                // controller: controller.documentPhoto,
-                onFilePicked: (result) =>
-                    controller.documentPhoto.value = result,
-              ),
-            ),
-
-            Container(
-              margin: EdgeInsets.all(10),
-              child: FilePickerFieldNew(
-                controller: TextEditingController(),
-                decoration: InputDecoration(label: Text("Foto com documento")),
-                onFilePicked: (file) =>
-                    controller.photoWithDocument.value = file,
-              ),
-            ),
-
-            Container(
-              margin: EdgeInsets.all(10),
-              child: FilePickerFieldNew(
-                controller: TextEditingController(),
-                decoration: InputDecoration(
-                  label: Text("Último contrato do serviço."),
-                ),
-                onFilePicked: (file) => controller.lastDocument.value = file,
-              ),
-            ),
-
-            Container(
-              margin: EdgeInsets.all(10),
-              child: FilePickerFieldNew(
-                controller: TextEditingController(),
-                decoration: InputDecoration(
-                  label: Text("Inserir contrato (locação/ compra e venda)"),
-                ),
-                onFilePicked: (file) => controller.rentContract.value = file,
-              ),
-            ),
-            Container(
-              margin: EdgeInsets.all(10),
-              child: TextFormField(
-                controller: TextEditingController(),
-                decoration: InputDecoration(label: Text("Telefone")),
-              ),
-            ),
-
-            Text('Serviço a encerrar:'),
-
-            Container(
-              margin: EdgeInsets.all(10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: controller.services
-                    .map(
-                      (service) => Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Checkbox(
-                                value: controller.solicitation.value.water,
-                                onChanged: (value) => controller.solicitation
-                                    .update((s) => s!.water = !s.water),
-                              ),
-                              Text(service.name),
-                            ],
-                          ),
-                          Container(
-                            width: 300,
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 5,
-                            ),
-                            child: TextFormField(
-                              onChanged: (text) => controller.solicitation
-                                  .update((s) => s!.waterCarrier = text),
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(25),
-                                  borderSide: BorderSide(
-                                    color: Colors.black,
-                                    width: 1,
-                                  ),
-                                ),
-                                labelText:
-                                    'Informa a empresa prestadora do serviço',
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                    .toList(),
-              ),
-            ),
-
-            ElevatedButton(
-              onPressed: () => Get.dialog(
-                AlertDialog(
-                  title: Text(
-                    'Termo de Consentimento.',
-                    textAlign: TextAlign.center,
+              SizedBox(height: 20),
+              Text('Endereço:'),
+              Container(
+                margin: EdgeInsets.symmetric(vertical: 5),
+                child: TextFormField(
+                  inputFormatters: [
+                    MaskTextInputFormatter(
+                      mask: '##.###-###',
+                      filter: {"#": RegExp(r'[0-9]')}, // only digits allowed
+                    ),
+                  ],
+                  onChanged: controller.setCep,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(25),
+                      borderSide: BorderSide(color: Colors.black, width: 1),
+                    ),
+                    labelText: 'CEP',
                   ),
-                  content: ObxValue(
-                    (agree) => Column(
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.symmetric(vertical: 5),
+                child: TextFormField(
+                  controller: TextEditingController(
+                    text: controller.solicitation.value.address?.street,
+                  ),
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(25),
+                      borderSide: BorderSide(color: Colors.black, width: 1),
+                    ),
+                    labelText: 'Rua',
+                  ),
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.symmetric(vertical: 5),
+                child: TextFormField(
+                  controller: TextEditingController(
+                    text: controller.solicitation.value.address?.neighborhood,
+                  ),
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(25),
+                      borderSide: BorderSide(color: Colors.black, width: 1),
+                    ),
+                    labelText: 'Bairro',
+                  ),
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.symmetric(vertical: 5),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    SizedBox(
+                      width: 150,
+                      child: TextFormField(
+                        onChanged: (text) => controller.solicitation.update(
+                          (s) => s!.address!.number = text,
+                        ),
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(25),
+                            borderSide: BorderSide(
+                              color: Colors.black,
+                              width: 1,
+                            ),
+                          ),
+                          labelText: 'Número',
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 150,
+                      child: TextFormField(
+                        controller: TextEditingController(
+                          text: controller.solicitation.value.address?.state,
+                        ),
+                        onChanged: (text) => controller.solicitation.update(
+                          (s) => s!.address!.state = text,
+                        ),
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(25),
+                            borderSide: BorderSide(
+                              color: Colors.black,
+                              width: 1,
+                            ),
+                          ),
+                          labelText: 'UF',
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              SizedBox(height: 20),
+              Text('Dados do novo titular'),
+
+              Container(
+                margin: EdgeInsets.symmetric(vertical: 5),
+                child: FilePickerFieldNew(
+                  controller: TextEditingController(),
+                  decoration: InputDecoration(label: Text("Foto do documento")),
+                  // controller: controller.documentPhoto,
+                  onFilePicked: (result) =>
+                      controller.documentPhoto.value = result,
+                ),
+              ),
+
+              Container(
+                margin: EdgeInsets.symmetric(vertical: 5),
+                child: FilePickerFieldNew(
+                  controller: TextEditingController(),
+                  decoration: InputDecoration(
+                    label: Text("Foto com documento"),
+                  ),
+                  onFilePicked: (file) =>
+                      controller.photoWithDocument.value = file,
+                ),
+              ),
+
+              Container(
+                margin: EdgeInsets.symmetric(vertical: 5),
+                child: FilePickerFieldNew(
+                  controller: TextEditingController(),
+                  decoration: InputDecoration(
+                    label: Text("Último contrato do serviço."),
+                  ),
+                  onFilePicked: (file) => controller.lastDocument.value = file,
+                ),
+              ),
+
+              Container(
+                margin: EdgeInsets.symmetric(vertical: 5),
+                child: FilePickerFieldNew(
+                  controller: TextEditingController(),
+                  decoration: InputDecoration(
+                    label: Text("Inserir contrato (locação/ compra e venda)"),
+                  ),
+                  onFilePicked: (file) => controller.rentContract.value = file,
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.symmetric(vertical: 5),
+                child: TextFormField(
+                  controller: TextEditingController(),
+                  decoration: InputDecoration(label: Text("Telefone")),
+                ),
+              ),
+
+              SizedBox(height: 20),
+
+              Text('Serviço a encerrar:'),
+
+              Container(
+                margin: EdgeInsets.symmetric(vertical: 5),
+                child: ListView.builder(
+                  shrinkWrap:
+                      true, // important for ListView inside other widgets
+                  physics:
+                      NeverScrollableScrollPhysics(), // prevents scroll conflict
+                  itemCount: controller.services.length,
+                  itemBuilder: (context, index) {
+                    final service = controller.services[index];
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'Termo de Consentimento.',
-                          textAlign: TextAlign.center,
-                        ),
-                        Text(
-                          'Autorizo o envio dos meus dados pessoais, conforme informado neste formulário, para que a empresa ENCERRAR CONTRATO possa utilizá-los exclussivament no processo de encerramento do contrato junto a prestadora de serviço. Declaro estar ciente de que as informações fornecidas são verdadeiras e que compreendo as etapas necessaria para conclusão do encerramento',
-                          textAlign: TextAlign.justify,
-                        ),
                         Row(
                           children: [
                             Checkbox(
-                              value: agree.value,
-                              onChanged: (value) => agree.value = !agree.value,
+                              value: controller.services[index].selected,
+                              onChanged: (value) => controller.services[index] =
+                                  service.copyWith(selected: value!),
                             ),
-                            Text('Li e aceito.'),
+                            Text(service.name),
                           ],
                         ),
-                        Text('Clique para assinar.'),
-                        ElevatedButton(
-                          onPressed: agree.value ? controller.transfer : null,
-                          style: ButtonStyle(
-                            backgroundColor: WidgetStatePropertyAll<Color>(
-                              agree.value
-                                  ? Color.fromRGBO(255, 131, 33, 1.0)
-                                  : Colors.grey,
-                            ),
-                            shape:
-                                WidgetStatePropertyAll<RoundedRectangleBorder>(
-                                  RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20),
-                                    side: BorderSide(
-                                      color: Colors.black,
-                                      width: 1,
-                                    ),
-                                  ),
+
+                        Container(
+                          width: 300,
+                          padding: EdgeInsets.symmetric(
+                            // horizontal: 10,
+                            vertical: 5,
+                          ),
+                          child: TextFormField(
+                            onChanged: (text) => controller.services[index] =
+                                service.copyWith(companyName: text),
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(25),
+                                borderSide: BorderSide(
+                                  color: Colors.black,
+                                  width: 1,
                                 ),
-                            padding: WidgetStatePropertyAll<EdgeInsetsGeometry>(
-                              EdgeInsets.symmetric(
-                                vertical: 15,
-                                horizontal: 20,
                               ),
+                              labelText:
+                                  'Informa a empresa prestadora do serviço',
                             ),
                           ),
-                          child: Text('ENVIAR'),
                         ),
+
+                        SizedBox(height: 12),
                       ],
+                    );
+                  },
+                ),
+              ),
+
+              Container(
+                margin: EdgeInsets.all(10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Total: '),
+                    Text("R\$ ${_priceTotal().toString()}"),
+                  ],
+                ),
+              ),
+
+              ElevatedButton(
+                onPressed: () => Get.dialog(
+                  AlertDialog(
+                    title: Text(
+                      'Termo de Consentimento.',
+                      textAlign: TextAlign.center,
                     ),
-                    false.obs,
+                    content: ObxValue(
+                      (agree) => Column(
+                        children: [
+                          Text(
+                            'Termo de Consentimento.',
+                            textAlign: TextAlign.center,
+                          ),
+                          Text(
+                            'Autorizo o envio dos meus dados pessoais, conforme informado neste formulário, para que a empresa ENCERRAR CONTRATO possa utilizá-los exclussivament no processo de encerramento do contrato junto a prestadora de serviço. Declaro estar ciente de que as informações fornecidas são verdadeiras e que compreendo as etapas necessaria para conclusão do encerramento',
+                            textAlign: TextAlign.justify,
+                          ),
+                          Row(
+                            children: [
+                              Checkbox(
+                                value: agree.value,
+                                onChanged: (value) =>
+                                    agree.value = !agree.value,
+                              ),
+                              Text('Li e aceito.'),
+                            ],
+                          ),
+                          Text('Clique para assinar.'),
+                          ElevatedButton(
+                            onPressed: agree.value ? controller.transfer : null,
+                            style: ButtonStyle(
+                              backgroundColor: WidgetStatePropertyAll<Color>(
+                                agree.value
+                                    ? Color.fromRGBO(255, 131, 33, 1.0)
+                                    : Colors.grey,
+                              ),
+                              shape:
+                                  WidgetStatePropertyAll<
+                                    RoundedRectangleBorder
+                                  >(
+                                    RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                      side: BorderSide(
+                                        color: Colors.black,
+                                        width: 1,
+                                      ),
+                                    ),
+                                  ),
+                              padding:
+                                  WidgetStatePropertyAll<EdgeInsetsGeometry>(
+                                    EdgeInsets.symmetric(
+                                      vertical: 15,
+                                      horizontal: 20,
+                                    ),
+                                  ),
+                            ),
+                            child: Text('ENVIAR'),
+                          ),
+                        ],
+                      ),
+                      false.obs,
+                    ),
                   ),
                 ),
-              ),
-              style: ButtonStyle(
-                backgroundColor: WidgetStatePropertyAll<Color>(
-                  Color.fromRGBO(255, 131, 33, 1.0),
-                ),
-                shape: WidgetStatePropertyAll<RoundedRectangleBorder>(
-                  RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                    side: BorderSide(color: Colors.black, width: 1),
+                style: ButtonStyle(
+                  backgroundColor: WidgetStatePropertyAll<Color>(
+                    Color.fromRGBO(255, 131, 33, 1.0),
+                  ),
+                  shape: WidgetStatePropertyAll<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      side: BorderSide(color: Colors.black, width: 1),
+                    ),
+                  ),
+                  padding: WidgetStatePropertyAll<EdgeInsetsGeometry>(
+                    EdgeInsets.symmetric(vertical: 15, horizontal: 20),
                   ),
                 ),
-                padding: WidgetStatePropertyAll<EdgeInsetsGeometry>(
-                  EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-                ),
+                child: Text('ENVIAR INFORMAÇÕES'),
               ),
-              child: Text('ENVIAR INFORMAÇÕES'),
-            ),
-            SizedBox(height: 100),
-          ],
+              SizedBox(height: 100),
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  double _priceTotal() {
+    double total = 0.0;
+    for (var service in controller.services) {
+      if (service.selected) {
+        total += service.price;
+      }
+    }
+    return total;
   }
 }
