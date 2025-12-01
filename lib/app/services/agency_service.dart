@@ -44,42 +44,30 @@ class AgencyService {
     throw Exception(response.data);
   }
 
-  // Future<Agency> create(Agency agency) async {
-  //   print('>>>>>>>>>>>>>>>>>>>>>>>>>');
-  //   final file = agency.file; // XFile or html.File
-
-  //   final bytes = await file!.readAsBytes(); // works in web
-
-  //   var data = FormData.fromMap({
-  //     "images": [
-  //       MultipartFile.fromBytes(
-  //         bytes,
-  //         filename: agency.file!.path.split('/').last, // correct filename
-  //       ),
-  //     ],
-  //     // 'files': [
-  //     //   await MultipartFile.fromBytes(
-  //     //     await agency.file!.readAsBytes(),
-  //     //     // filename: agency.file!.path.split('/').last,
-  //     //   ),
-  //     // ],
-  //     'name': agency.name,
-  //     'login': agency.login,
-  //     'password': agency.password,
-  //   });
-  //   print('------------------->');
-  //   var response = await dio.post('/agencies', data: data);
-  //   print("======================>");
-  //   print(response);
-  //   if (response.statusCode == 200 || response.statusCode == 201) {
-  //     return Agency.fromJson(response.data);
-  //   }
-  //   throw Exception(response.data);
-  // }
-
   Future<Agency> update(String id, Agency agency) async {
-    var response = await dio.put('/agencies/$id', data: agency.toJson());
-    if (response.data == 200) {
+    FormData data;
+    if (agency.fileBytes == null) {
+      data = FormData.fromMap({
+        "name": agency.name,
+        "login": agency.login,
+        "password": agency.password,
+      });
+    } else {
+      data = FormData.fromMap({
+        "files": [
+          MultipartFile.fromBytes(
+            agency.fileBytes!, // Uint8List
+            filename: agency.fileName,
+          ),
+        ],
+        "name": agency.name,
+        "login": agency.login,
+        "password": agency.password,
+      });
+    }
+
+    var response = await dio.put('/agencies/$id', data: data);
+    if (response.statusCode == 200) {
       return Agency.fromJson(response.data);
     }
     throw Exception(response.data);
