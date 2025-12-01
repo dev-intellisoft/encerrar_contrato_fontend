@@ -44,25 +44,13 @@ class AgencyController extends GetxController {
     }
   }
 
-  // Future<void> updateAgency(String id, Agency a) async {
-  //   try {
-  //     isLoading.value = true;
-  //     agency.value = await services.update(id, a);
-  //     await fetchAgencies();
-  //     Get.snackbar("Sucesso", "Agência atualizada com sucesso.");
-  //   } catch (e) {
-  //     print(e);
-  //     Get.snackbar("Erro", "Erro ao atualizar a agência.");
-  //   } finally {
-  //     isLoading.value = false;
-  //   }
-  // }
-
   Future<void> deleteAgency(String id) async {
     try {
       isLoading.value = true;
       agency.value = await services.delete(id);
       await fetchAgencies();
+      Get.back();
+      Get.snackbar("Sucesso", "Agência removida com sucesso.");
     } catch (e) {
       print(e);
     } finally {

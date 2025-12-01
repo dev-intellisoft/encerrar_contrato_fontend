@@ -94,9 +94,32 @@ class AgencyPage extends GetView<AgencyController> {
               },
               trailing: IconButton(
                 icon: const Icon(Icons.delete, color: Colors.red),
-                onPressed: () async {
-                  await controller.deleteAgency(agency.id!);
-                },
+                onPressed: () => Get.dialog(
+                  AlertDialog(
+                    title: Text('Warning'),
+                    // icon: Icon(Icons.warning),
+                    content: Text(
+                      'Tem certeza que deseja remover a imobiliária?',
+                    ),
+                    actions: [
+                      ElevatedButton(
+                        onPressed: () => Get.back(),
+                        child: Text('Não'),
+                      ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                          foregroundColor: Colors.white, // text/icon color
+                        ),
+                        onPressed: () => controller.deleteAgency(agency.id!),
+                        child: Text('Sim'),
+                      ),
+                    ],
+                  ),
+                ),
+                // onPressed: () async {
+                //   await controller.deleteAgency(agency.id!);
+                // },
               ),
             );
           },
