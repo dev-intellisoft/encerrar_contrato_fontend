@@ -13,6 +13,7 @@ import '../../../widgets/drawer.dart';
 import '../../../widgets/pending.dart';
 import '../../../widgets/processing.dart';
 import '../../../widgets/solicitation_tile.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class HomePage extends GetView<HomeController> {
   const HomePage({super.key});
@@ -23,7 +24,7 @@ class HomePage extends GetView<HomeController> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title:  Logo(),
+        title: Logo(),
         backgroundColor: Color.fromRGBO(255, 131, 33, 1.0),
         actions: [
           IconButton(
@@ -38,77 +39,119 @@ class HomePage extends GetView<HomeController> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Obx(() => Container( margin: EdgeInsets.symmetric(vertical: 20, horizontal: 20), child: Row(
-                  children:[
-                    if(controller.agency.value == 'a')
-                      AgencyALogo()
-                    else if(controller.agency.value == 'b')
-                      AgencyBLogo()
-                    else
-                      LogoImobiliaria()
-                  ]
-              ),)),
+              Obx(
+                () => Container(
+                  margin: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                  child: Row(
+                    children: [
+                      Image.network(
+                        '${dotenv.env['API_URL']!}${controller.avatar.value!}',
+                        fit: BoxFit.cover,
+
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        },
+
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Icon(
+                            Icons.image_not_supported,
+                            size: 40,
+                            color: Colors.grey,
+                          );
+                        },
+                      ),
+                      // if(controller.agency.value == 'a')
+                      //   AgencyALogo()
+                      // else if(controller.agency.value == 'b')
+                      //   AgencyBLogo()
+                      // else
+                      //   LogoImobiliaria()
+                    ],
+                  ),
+                ),
+              ),
               Text(
                 'Forneça as informações necessária para o encerramento do contrato.',
                 textAlign: TextAlign.center,
                 style: TextStyle(color: Color.fromRGBO(61, 196, 250, 1.0)),
               ),
-              Container( margin:EdgeInsets.symmetric(vertical: 5), child: ElevatedButton(
-                // onPressed: () => Get.toNamed(Routes.SOLICITATION),
-                onPressed: () => Get.dialog(AlertDialog(
-                  title: Text('Detalhes do contrato'),
-                  content: Container(
-                    height: 250,
-                    width:400,
-                    child: Obx(() {
-                      if(controller.loading.value) {
-                        return Center(child: CircularProgressIndicator(),);
-                      }
-                      return Column(
-                        children: [
-                          Text('Enviar link por e-mail'),
-                          TextField(
-                            onChanged: (value) => controller.name.value = value,
-                            decoration: InputDecoration(
-                              labelText: 'Nome',
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(20),
-                                borderSide: BorderSide(color: Colors.black, width: 1),
+              Container(
+                margin: EdgeInsets.symmetric(vertical: 5),
+                child: ElevatedButton(
+                  // onPressed: () => Get.toNamed(Routes.SOLICITATION),
+                  onPressed: () => Get.dialog(
+                    AlertDialog(
+                      title: Text('Detalhes do contrato'),
+                      content: Container(
+                        height: 250,
+                        width: 400,
+                        child: Obx(() {
+                          if (controller.loading.value) {
+                            return Center(child: CircularProgressIndicator());
+                          }
+                          return Column(
+                            children: [
+                              Text('Enviar link por e-mail'),
+                              TextField(
+                                onChanged: (value) =>
+                                    controller.name.value = value,
+                                decoration: InputDecoration(
+                                  labelText: 'Nome',
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                    borderSide: BorderSide(
+                                      color: Colors.black,
+                                      width: 1,
+                                    ),
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                          TextFormField(
-                            onChanged: (value) => controller.email.value = value,
-                            decoration: InputDecoration(
-                              labelText: 'E-mail',
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(20),
-                                borderSide: BorderSide(color: Colors.black, width: 1),
+                              TextFormField(
+                                onChanged: (value) =>
+                                    controller.email.value = value,
+                                decoration: InputDecoration(
+                                  labelText: 'E-mail',
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                    borderSide: BorderSide(
+                                      color: Colors.black,
+                                      width: 1,
+                                    ),
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                          SizedBox(height: 10,),
-                          ElevatedButton(
-                            onPressed: controller.sendEmail,
-                            child: Text('Enviar'),
-                          ),
-                        ],
-                      );
-                    })
-                  ))),
-                style: ButtonStyle(
-                  backgroundColor: WidgetStatePropertyAll<Color>(Color.fromRGBO(255, 131, 33, 1.0)),
-                  shape: WidgetStatePropertyAll<RoundedRectangleBorder>(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                      side: BorderSide(color: Colors.black, width: 1),
+                              SizedBox(height: 10),
+                              ElevatedButton(
+                                onPressed: controller.sendEmail,
+                                child: Text('Enviar'),
+                              ),
+                            ],
+                          );
+                        }),
+                      ),
                     ),
                   ),
-                  padding: WidgetStatePropertyAll<EdgeInsetsGeometry>(EdgeInsets.symmetric(vertical: 17, horizontal: 35)),
+                  style: ButtonStyle(
+                    backgroundColor: WidgetStatePropertyAll<Color>(
+                      Color.fromRGBO(255, 131, 33, 1.0),
+                    ),
+                    shape: WidgetStatePropertyAll<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                        side: BorderSide(color: Colors.black, width: 1),
+                      ),
+                    ),
+                    padding: WidgetStatePropertyAll<EdgeInsetsGeometry>(
+                      EdgeInsets.symmetric(vertical: 17, horizontal: 35),
+                    ),
+                  ),
+                  child: Text('Cadastrar informações'),
                 ),
-                child: Text('Cadastrar informações'),
-              ),),
-              SizedBox(height: 25,)
+              ),
+              SizedBox(height: 25),
             ],
           ),
 
@@ -120,7 +163,10 @@ class HomePage extends GetView<HomeController> {
                 children: [
                   Container(
                     margin: EdgeInsets.symmetric(vertical: 10),
-                    child: Text('Histórico de contratos', style: TextStyle(color: Colors.white), ),
+                    child: Text(
+                      'Histórico de contratos',
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
                   SizedBox(
                     height: 30,
@@ -128,11 +174,15 @@ class HomePage extends GetView<HomeController> {
                     child: TextFormField(
                       onChanged: (value) => controller.search.value = value,
                       style: TextStyle(color: Colors.black),
-                      decoration: InputDecoration(labelText: 'Procurar',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30),
-                        borderSide: BorderSide(color: Colors.lightBlue, width: 2),
-                      ),
+                      decoration: InputDecoration(
+                        labelText: 'Procurar',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(30),
+                          borderSide: BorderSide(
+                            color: Colors.lightBlue,
+                            width: 2,
+                          ),
+                        ),
                         prefixIcon: SearchIcon(),
                       ),
                     ),
@@ -155,49 +205,87 @@ class HomePage extends GetView<HomeController> {
                   color: Colors.white,
                 ),
 
-                child: Obx(() => controller.loading.value?Center(child: CircularProgressIndicator(),):ListView(
-                  children: controller.solicitations.isEmpty? [Center(child: Text('Nenhum solicitação!'),)]: controller.solicitations.where(
-                          (s) => s.customer!.name!.toLowerCase().contains(controller.search.value.toLowerCase())
-                  ).map((s) => SolicitationTile(solicitation: s, onTap: (solicitation) {
-                    Get.dialog(AlertDialog(
-                      title: Text('Detalhes do contrato'),
-                      content: Container(
-                        height: 300,
-                        child: Column(
-                          children: [
-                            Text('${solicitation.customer!.name}'),
-                            Text('${solicitation.customer!.email}'),
-                            Text('${solicitation.customer!.phone}'),
-                            Text('${solicitation.customer!.cpf}'),
-                            Text('${solicitation.address!.street}, ${solicitation.address!.number} ${solicitation.address!.complement}'),
-                            Text('${solicitation.address!.neighborhood}, ${solicitation.address!.city}, ${solicitation.address!.state}'),
-                            if(solicitation.status == SolicitationStatus.done)
-                              Row(
-                                children: [
-                                  Text('Encerrado'),
-                                  Done(),
-                                ],
-                              )
-                            else if(solicitation.status == SolicitationStatus.processing)
-                              Row(
-                                children: [
-                                  Text('Em andamento'),
-                                  Processing(),
-                                ],
-                              )
-                            else
-                              Row(
-                                children: [
-                                  Text('Pendente'),
-                                  Pending(),
-                                ],
-                              ),
-                          ],
+                child: Obx(
+                  () => controller.loading.value
+                      ? Center(child: CircularProgressIndicator())
+                      : ListView(
+                          children: controller.solicitations.isEmpty
+                              ? [Center(child: Text('Nenhum solicitação!'))]
+                              : controller.solicitations
+                                    .where(
+                                      (s) => s.customer!.name!
+                                          .toLowerCase()
+                                          .contains(
+                                            controller.search.value
+                                                .toLowerCase(),
+                                          ),
+                                    )
+                                    .map(
+                                      (s) => SolicitationTile(
+                                        solicitation: s,
+                                        onTap: (solicitation) {
+                                          Get.dialog(
+                                            AlertDialog(
+                                              title: Text(
+                                                'Detalhes do contrato',
+                                              ),
+                                              content: Container(
+                                                height: 300,
+                                                child: Column(
+                                                  children: [
+                                                    Text(
+                                                      '${solicitation.customer!.name}',
+                                                    ),
+                                                    Text(
+                                                      '${solicitation.customer!.email}',
+                                                    ),
+                                                    Text(
+                                                      '${solicitation.customer!.phone}',
+                                                    ),
+                                                    Text(
+                                                      '${solicitation.customer!.cpf}',
+                                                    ),
+                                                    Text(
+                                                      '${solicitation.address!.street}, ${solicitation.address!.number} ${solicitation.address!.complement}',
+                                                    ),
+                                                    Text(
+                                                      '${solicitation.address!.neighborhood}, ${solicitation.address!.city}, ${solicitation.address!.state}',
+                                                    ),
+                                                    if (solicitation.status ==
+                                                        SolicitationStatus.done)
+                                                      Row(
+                                                        children: [
+                                                          Text('Encerrado'),
+                                                          Done(),
+                                                        ],
+                                                      )
+                                                    else if (solicitation
+                                                            .status ==
+                                                        SolicitationStatus
+                                                            .processing)
+                                                      Row(
+                                                        children: [
+                                                          Text('Em andamento'),
+                                                          Processing(),
+                                                        ],
+                                                      )
+                                                    else
+                                                      Row(
+                                                        children: [
+                                                          Text('Pendente'),
+                                                          Pending(),
+                                                        ],
+                                                      ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    )
+                                    .toList(),
                         ),
-                      ),
-                    ));
-                  },)).toList(),
-                ),
                 ),
               ),
             ),

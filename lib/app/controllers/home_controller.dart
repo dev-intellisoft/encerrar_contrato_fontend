@@ -12,6 +12,7 @@ class HomeController extends GetxController {
   RxBool loadingEmail = false.obs;
   RxString name = ''.obs;
   RxString agency = 'agencya'.obs;
+  RxString avatar = ''.obs;
 
   @override
   void onInit() {
@@ -21,6 +22,10 @@ class HomeController extends GetxController {
 
   Future<void> checkAgency() async {
     String? agency = await getAgency();
+    String? avatar = await getAvatar();
+    if (avatar != null) {
+      this.avatar.value = avatar;
+    }
     if (agency != null) {
       this.agency.value = agency;
     }

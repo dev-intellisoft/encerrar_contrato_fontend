@@ -70,13 +70,11 @@ class AgencyPage extends GetView<AgencyController> {
                   '${dotenv.env['API_URL']!}${agency.image!}',
                   fit: BoxFit.cover,
 
-                  // Placeholder while loading
                   loadingBuilder: (context, child, loadingProgress) {
                     if (loadingProgress == null) return child;
                     return const Center(child: CircularProgressIndicator());
                   },
 
-                  // Placeholder on error (broken link, offline, 404)
                   errorBuilder: (context, error, stackTrace) {
                     return const Icon(
                       Icons.image_not_supported,
@@ -117,9 +115,6 @@ class AgencyPage extends GetView<AgencyController> {
                     ],
                   ),
                 ),
-                // onPressed: () async {
-                //   await controller.deleteAgency(agency.id!);
-                // },
               ),
             );
           },
