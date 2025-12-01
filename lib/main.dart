@@ -10,7 +10,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   const env = String.fromEnvironment("ENV", defaultValue: "development");
   await GetStorage.init();
-  // await dotenv.load(fileName: "assets/.env");
   await dotenv.load(fileName: ".env.$env");
   Get.put(DioProvider.createDio());
   runApp(const EC());

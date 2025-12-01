@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../controllers/services_controller.dart';
 import '../../../widgets/logo.dart';
 import '../../../widgets/drawer.dart';
+import '../../../routes/app_pages.dart';
 
 class ServicesPage extends GetView<ServicesController> {
   @override
@@ -51,13 +52,39 @@ class ServicesPage extends GetView<ServicesController> {
               child: ListView.builder(
                 itemCount: controller.services.length,
                 itemBuilder: (context, index) => ListTile(
-                  title: Text(controller.services[index].name),
-                  subtitle: Text(controller.services[index].description),
-
+                  onTap: () {
+                    controller.service.value = controller.services[index];
+                    Get.toNamed(Routes.SERVICE_FORM);
+                  },
+                  title: Text(controller.services[index].name!),
+                  subtitle: Text(controller.services[index].description!),
                   trailing: IconButton(
                     icon: Icon(Icons.remove_circle_outline, color: Colors.red),
-                    onPressed: () =>
-                        controller.removeService(controller.services[index]),
+                    onPressed: () => Get.dialog(
+                      AlertDialog(
+                        title: Text('Warning'),
+                        // icon: Icon(Icons.warning),
+                        content: Text(
+                          'Tem certeza que deseja remover o serviço?',
+                        ),
+                        actions: [
+                          ElevatedButton(
+                            onPressed: () => Get.back(),
+                            child: Text('Não'),
+                          ),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red,
+                              foregroundColor: Colors.white, // text/icon color
+                            ),
+                            onPressed: () => controller.removeService(
+                              controller.services[index].id!,
+                            ),
+                            child: Text('Sim'),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -66,7 +93,7 @@ class ServicesPage extends GetView<ServicesController> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Get.toNamed('/services/create'),
+        onPressed: () => Get.toNamed(Routes.SERVICE_FORM),
         child: Icon(Icons.add),
       ),
     );

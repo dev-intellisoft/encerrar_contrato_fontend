@@ -1,4 +1,6 @@
-import 'dart:io';
+// import 'dart:io';
+import 'dart:typed_data';
+import 'package:image_picker/image_picker.dart'; // or file_picker
 
 class Agency {
   String? id;
@@ -6,7 +8,9 @@ class Agency {
   String? image;
   String? login;
   String? password;
-  File? file;
+  XFile? file;
+  Uint8List? fileBytes; // <—
+  String? fileName; // <—
 
   Agency({
     this.id,
@@ -14,7 +18,9 @@ class Agency {
     this.image,
     this.login,
     this.password,
-    this.file
+    this.file,
+    this.fileBytes,
+    this.fileName,
   });
 
   factory Agency.fromJson(Map<String, dynamic> json) => Agency(
@@ -23,7 +29,9 @@ class Agency {
     image: json['image'] ?? '',
     login: json['login'],
     password: json['password'],
-    file: json['file']
+    file: json['file'],
+    fileBytes: json['fileBytes'],
+    fileName: json['fileName'],
   );
 
   Map<String, dynamic> toJson() => {
@@ -32,6 +40,8 @@ class Agency {
     'image': image,
     'login': login,
     'password': password,
-    'file': file
+    'file': file,
+    'fileBytes': fileBytes,
+    'fileName': fileName,
   };
 }

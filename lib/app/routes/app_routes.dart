@@ -10,5 +10,6 @@ abstract class Routes {
   static const SOLICITATION = '/solicitation';
   static const AGENCIES = '/agencies';
   static const SERVICES = '/services';
-  static const SERVICES_CREATE = '/services/create';
+  static const SERVICE_FORM = '/services/form';
+  static const AGENCY_FORM = '/angecies/form';
 }

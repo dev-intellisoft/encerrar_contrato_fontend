@@ -314,7 +314,7 @@ class TransferForm extends GetView<RegisterController> {
                               onChanged: (value) => controller.services[index] =
                                   service.copyWith(selected: value!),
                             ),
-                            Text(service.name),
+                            Text(service.name!),
                           ],
                         ),
 
@@ -452,7 +452,7 @@ class TransferForm extends GetView<RegisterController> {
     double total = 0.0;
     for (var service in controller.services) {
       if (service.selected) {
-        total += service.price;
+        total += service.price!;
       }
     }
     return total;

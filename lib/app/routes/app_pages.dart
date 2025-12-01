@@ -1,3 +1,4 @@
+import 'package:encerrar_contrato/app/ui/pages/agengies/widgets/agency_form.dart';
 import 'package:get/get.dart';
 import '../bindings/agencies_binding.dart';
 import '../bindings/customer_binding.dart';
@@ -14,14 +15,14 @@ import '../bindings/register_binding.dart';
 import '../ui/pages/solicitation/solicitation_page.dart';
 import '../ui/pages/services/services_page.dart';
 import '../bindings/services_binding.dart';
-import '../ui/pages/services/services_create_page.dart';
+import '../ui/pages/services/widgets/service_form.dart';
 
 part 'app_routes.dart';
 
 class AppPages {
   AppPages._();
 
-  static const INITIAL = Routes.LOGIN;
+  static const INITIAL = Routes.REGISTER;
 
   static final routes = [
     GetPage(
@@ -66,9 +67,14 @@ class AppPages {
       binding: ServicesBinding(),
     ),
     GetPage(
-      name: Routes.SERVICES_CREATE,
-      page: () => ServicesCreatePage(),
+      name: Routes.SERVICE_FORM,
+      page: () => ServiceForm(),
       binding: ServicesBinding(),
+    ),
+    GetPage(
+      name: Routes.AGENCY_FORM,
+      page: () => AgencyForm(),
+      binding: AgenciesBinding(),
     ),
   ];
 }

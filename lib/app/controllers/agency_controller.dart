@@ -1,9 +1,10 @@
-import 'dart:io';
+// import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:get/get.dart';
 import '../models/agency_model.dart';
 import '../services/agency_service.dart';
+import 'package:image_picker/image_picker.dart';
 
 class AgencyController extends GetxController {
   final AgencyService services = Get.find<AgencyService>();
@@ -23,29 +24,39 @@ class AgencyController extends GetxController {
     }
   }
 
-  Future<void> addAgency() async {
+  Future<void> save() async {
     try {
       isLoading.value = true;
-      agency.value = await services.create(agency.value);
+      if (agency.value.id == null) {
+        agency.value = await services.create(agency.value);
+      } else {
+        agency.value = await services.update(agency.value.id!, agency.value);
+      }
       await fetchAgencies();
+      agency.value = Agency();
+      Get.back();
+      Get.snackbar("Sucesso", "Agência salva com sucesso.");
     } catch (e) {
       print(e);
+      Get.snackbar("Erro", "Erro ao salvar a agência.");
     } finally {
       isLoading.value = false;
     }
   }
 
-  Future<void> updateAgency(String id, Agency a) async {
-    try {
-      isLoading.value = true;
-      agency.value = await services.update(id, a);
-      await fetchAgencies();
-    } catch (e) {
-      print(e);
-    } finally {
-      isLoading.value = false;
-    }
-  }
+  // Future<void> updateAgency(String id, Agency a) async {
+  //   try {
+  //     isLoading.value = true;
+  //     agency.value = await services.update(id, a);
+  //     await fetchAgencies();
+  //     Get.snackbar("Sucesso", "Agência atualizada com sucesso.");
+  //   } catch (e) {
+  //     print(e);
+  //     Get.snackbar("Erro", "Erro ao atualizar a agência.");
+  //   } finally {
+  //     isLoading.value = false;
+  //   }
+  // }
 
   Future<void> deleteAgency(String id) async {
     try {
@@ -59,11 +70,20 @@ class AgencyController extends GetxController {
     }
   }
 
-  Future<void> pickFile() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles();
-    File file = File(result!.files.single.path!);
-    agency.update((a) => a!.file = file);
+  Future<void> pickAgencyImage() async {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.image,
+      allowMultiple: false,
+      withData: true, // important for Web → gives bytes
+    );
 
-    print(agency.toJson());
+    if (result == null) return;
+
+    final file = result.files.first;
+
+    agency.update((a) => a!.fileName = file.name);
+    agency.update(
+      (a) => a!.fileBytes = file.bytes,
+    ); // Uint8List, works everywhere
   }
 }

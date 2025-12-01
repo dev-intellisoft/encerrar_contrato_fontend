@@ -1,19 +1,19 @@
 class Service {
-  String id;
-  String name;
-  String description;
-  int price;
-  String type;
-  String companyName;
+  String? id;
+  String? name;
+  String? description;
+  int? price;
+  String? type;
+  String? companyName;
   bool selected;
 
   Service({
-    required this.id,
-    required this.name,
-    required this.description,
-    required this.price,
-    required this.type,
-    required this.companyName,
+    this.id,
+    this.name,
+    this.description,
+    this.price,
+    this.type,
+    this.companyName,
     this.selected = false,
   });
 
