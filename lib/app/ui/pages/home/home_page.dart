@@ -1,10 +1,6 @@
-import 'package:encerrar_contrato/app/widgets/agencya.dart';
-import 'package:encerrar_contrato/app/widgets/agencyb.dart';
 import 'package:encerrar_contrato/app/widgets/logo.dart';
-import 'package:encerrar_contrato/app/widgets/logo_imobiliaria.dart';
 import 'package:encerrar_contrato/app/widgets/search_icon.dart';
 import 'package:get/get.dart';
-import 'package:encerrar_contrato/app/routes/app_pages.dart';
 import 'package:flutter/material.dart';
 import 'package:encerrar_contrato/app/controllers/home_controller.dart';
 import '../../../models/solicitation_model.dart';
@@ -12,8 +8,8 @@ import '../../../widgets/done.dart';
 import '../../../widgets/drawer.dart';
 import '../../../widgets/pending.dart';
 import '../../../widgets/processing.dart';
-import '../../../widgets/solicitation_tile.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import '../dashboard/widgets/solicitation_tile.dart';
+import '../../../widgets/agency_logo.dart';
 
 class HomePage extends GetView<HomeController> {
   const HomePage({super.key});
@@ -43,33 +39,7 @@ class HomePage extends GetView<HomeController> {
                 () => Container(
                   margin: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
                   child: Row(
-                    children: [
-                      Image.network(
-                        '${dotenv.env['API_URL']!}${controller.avatar.value!}',
-                        fit: BoxFit.cover,
-
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        },
-
-                        errorBuilder: (context, error, stackTrace) {
-                          return const Icon(
-                            Icons.image_not_supported,
-                            size: 40,
-                            color: Colors.grey,
-                          );
-                        },
-                      ),
-                      // if(controller.agency.value == 'a')
-                      //   AgencyALogo()
-                      // else if(controller.agency.value == 'b')
-                      //   AgencyBLogo()
-                      // else
-                      //   LogoImobiliaria()
-                    ],
+                    children: [AgencyLogo(imagePath: controller.avatar.value!)],
                   ),
                 ),
               ),

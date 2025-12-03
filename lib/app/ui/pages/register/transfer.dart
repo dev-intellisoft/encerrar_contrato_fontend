@@ -4,8 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
-
-import '../../../widgets/logo_imobiliaria.dart';
+import '../../../widgets/agency_logo.dart';
 
 class TransferForm extends GetView<RegisterController> {
   @override
@@ -19,7 +18,9 @@ class TransferForm extends GetView<RegisterController> {
           margin: EdgeInsets.all(10),
           child: ListView(
             children: [
-              Row(children: [LogoImobiliaria()]),
+              Row(
+                children: [AgencyLogo(imagePath: controller.agencyLogo.value!)],
+              ),
 
               SizedBox(height: 20),
               Text('Dados do atual titular:'),

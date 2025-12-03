@@ -30,6 +30,7 @@ class Solicitation {
   String paymentStatus = "pending";
   String service = "close";
   String? agencyId;
+  String? agencyLogo;
   ASAASCreditCardHolderInfo? creditCardHolderInfo;
   ASAASCreditCard? creditCard;
 
@@ -55,17 +56,18 @@ class Solicitation {
     this.paymentStatus = "pending",
     this.service = "close",
     this.agencyId,
+    this.agencyLogo,
     this.creditCardHolderInfo,
-    this.creditCard
+    this.creditCard,
   });
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'customer_id':customer != null ? customer!.id:"",
+      'customer_id': customer != null ? customer!.id : "",
       'title': title,
-      'customer':customer!.toJson(),
-      'address':address!.toMap(),
+      'customer': customer!.toJson(),
+      'address': address!.toMap(),
       'description': description,
       'status': SolicitationStatus.pending.index,
       'agency': agency,
@@ -80,11 +82,12 @@ class Solicitation {
       'power': power,
       'pix': pix?.toJson(),
       'payment_type': paymentType,
-      'payment_status':paymentStatus,
-      'service':service,
-      'agency_id':agencyId,
-      'credit_card_holder_info':creditCardHolderInfo,
-      'credit_card':creditCard
+      'payment_status': paymentStatus,
+      'service': service,
+      'agency_id': agencyId,
+      'agency_logo': agencyLogo,
+      'credit_card_holder_info': creditCardHolderInfo,
+      'credit_card': creditCard,
     };
   }
 
@@ -104,13 +107,14 @@ class Solicitation {
       water: map['water'],
       gas: map['gas'],
       power: map['power'],
-      pix: map['pix'] != null?PIX.fromJson(map['pix']):null,
+      pix: map['pix'] != null ? PIX.fromJson(map['pix']) : null,
       paymentType: map['payment_type'],
       paymentStatus: map['payment_status'],
       service: map['service'],
       agencyId: map['agency_id'],
+      agencyLogo: map['agency_logo'],
       creditCardHolderInfo: map['credit_card_holder_info'],
-      creditCard: map['credit_card']
+      creditCard: map['credit_card'],
     );
   }
 }

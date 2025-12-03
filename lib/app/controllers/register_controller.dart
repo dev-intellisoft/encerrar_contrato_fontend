@@ -11,6 +11,7 @@ import '../models/pix_model.dart';
 import '../models/solicitation_model.dart';
 import '../services/registration_services.dart';
 import '../models/service_model.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class RegisterController extends GetxController {
   RegistrationServices registrationService = Get.find<RegistrationServices>();
@@ -35,10 +36,22 @@ class RegisterController extends GetxController {
   Rx<PlatformFile?> lastDocument = Rx<PlatformFile?>(null);
   Rx<PlatformFile?> rentContract = Rx<PlatformFile?>(null);
 
+  RxString agencyLogo = ''.obs;
+
   bool isValidCEP(String cep) {
     cep = cep.replaceAll(RegExp(r'\D'), '');
     final regex = RegExp(r'^\d{5}-?\d{3}$');
     return regex.hasMatch(cep);
+  }
+
+  Future<void> getAgencyLogo(String agencyId) async {
+    try {
+      var logo = await registrationService.getAgencyLogo(agencyId);
+      agencyLogo.value = logo;
+      // solicitation.update((s) => s!.agencyLogo = logo);
+    } catch (e) {
+      Get.snackbar('Error', e.toString());
+    }
   }
 
   Future<bool> searchCep(String cep) async {

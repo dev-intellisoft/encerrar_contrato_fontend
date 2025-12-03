@@ -1,18 +1,12 @@
-import 'dart:convert';
-
 import 'package:encerrar_contrato/app/ui/pages/register/credit_card.dart';
 import 'package:encerrar_contrato/app/ui/pages/register/pix.dart';
 import 'package:encerrar_contrato/app/ui/pages/register/spinner.dart';
 import 'package:encerrar_contrato/app/ui/pages/register/success.dart';
 import 'package:encerrar_contrato/app/ui/pages/register/transfer.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:encerrar_contrato/app/controllers/register_controller.dart';
-import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
-
 import '../../../widgets/logo.dart';
-import '../../../widgets/logo_imobiliaria.dart';
 import 'close.dart';
 
 class RegisterPage extends GetView<RegisterController> {
@@ -22,6 +16,7 @@ class RegisterPage extends GetView<RegisterController> {
   @override
   Widget build(BuildContext context) {
     controller.solicitation.value.agencyId = agencyId;
+    controller.getAgencyLogo(agencyId);
     return Scaffold(
       appBar: AppBar(
         title: Logo(),

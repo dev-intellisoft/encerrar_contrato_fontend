@@ -1,12 +1,10 @@
 import 'package:encerrar_contrato/app/routes/app_pages.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import '../../../controllers/agency_controller.dart';
 import '../../../widgets/drawer.dart';
 import '../../../widgets/logo.dart';
-// import 'agency_create_page.dart';
-// import 'agency_view_page.dart';
+import '../../../widgets/agency_logo.dart';
 
 class AgencyPage extends GetView<AgencyController> {
   const AgencyPage({super.key});
@@ -63,27 +61,7 @@ class AgencyPage extends GetView<AgencyController> {
           itemBuilder: (context, index) {
             final agency = controller.agencies[index];
             return ListTile(
-              leading: Container(
-                height: 30,
-                width: 30,
-                child: Image.network(
-                  '${dotenv.env['API_URL']!}${agency.image!}',
-                  fit: BoxFit.cover,
-
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) return child;
-                    return const Center(child: CircularProgressIndicator());
-                  },
-
-                  errorBuilder: (context, error, stackTrace) {
-                    return const Icon(
-                      Icons.image_not_supported,
-                      size: 40,
-                      color: Colors.grey,
-                    );
-                  },
-                ),
-              ),
+              leading: AgencyLogo(imagePath: agency.image!),
               title: Text(agency.name!),
               subtitle: Text(agency.login!),
               onTap: () {

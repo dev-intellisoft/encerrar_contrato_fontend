@@ -8,6 +8,17 @@ import '../models/service_model.dart';
 class RegistrationServices {
   final Dio dio;
   RegistrationServices(this.dio);
+
+  Future<String> getAgencyLogo(String agencyId) async {
+    // Dio _dio = Dio();
+    // var response = await _dio.get('/agency/logo/$agencyId');
+    var response = await dio.get('/agency/logo/$agencyId');
+    if (response.statusCode == 200) {
+      return response.data;
+    }
+    throw Exception('Failed to get agency logo');
+  }
+
   Future<Address> getCep(String cep) async {
     cep = cep.replaceAll(RegExp(r'\D'), '');
     var response = await Dio().get('https://viacep.com.br/ws/$cep/json/');
