@@ -39,7 +39,7 @@ class HomePage extends GetView<HomeController> {
                 () => Container(
                   margin: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
                   child: Row(
-                    children: [AgencyLogo(imagePath: controller.avatar.value!)],
+                    children: [AgencyLogo(imagePath: controller.avatar.value)],
                   ),
                 ),
               ),

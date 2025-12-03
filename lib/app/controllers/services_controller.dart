@@ -23,6 +23,7 @@ class ServicesController extends GetxController {
   Future<void> removeService(String id) async {
     try {
       final response = await servicesService.removeService(id);
+      print(response);
       await getServices();
       Get.back();
       Get.snackbar('Sucesso', 'Serviço removido com sucesso!');
@@ -35,11 +36,13 @@ class ServicesController extends GetxController {
     try {
       if (service.value.id != null) {
         final response = await servicesService.updateServices(service.value);
+        print(response);
         await getServices();
         Get.back();
         Get.snackbar('Success', 'Serviço criado com sucesso!');
       } else {
         final response = await servicesService.createService(service.value);
+        print(response);
         await getServices();
         Get.back();
         Get.snackbar('Success', 'Serviço criado com sucesso!');

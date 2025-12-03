@@ -18,7 +18,7 @@ class CloseForm extends GetView<RegisterController> {
           child: ListView(
             children: [
               Row(
-                children: [AgencyLogo(imagePath: controller.agencyLogo.value!)],
+                children: [AgencyLogo(imagePath: controller.agencyLogo.value)],
               ),
               SizedBox(height: 20),
               Text('Preencha os campos solicitados:'),

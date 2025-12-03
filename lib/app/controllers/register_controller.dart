@@ -11,7 +11,6 @@ import '../models/pix_model.dart';
 import '../models/solicitation_model.dart';
 import '../services/registration_services.dart';
 import '../models/service_model.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class RegisterController extends GetxController {
   RegistrationServices registrationService = Get.find<RegistrationServices>();
