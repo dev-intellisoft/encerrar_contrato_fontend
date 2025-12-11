@@ -12,7 +12,6 @@ import '../ui/pages/home/home_page.dart';
 import '../bindings/home_binding.dart';
 import '../ui/pages/register/register_page.dart';
 import '../bindings/register_binding.dart';
-import '../ui/pages/solicitation/solicitation_page.dart';
 import '../ui/pages/services/services_page.dart';
 import '../bindings/services_binding.dart';
 import '../ui/pages/services/widgets/service_form.dart';
@@ -45,11 +44,6 @@ class AppPages {
       },
       binding: RegisterBinding(),
       transition: Transition.noTransition,
-    ),
-    GetPage(
-      name: Routes.SOLICITATION,
-      page: () => const SolicitationPage(),
-      bindings: [CustomerBinding(), SolicitationBinding()],
     ),
     GetPage(
       name: Routes.DASHBOARD,

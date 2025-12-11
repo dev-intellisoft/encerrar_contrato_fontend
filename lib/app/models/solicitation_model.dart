@@ -1,6 +1,7 @@
 import 'package:encerrar_contrato/app/models/asaas_credit_card.dart';
 import 'package:encerrar_contrato/app/models/asaas_credit_card_holder_info.dart';
 import 'package:encerrar_contrato/app/models/pix_model.dart';
+import 'package:encerrar_contrato/app/models/service_model.dart';
 
 import 'customer_model.dart';
 
@@ -17,14 +18,7 @@ class Solicitation {
   SolicitationStatus? status;
   DateTime? createdAt;
   DateTime? updatedAt;
-  String? services;
-  String? agency;
-  String? gasCarrier;
-  String? waterCarrier;
-  String? powerCarrier;
-  bool water;
-  bool gas;
-  bool power;
+  List<Service>? services = [];
   PIX? pix;
   String paymentType = "pix";
   String paymentStatus = "pending";
@@ -44,13 +38,6 @@ class Solicitation {
     this.createdAt,
     this.updatedAt,
     this.services,
-    this.agency,
-    this.gasCarrier,
-    this.waterCarrier,
-    this.powerCarrier,
-    this.water = false,
-    this.gas = false,
-    this.power = false,
     this.pix,
     this.paymentType = "pix",
     this.paymentStatus = "pending",
@@ -70,16 +57,9 @@ class Solicitation {
       'address': address!.toMap(),
       'description': description,
       'status': SolicitationStatus.pending.index,
-      'agency': agency,
-      'services': services,
+      'services': services?.map((e) => e.toJson()).toList(),
       'createdAt': createdAt,
       'updatedAt': updatedAt,
-      'gas_carrier': gasCarrier,
-      'water_carrier': waterCarrier,
-      'power_carrier': powerCarrier,
-      'water': water,
-      'gas': gas,
-      'power': power,
       'pix': pix?.toJson(),
       'payment_type': paymentType,
       'payment_status': paymentStatus,
@@ -99,14 +79,11 @@ class Solicitation {
       title: map['title'],
       description: map['description'],
       status: SolicitationStatus.values[map['status']],
-      services: map['services'],
-      agency: map['agency'],
-      gasCarrier: map['gas_carrier'],
-      waterCarrier: map['water_carrier'],
-      powerCarrier: map['power_carrier'],
-      water: map['water'],
-      gas: map['gas'],
-      power: map['power'],
+      services: map['services'] != null
+          ? (map['services'] as List)
+                .map((e) => Service.fromJson(e as Map<String, dynamic>))
+                .toList()
+          : [],
       pix: map['pix'] != null ? PIX.fromJson(map['pix']) : null,
       paymentType: map['payment_type'],
       paymentStatus: map['payment_status'],

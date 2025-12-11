@@ -23,6 +23,7 @@ class RegisterController extends GetxController {
   Rx<Solicitation> solicitation = Solicitation(
     customer: Customer(),
     address: Address(),
+    services: [],
   ).obs;
   Rx<ASAASCreditCardHolderInfo> creditCardHolderInfo =
       ASAASCreditCardHolderInfo().obs;
@@ -80,6 +81,11 @@ class RegisterController extends GetxController {
   }
 
   Future<void> register() async {
+    for (var s in services) {
+      if (s.selected) {
+        solicitation.update((e) => e!.services?.add(s));
+      }
+    }
     Get.back();
     try {
       isLoading.value = true;
@@ -89,6 +95,7 @@ class RegisterController extends GetxController {
       print(solicitation.value.toJson());
       Get.snackbar('Success', 'Solicitação criada com sucesso');
     } catch (e) {
+      print(e);
       Get.snackbar('Error', e.toString());
     } finally {
       isLoading.value = false;

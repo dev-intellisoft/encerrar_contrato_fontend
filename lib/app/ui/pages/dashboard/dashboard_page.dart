@@ -233,18 +233,18 @@ class DashboardPage extends GetView<DashboardController> {
                               readOnly: true,
                             ),
                             SizedBox(height: 10),
-                            if (controller.solicitation.value!.gas)
-                              Text(
-                                'Serviço de gás; Empresa: ${controller.solicitation.value!.gasCarrier}',
-                              ),
-                            if (controller.solicitation.value!.water)
-                              Text(
-                                ' Serviço de agua; Empresa: ${controller.solicitation.value!.waterCarrier}',
-                              ),
-                            if (controller.solicitation.value!.power)
-                              Text(
-                                'Serviço de eletricidade; Empresa: ${controller.solicitation.value!.powerCarrier}',
-                              ),
+                            // if (controller.solicitation.value!.gas)
+                            //   Text(
+                            //     'Serviço de gás; Empresa: ${controller.solicitation.value!.gasCarrier}',
+                            //   ),
+                            // if (controller.solicitation.value!.water)
+                            //   Text(
+                            //     ' Serviço de agua; Empresa: ${controller.solicitation.value!.waterCarrier}',
+                            //   ),
+                            // if (controller.solicitation.value!.power)
+                            //   Text(
+                            //     'Serviço de eletricidade; Empresa: ${controller.solicitation.value!.powerCarrier}',
+                            //   ),
                             if (controller.solicitation.value!.status ==
                                 SolicitationStatus.pending)
                               ElevatedButton(
