@@ -1,13 +1,13 @@
-import 'package:encerrar_contrato/app/ui/pages/register/credit_card.dart';
-import 'package:encerrar_contrato/app/ui/pages/register/pix.dart';
-import 'package:encerrar_contrato/app/ui/pages/register/spinner.dart';
-import 'package:encerrar_contrato/app/ui/pages/register/success.dart';
-import 'package:encerrar_contrato/app/ui/pages/register/transfer.dart';
+import 'package:encerrar_contrato/app/ui/pages/register/widgets/credit_card.dart';
+import 'package:encerrar_contrato/app/ui/pages/register/widgets/pix.dart';
+import 'package:encerrar_contrato/app/ui/pages/register/widgets/spinner.dart';
+import 'package:encerrar_contrato/app/ui/pages/register/widgets/success.dart';
+import 'package:encerrar_contrato/app/ui/pages/register/widgets/transfer.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:encerrar_contrato/app/controllers/register_controller.dart';
 import '../../../widgets/logo.dart';
-import 'close.dart';
+import 'widgets/close.dart';
 
 class RegisterPage extends GetView<RegisterController> {
   final String agencyId;
@@ -185,6 +185,7 @@ class RegisterPage extends GetView<RegisterController> {
 
           return Column(
             children: [
+              Text(controller.solicitation.value.service),
               SizedBox(height: 10),
               Center(
                 child: Row(

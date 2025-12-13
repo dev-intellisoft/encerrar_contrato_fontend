@@ -30,11 +30,7 @@ class RegisterController extends GetxController {
   Rx<ASAASCreditCard> creditCard = ASAASCreditCard().obs;
   RxBool isLoading = false.obs;
   RxString cep = ''.obs;
-
-  Rx<PlatformFile?> documentPhoto = Rx<PlatformFile?>(null);
-  Rx<PlatformFile?> photoWithDocument = Rx<PlatformFile?>(null);
-  Rx<PlatformFile?> lastDocument = Rx<PlatformFile?>(null);
-  Rx<PlatformFile?> rentContract = Rx<PlatformFile?>(null);
+  Rx<Documents> documents = Documents().obs;
 
   RxString agencyLogo = ''.obs;
 
@@ -155,13 +151,12 @@ class RegisterController extends GetxController {
     Get.back();
     try {
       isLoading.value = true;
-      await registrationService.transfer(
-        documentPhoto: documentPhoto.value!,
-        photoWithDocument: photoWithDocument.value!,
-        lastInvoice: lastDocument.value!,
-        contract: rentContract.value!,
+      var response = await registrationService.transfer(
+        documents: documents.value,
         soliciation: solicitation.value,
       );
+      print("response => ");
+      print(response);
       Get.snackbar('Success', 'Transferência realizada com sucesso');
     } catch (e) {
       print(e);
@@ -169,5 +164,73 @@ class RegisterController extends GetxController {
     } finally {
       isLoading.value = false;
     }
+  }
+
+  Future<void> pickDocumentPhoto() async {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.any,
+      allowMultiple: false,
+      withData: true, // important for Web → gives bytes
+    );
+
+    if (result == null) return;
+
+    final file = result.files.first;
+
+    documents.update((a) => a!.documentPhotoName = file.name);
+    documents.update(
+      (a) => a!.documentPhotoByte = file.bytes,
+    ); // Uint8List, works everywhere
+  }
+
+  Future<void> pickPhotoWithDocument() async {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.any, //allow also pdf
+      allowMultiple: false,
+      withData: true, // important for Web → gives bytes
+    );
+
+    if (result == null) return;
+
+    final file = result.files.first;
+
+    documents.update((a) => a!.photoWithDocumentName = file.name);
+    documents.update(
+      (a) => a!.photoWithDocumentByte = file.bytes,
+    ); // Uint8List, works everywhere
+  }
+
+  Future<void> pickLastInvoice() async {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.any, //allow also pdf
+      allowMultiple: false,
+      withData: true, // important for Web → gives bytes
+    );
+
+    if (result == null) return;
+
+    final file = result.files.first;
+
+    documents.update((a) => a!.lastInvoiceName = file.name);
+    documents.update(
+      (a) => a!.lastInvoiceByte = file.bytes,
+    ); // Uint8List, works everywhere
+  }
+
+  Future<void> pickContract() async {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.any, //allow also pdf
+      allowMultiple: false,
+      withData: true, // important for Web → gives bytes
+    );
+
+    if (result == null) return;
+
+    final file = result.files.first;
+
+    documents.update((a) => a!.contractName = file.name);
+    documents.update(
+      (a) => a!.contractByte = file.bytes,
+    ); // Uint8List, works everywhere
   }
 }

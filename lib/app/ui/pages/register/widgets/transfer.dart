@@ -1,10 +1,9 @@
 import 'package:encerrar_contrato/app/controllers/register_controller.dart';
-import 'package:encerrar_contrato/app/ui/pages/register/file_picker_new.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
-import '../../../widgets/agency_logo.dart';
+import '../../../../widgets/agency_logo.dart';
 
 class TransferForm extends GetView<RegisterController> {
   @override
@@ -240,46 +239,55 @@ class TransferForm extends GetView<RegisterController> {
 
               Container(
                 margin: EdgeInsets.symmetric(vertical: 5),
-                child: FilePickerFieldNew(
-                  controller: TextEditingController(),
-                  decoration: InputDecoration(label: Text("Foto do documento")),
-                  // controller: controller.documentPhoto,
-                  onFilePicked: (result) =>
-                      controller.documentPhoto.value = result,
+                child: TextField(
+                  controller: TextEditingController(
+                    text: controller.documents.value.documentPhotoName ?? '',
+                  ),
+                  onTap: controller.pickDocumentPhoto,
+                  decoration: const InputDecoration(
+                    labelText: 'Foto do documento',
+                  ),
                 ),
               ),
 
               Container(
                 margin: EdgeInsets.symmetric(vertical: 5),
-                child: FilePickerFieldNew(
-                  controller: TextEditingController(),
-                  decoration: InputDecoration(
-                    label: Text("Foto com documento"),
+                child: TextFormField(
+                  controller: TextEditingController(
+                    text:
+                        controller.documents.value.photoWithDocumentName ?? '',
                   ),
-                  onFilePicked: (file) =>
-                      controller.photoWithDocument.value = file,
+                  onTap: controller.pickPhotoWithDocument,
+                  decoration: const InputDecoration(
+                    labelText: 'Foto com documento',
+                  ),
                 ),
               ),
 
               Container(
                 margin: EdgeInsets.symmetric(vertical: 5),
-                child: FilePickerFieldNew(
-                  controller: TextEditingController(),
-                  decoration: InputDecoration(
-                    label: Text("Último contrato do serviço."),
+                child: TextFormField(
+                  controller: TextEditingController(
+                    text: controller.documents.value.lastInvoiceName ?? '',
                   ),
-                  onFilePicked: (file) => controller.lastDocument.value = file,
+                  onTap: controller.pickLastInvoice,
+                  decoration: const InputDecoration(
+                    labelText: 'Última fatura do serviço',
+                  ),
                 ),
               ),
 
               Container(
                 margin: EdgeInsets.symmetric(vertical: 5),
-                child: FilePickerFieldNew(
-                  controller: TextEditingController(),
-                  decoration: InputDecoration(
-                    label: Text("Inserir contrato (locação/ compra e venda)"),
+                child: TextFormField(
+                  controller: TextEditingController(
+                    text: controller.documents.value.contractName ?? '',
                   ),
-                  onFilePicked: (file) => controller.rentContract.value = file,
+                  onTap: controller.pickContract,
+                  decoration: const InputDecoration(
+                    labelText: 'Inserir contrato (locação/ compra e venda)',
+                  ),
+                  // onFilePicked: (file) => controller.contract.value = file,
                 ),
               ),
               Container(

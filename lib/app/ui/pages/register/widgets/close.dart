@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
-import '../../../widgets/agency_logo.dart';
+import '../../../../widgets/agency_logo.dart';
 
 class CloseForm extends GetView<RegisterController> {
   @override

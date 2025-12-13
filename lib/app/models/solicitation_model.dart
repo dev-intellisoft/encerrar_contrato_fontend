@@ -2,6 +2,7 @@ import 'package:encerrar_contrato/app/models/asaas_credit_card.dart';
 import 'package:encerrar_contrato/app/models/asaas_credit_card_holder_info.dart';
 import 'package:encerrar_contrato/app/models/pix_model.dart';
 import 'package:encerrar_contrato/app/models/service_model.dart';
+import 'dart:typed_data';
 
 import 'customer_model.dart';
 
@@ -20,9 +21,9 @@ class Solicitation {
   DateTime? updatedAt;
   List<Service>? services = [];
   PIX? pix;
-  String paymentType = "pix";
-  String paymentStatus = "pending";
-  String service = "close";
+  String paymentType;
+  String paymentStatus;
+  String service;
   String? agencyId;
   String? agencyLogo;
   ASAASCreditCardHolderInfo? creditCardHolderInfo;
@@ -41,7 +42,7 @@ class Solicitation {
     this.pix,
     this.paymentType = "pix",
     this.paymentStatus = "pending",
-    this.service = "close",
+    this.service = "transfer",
     this.agencyId,
     this.agencyLogo,
     this.creditCardHolderInfo,
@@ -92,6 +93,53 @@ class Solicitation {
       agencyLogo: map['agency_logo'],
       creditCardHolderInfo: map['credit_card_holder_info'],
       creditCard: map['credit_card'],
+    );
+  }
+}
+
+class Documents {
+  Uint8List? documentPhotoByte;
+  String? documentPhotoName;
+  Uint8List? photoWithDocumentByte;
+  String? photoWithDocumentName;
+  Uint8List? lastInvoiceByte;
+  String? lastInvoiceName;
+  Uint8List? contractByte;
+  String? contractName;
+  Documents({
+    this.documentPhotoByte,
+    this.documentPhotoName,
+    this.photoWithDocumentByte,
+    this.photoWithDocumentName,
+    this.lastInvoiceByte,
+    this.lastInvoiceName,
+    this.contractByte,
+    this.contractName,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'document_photo_byte': documentPhotoByte,
+      'document_photo_name': documentPhotoName,
+      'photo_with_document_byte': photoWithDocumentByte,
+      'photo_with_document_name': photoWithDocumentName,
+      'last_invoice_byte': lastInvoiceByte,
+      'last_invoice_name': lastInvoiceName,
+      'contract_byte': contractByte,
+      'contract_name': contractName,
+    };
+  }
+
+  factory Documents.fromJson(Map<String, dynamic> map) {
+    return Documents(
+      documentPhotoByte: map['document_photo_byte'],
+      documentPhotoName: map['document_photo_name'],
+      photoWithDocumentByte: map['photo_with_document_byte'],
+      photoWithDocumentName: map['photo_with_document_name'],
+      lastInvoiceByte: map['last_invoice_byte'],
+      lastInvoiceName: map['last_invoice_name'],
+      contractByte: map['contract_byte'],
+      contractName: map['contract_name'],
     );
   }
 }

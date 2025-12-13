@@ -21,7 +21,7 @@ part 'app_routes.dart';
 class AppPages {
   AppPages._();
 
-  static const INITIAL = Routes.LOGIN;
+  static const INITIAL = Routes.REGISTER;
 
   static final routes = [
     GetPage(
@@ -37,9 +37,10 @@ class AppPages {
       transition: Transition.noTransition,
     ),
     GetPage(
-      name: Routes.REGISTER,
+      name: Routes.LOGIN,
       page: () {
         String? agencyId = Get.parameters['agency_id']; // ?? debugAgencyId;
+        // agencyId = '10160d72-3b5f-468a-bf02-ba954a20ffb9'
         return RegisterPage(agencyId: agencyId!);
       },
       binding: RegisterBinding(),
