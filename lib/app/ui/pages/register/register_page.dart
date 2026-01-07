@@ -231,7 +231,7 @@ class RegisterPage extends GetView<RegisterController> {
                           ),
                           child: Center(
                             child: Text(
-                              'Tranferir Contrato',
+                              'Transferir Contrato',
                               style: TextStyle(color: Colors.white),
                             ),
                           ),

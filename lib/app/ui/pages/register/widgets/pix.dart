@@ -62,8 +62,6 @@ class PIX extends GetView<RegisterController> {
                 ],
               ),
             );
-
-            return Text('data');
           }
           return GestureDetector(
             onTap: controller.processPIXPayment,

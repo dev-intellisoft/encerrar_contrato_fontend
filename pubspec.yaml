@@ -46,7 +46,9 @@ dependencies:
   mask_text_input_formatter: ^2.9.0
   jwt_decoder: ^2.0.1
   file_picker: ^10.3.3
-  image_picker: ^1.2.1
+  html: ^0.15.6
+  pdfx: ^2.9.2
+  http: ^1.6.0
   # auto_updater: ^1.0.0
   # flutter_distributor: ^0.6.2
   # flutter_inappwebview: ^6.1.5

@@ -21,321 +21,180 @@ class TransferForm extends GetView<RegisterController> {
                 children: [AgencyLogo(imagePath: controller.agencyLogo.value!)],
               ),
 
-              SizedBox(height: 20),
-              Text('Dados do atual titular:'),
-
-              Container(
-                margin: EdgeInsets.symmetric(vertical: 10),
-                child: TextFormField(
-                  onChanged: (text) =>
-                      controller.solicitation.value.customer!.name = text,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(25),
-                      borderSide: BorderSide(color: Colors.black, width: 1),
-                    ),
-                    hintText: 'Digite seu nome completo',
-                    labelText: 'Nome completo',
-                  ),
-                ),
-              ),
-              Row(
+              ExpansionTile(
+                title: Text('Dados do atual titular:'),
                 children: [
-                  Expanded(
-                    child: TextFormField(
-                      inputFormatters: [
-                        MaskTextInputFormatter(
-                          mask: '###.###.###-##',
-                          filter: {
-                            "#": RegExp(r'[0-9]'),
-                          }, // only digits allowed
-                        ),
-                      ],
-                      onChanged: (text) =>
-                          controller.solicitation.value.customer!.cpf = text,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(25),
-                          borderSide: BorderSide(color: Colors.black, width: 1),
-                        ),
-                        labelText: 'CPF',
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 10),
-                  Expanded(
-                    child: TextFormField(
-                      inputFormatters: [
-                        MaskTextInputFormatter(
-                          mask: '##/##/####',
-                          filter: {
-                            "#": RegExp(r'[0-9]'),
-                          }, // only digits allowed
-                        ),
-                      ],
-                      onChanged: (text) =>
-                          controller.solicitation.value.customer!.birthDate =
-                              text,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(25),
-                          borderSide: BorderSide(color: Colors.black, width: 1),
-                        ),
-                        labelText: 'Data de nascimento',
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+                  SizedBox(height: 20),
+                  Text('Dados do atual titular:'),
 
-              SizedBox(height: 10),
-              Row(
-                children: [
-                  Expanded(
+                  Container(
+                    margin: EdgeInsets.symmetric(vertical: 10),
                     child: TextFormField(
-                      inputFormatters: [
-                        FilteringTextInputFormatter.deny(
-                          RegExp(r'[^a-zA-Z0-9@.]+'),
-                        ),
-                      ],
-
                       onChanged: (text) =>
-                          controller.solicitation.value.customer!.email = text,
+                          controller.solicitation.value.customer!.name = text,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(25),
                           borderSide: BorderSide(color: Colors.black, width: 1),
                         ),
-                        labelText: 'Email',
+                        hintText: 'Digite seu nome completo',
+                        labelText: 'Nome completo',
                       ),
                     ),
                   ),
-                  SizedBox(width: 10),
-                  Expanded(
-                    child: TextFormField(
-                      inputFormatters: [
-                        MaskTextInputFormatter(
-                          mask: '(##) #####-####',
-                          filter: {
-                            "#": RegExp(r'[0-9]'),
-                          }, // only digits allowed
-                        ),
-                      ],
-                      onChanged: (text) =>
-                          controller.solicitation.value.customer!.phone = text,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(25),
-                          borderSide: BorderSide(color: Colors.black, width: 1),
-                        ),
-                        labelText: 'Telefone(Whatsapp)',
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-              SizedBox(height: 20),
-              Text('Endereço:'),
-              Container(
-                margin: EdgeInsets.symmetric(vertical: 5),
-                child: TextFormField(
-                  inputFormatters: [
-                    MaskTextInputFormatter(
-                      mask: '##.###-###',
-                      filter: {"#": RegExp(r'[0-9]')}, // only digits allowed
-                    ),
-                  ],
-                  onChanged: controller.setCep,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(25),
-                      borderSide: BorderSide(color: Colors.black, width: 1),
-                    ),
-                    labelText: 'CEP',
-                  ),
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.symmetric(vertical: 5),
-                child: TextFormField(
-                  controller: TextEditingController(
-                    text: controller.solicitation.value.address?.street,
-                  ),
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(25),
-                      borderSide: BorderSide(color: Colors.black, width: 1),
-                    ),
-                    labelText: 'Rua',
-                  ),
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.symmetric(vertical: 5),
-                child: TextFormField(
-                  controller: TextEditingController(
-                    text: controller.solicitation.value.address?.neighborhood,
-                  ),
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(25),
-                      borderSide: BorderSide(color: Colors.black, width: 1),
-                    ),
-                    labelText: 'Bairro',
-                  ),
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.symmetric(vertical: 5),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    SizedBox(
-                      width: 150,
-                      child: TextFormField(
-                        onChanged: (text) => controller.solicitation.update(
-                          (s) => s!.address!.number = text,
-                        ),
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(25),
-                            borderSide: BorderSide(
-                              color: Colors.black,
-                              width: 1,
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextFormField(
+                          inputFormatters: [
+                            MaskTextInputFormatter(
+                              mask: '###.###.###-##',
+                              filter: {
+                                "#": RegExp(r'[0-9]'),
+                              }, // only digits allowed
                             ),
-                          ),
-                          labelText: 'Número',
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      width: 150,
-                      child: TextFormField(
-                        controller: TextEditingController(
-                          text: controller.solicitation.value.address?.state,
-                        ),
-                        onChanged: (text) => controller.solicitation.update(
-                          (s) => s!.address!.state = text,
-                        ),
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(25),
-                            borderSide: BorderSide(
-                              color: Colors.black,
-                              width: 1,
-                            ),
-                          ),
-                          labelText: 'UF',
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              SizedBox(height: 20),
-              Text('Dados do novo titular'),
-
-              Container(
-                margin: EdgeInsets.symmetric(vertical: 5),
-                child: TextField(
-                  controller: TextEditingController(
-                    text: controller.documents.value.documentPhotoName ?? '',
-                  ),
-                  onTap: controller.pickDocumentPhoto,
-                  decoration: const InputDecoration(
-                    labelText: 'Foto do documento',
-                  ),
-                ),
-              ),
-
-              Container(
-                margin: EdgeInsets.symmetric(vertical: 5),
-                child: TextFormField(
-                  controller: TextEditingController(
-                    text:
-                        controller.documents.value.photoWithDocumentName ?? '',
-                  ),
-                  onTap: controller.pickPhotoWithDocument,
-                  decoration: const InputDecoration(
-                    labelText: 'Foto com documento',
-                  ),
-                ),
-              ),
-
-              Container(
-                margin: EdgeInsets.symmetric(vertical: 5),
-                child: TextFormField(
-                  controller: TextEditingController(
-                    text: controller.documents.value.lastInvoiceName ?? '',
-                  ),
-                  onTap: controller.pickLastInvoice,
-                  decoration: const InputDecoration(
-                    labelText: 'Última fatura do serviço',
-                  ),
-                ),
-              ),
-
-              Container(
-                margin: EdgeInsets.symmetric(vertical: 5),
-                child: TextFormField(
-                  controller: TextEditingController(
-                    text: controller.documents.value.contractName ?? '',
-                  ),
-                  onTap: controller.pickContract,
-                  decoration: const InputDecoration(
-                    labelText: 'Inserir contrato (locação/ compra e venda)',
-                  ),
-                  // onFilePicked: (file) => controller.contract.value = file,
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.symmetric(vertical: 5),
-                child: TextFormField(
-                  controller: TextEditingController(),
-                  decoration: InputDecoration(label: Text("Telefone")),
-                ),
-              ),
-
-              SizedBox(height: 20),
-
-              Text('Serviço a encerrar:'),
-
-              Container(
-                margin: EdgeInsets.symmetric(vertical: 5),
-                child: ListView.builder(
-                  shrinkWrap:
-                      true, // important for ListView inside other widgets
-                  physics:
-                      NeverScrollableScrollPhysics(), // prevents scroll conflict
-                  itemCount: controller.services.length,
-                  itemBuilder: (context, index) {
-                    final service = controller.services[index];
-
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Checkbox(
-                              value: controller.services[index].selected,
-                              onChanged: (value) => controller.services[index] =
-                                  service.copyWith(selected: value!),
-                            ),
-                            Text(service.name!),
                           ],
-                        ),
-
-                        Container(
-                          width: 300,
-                          padding: EdgeInsets.symmetric(
-                            // horizontal: 10,
-                            vertical: 5,
+                          onChanged: (text) =>
+                              controller.solicitation.value.customer!.cpf =
+                                  text,
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(25),
+                              borderSide: BorderSide(
+                                color: Colors.black,
+                                width: 1,
+                              ),
+                            ),
+                            labelText: 'CPF',
                           ),
+                        ),
+                      ),
+                      SizedBox(width: 10),
+                      Expanded(
+                        child: TextFormField(
+                          inputFormatters: [
+                            MaskTextInputFormatter(
+                              mask: '##/##/####',
+                              filter: {
+                                "#": RegExp(r'[0-9]'),
+                              }, // only digits allowed
+                            ),
+                          ],
+                          onChanged: (text) =>
+                              controller
+                                      .solicitation
+                                      .value
+                                      .customer!
+                                      .birthDate =
+                                  text,
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(25),
+                              borderSide: BorderSide(
+                                color: Colors.black,
+                                width: 1,
+                              ),
+                            ),
+                            labelText: 'Data de nascimento',
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextFormField(
+                          inputFormatters: [
+                            FilteringTextInputFormatter.deny(
+                              RegExp(r'[^a-zA-Z0-9@.]+'),
+                            ),
+                          ],
+
+                          onChanged: (text) =>
+                              controller.solicitation.value.customer!.email =
+                                  text,
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(25),
+                              borderSide: BorderSide(
+                                color: Colors.black,
+                                width: 1,
+                              ),
+                            ),
+                            labelText: 'Email',
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 10),
+                      Expanded(
+                        child: TextFormField(
+                          inputFormatters: [
+                            MaskTextInputFormatter(
+                              mask: '(##) #####-####',
+                              filter: {
+                                "#": RegExp(r'[0-9]'),
+                              }, // only digits allowed
+                            ),
+                          ],
+                          onChanged: (text) =>
+                              controller.solicitation.value.customer!.phone =
+                                  text,
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(25),
+                              borderSide: BorderSide(
+                                color: Colors.black,
+                                width: 1,
+                              ),
+                            ),
+                            labelText: 'Telefone(Whatsapp)',
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  SizedBox(height: 20),
+                  Text('Endereço:'),
+                  Container(
+                    margin: EdgeInsets.symmetric(vertical: 5),
+                    child: TextFormField(
+                      inputFormatters: [
+                        MaskTextInputFormatter(
+                          mask: '##.###-###',
+                          filter: {
+                            "#": RegExp(r'[0-9]'),
+                          }, // only digits allowed
+                        ),
+                      ],
+                      onChanged: controller.setCep,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25),
+                          borderSide: BorderSide(color: Colors.black, width: 1),
+                        ),
+                        labelText: 'CEP',
+                      ),
+                    ),
+                  ),
+
+                  Container(
+                    margin: EdgeInsets.symmetric(vertical: 5),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
                           child: TextFormField(
-                            onChanged: (text) => controller.services[index] =
-                                service.copyWith(companyName: text),
+                            controller: TextEditingController(
+                              text:
+                                  controller.solicitation.value.address?.street,
+                            ),
+                            onChanged: (text) => controller.solicitation.update(
+                              (s) => s!.address!.street = text,
+                            ),
                             decoration: InputDecoration(
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(25),
@@ -344,17 +203,234 @@ class TransferForm extends GetView<RegisterController> {
                                   width: 1,
                                 ),
                               ),
-                              labelText:
-                                  'Informa a empresa prestadora do serviço',
+                              labelText: 'Rua',
                             ),
                           ),
                         ),
-
-                        SizedBox(height: 12),
+                        SizedBox(width: 10),
+                        SizedBox(
+                          width: 150,
+                          child: TextFormField(
+                            controller: TextEditingController(
+                              text:
+                                  controller.solicitation.value.address?.number,
+                            ),
+                            onChanged: (text) => controller.solicitation.update(
+                              (s) => s!.address!.number = text,
+                            ),
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(25),
+                                borderSide: BorderSide(
+                                  color: Colors.black,
+                                  width: 1,
+                                ),
+                              ),
+                              labelText: 'Número',
+                            ),
+                          ),
+                        ),
                       ],
-                    );
-                  },
-                ),
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.symmetric(vertical: 5),
+                    child: TextFormField(
+                      controller: TextEditingController(
+                        text:
+                            controller.solicitation.value.address?.neighborhood,
+                      ),
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25),
+                          borderSide: BorderSide(color: Colors.black, width: 1),
+                        ),
+                        labelText: 'Bairro',
+                      ),
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.symmetric(vertical: 5),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            controller: TextEditingController(
+                              text: controller.solicitation.value.address?.city,
+                            ),
+                            onChanged: (text) => controller.solicitation.update(
+                              (s) => s!.address!.city = text,
+                            ),
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(25),
+                                borderSide: BorderSide(
+                                  color: Colors.black,
+                                  width: 1,
+                                ),
+                              ),
+                              labelText: 'Cidade',
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 10),
+                        SizedBox(
+                          width: 150,
+                          child: TextFormField(
+                            controller: TextEditingController(
+                              text:
+                                  controller.solicitation.value.address?.state,
+                            ),
+                            onChanged: (text) => controller.solicitation.update(
+                              (s) => s!.address!.state = text,
+                            ),
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(25),
+                                borderSide: BorderSide(
+                                  color: Colors.black,
+                                  width: 1,
+                                ),
+                              ),
+                              labelText: 'UF',
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+
+              ExpansionTile(
+                title: Text('Dados do novo titular:'),
+                children: [
+                  Container(
+                    margin: EdgeInsets.symmetric(vertical: 5),
+                    child: TextField(
+                      controller: TextEditingController(
+                        text:
+                            controller.documents.value.documentPhotoName ?? '',
+                      ),
+                      onTap: controller.pickDocumentPhoto,
+                      decoration: const InputDecoration(
+                        labelText: 'Foto do documento',
+                      ),
+                    ),
+                  ),
+
+                  Container(
+                    margin: EdgeInsets.symmetric(vertical: 5),
+                    child: TextFormField(
+                      controller: TextEditingController(
+                        text:
+                            controller.documents.value.photoWithDocumentName ??
+                            '',
+                      ),
+                      onTap: controller.pickPhotoWithDocument,
+                      decoration: const InputDecoration(
+                        labelText: 'Foto com documento',
+                      ),
+                    ),
+                  ),
+
+                  Container(
+                    margin: EdgeInsets.symmetric(vertical: 5),
+                    child: TextFormField(
+                      controller: TextEditingController(
+                        text: controller.documents.value.lastInvoiceName ?? '',
+                      ),
+                      onTap: controller.pickLastInvoice,
+                      decoration: const InputDecoration(
+                        labelText: 'Última fatura do serviço',
+                      ),
+                    ),
+                  ),
+
+                  Container(
+                    margin: EdgeInsets.symmetric(vertical: 5),
+                    child: TextFormField(
+                      controller: TextEditingController(
+                        text: controller.documents.value.contractName ?? '',
+                      ),
+                      onTap: controller.pickContract,
+                      decoration: const InputDecoration(
+                        labelText: 'Inserir contrato (locação/ compra e venda)',
+                      ),
+                      // onFilePicked: (file) => controller.contract.value = file,
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.symmetric(vertical: 5),
+                    child: TextFormField(
+                      controller: TextEditingController(),
+                      decoration: InputDecoration(label: Text("Telefone")),
+                    ),
+                  ),
+                ],
+              ),
+
+              ExpansionTile(
+                title: Text('Serviço a encerrar:'),
+                children: [
+                  Container(
+                    margin: EdgeInsets.symmetric(vertical: 5),
+                    child: ListView.builder(
+                      shrinkWrap:
+                          true, // important for ListView inside other widgets
+                      physics:
+                          NeverScrollableScrollPhysics(), // prevents scroll conflict
+                      itemCount: controller.services.length,
+                      itemBuilder: (context, index) {
+                        final service = controller.services[index];
+
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Checkbox(
+                                  value: controller.services[index].selected,
+                                  onChanged: (value) =>
+                                      controller.services[index] = service
+                                          .copyWith(selected: value!),
+                                ),
+                                Text(service.name!),
+                              ],
+                            ),
+
+                            Container(
+                              width: 300,
+                              padding: EdgeInsets.symmetric(
+                                // horizontal: 10,
+                                vertical: 5,
+                              ),
+                              child: TextFormField(
+                                onChanged: (text) =>
+                                    controller.services[index] = service
+                                        .copyWith(companyName: text),
+                                decoration: InputDecoration(
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(25),
+                                    borderSide: BorderSide(
+                                      color: Colors.black,
+                                      width: 1,
+                                    ),
+                                  ),
+                                  labelText:
+                                      'Informa a empresa prestadora do serviço',
+                                ),
+                              ),
+                            ),
+
+                            SizedBox(height: 12),
+                          ],
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
 
               Container(
