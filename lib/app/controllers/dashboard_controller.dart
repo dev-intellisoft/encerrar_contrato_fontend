@@ -12,21 +12,24 @@ class DashboardController extends GetxController {
   RxBool loading = false.obs;
   RxList<String> documents = <String>[].obs;
   RxList<Uint8List> documentBytes = <Uint8List>[].obs;
-  Rx<PdfController?> pdfController = Rx<PdfController?>(null);
+  // Rx<PdfController?> pdfController = Rx<PdfController?>(null);
   RxBool isLoading = false.obs;
+  Rx<Uint8List?> documentByte = Rx<Uint8List?>(null);
 
   @override
   void onInit() {
     super.onInit();
   }
 
-  Future<void> loadPdf() async {
+  Future<void> loadPdf(String document) async {
     try {
-      final res = await service.getDocument(
-        '/documents/f29bb805-666a-430b-8aa6-04352f2b2a05/photo_with_document.pdf',
-      );
-
-      pdfController.value = PdfController(document: PdfDocument.openData(res));
+      // pdfController.value = null;
+      documentByte.value = null;
+      isLoading.value = true;
+      final res = await service.getDocument(document);
+      documentByte.value = res;
+      // pdfController.value = PdfController(document: PdfDocument.openData(res));
+      isLoading.value = false;
     } catch (e) {
       Get.snackbar('Error', 'Failed to load PDF');
     } finally {

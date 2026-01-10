@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import '../../../../controllers/dashboard_controller.dart';
 import 'package:pdfx/pdfx.dart';
-import 'dart:typed_data';
 
 class Document extends GetView<DashboardController> {
   const Document({super.key});
@@ -29,16 +27,14 @@ class Document extends GetView<DashboardController> {
                         onPressed: () => Get.dialog(
                           AlertDialog(
                             title: Text('Visualizar documento $e'),
-                            content: Text(
-                              'Aqui você pode visualizar o documento $e',
-                            ),
+                            content: DocumentPreview(document: e),
                             actions: [
-                              TextButton(
-                                onPressed: () => Get.back(),
-                                child: Container(
-                                  child: DocumentPreview(document: e),
-                                ),
-                              ),
+                              // TextButton(
+                              //   onPressed: () => Get.back(),
+                              //   child: Container(
+                              //     child: DocumentPreview(document: e),
+                              //   ),
+                              // ),
                             ],
                           ),
                         ),
@@ -61,58 +57,26 @@ class DocumentPreview extends GetView<DashboardController> {
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((_) => controller.loadPdf());
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => controller.loadPdf(document),
+    );
+
     return Obx(() {
-      if (controller.isLoading.value ||
-          controller.pdfController.value == null) {
-        return const Center(child: CircularProgressIndicator());
+      if (controller.isLoading.value) return CircularProgressIndicator();
+
+      if (document.contains(".pdf")) {
+        return SizedBox(
+          width: 600,
+          height: 800,
+          child: PdfView(
+            controller: PdfController(
+              document: PdfDocument.openData(controller.documentByte.value!),
+            ),
+          ),
+        );
       }
 
-      return PdfView(controller: controller.pdfController.value!);
+      return Container(child: Image.memory(controller.documentByte.value!));
     });
   }
-
-  // @override
-  // Widget build(BuildContext context) {
-  //   PdfController? pdfController;
-  //   WidgetsBinding.instance.addPostFrameCallback(
-  //     (_) => controller.loadDocument()
-  //   );
-  //   pdfController = PdfController(
-  //     document: PdfDocument.openData(
-  //       Uint8List.fromList('${dotenv.env['API_URL']}$document'),
-  //     ),
-  //     // document: PdfDocument.openFile('${dotenv.env['API_URL']}$document'),
-  //     // document: PdfDocument.openAsset('assets/sample.pdf'),
-  //   );
-  //   if (document.contains(".pdf")) {
-  //     return PdfView(controller: pdfController);
-  //   }
-  //   return Container(
-  //     child: Image.network(
-  //       '${dotenv.env['API_URL']}$document',
-  //       fit: BoxFit.cover,
-  //     ),
-  //   );
-  // }
 }
-
-// class PdfViewerPage extends StatelessWidget {
-//   final String filePath;
-
-//   const PdfViewerPage({super.key, required this.filePath});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(title: const Text("PDF Viewer")),
-//       body: PDFView(
-//         filePath: filePath,
-//         enableSwipe: true,
-//         swipeHorizontal: false,
-//         autoSpacing: true,
-//         pageFling: true,
-//       ),
-//     );
-//   }
-// }

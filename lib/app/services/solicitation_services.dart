@@ -82,7 +82,10 @@ class SolicitationServices {
   }
 
   Future<Uint8List> getDocument(String path) async {
-    var response = await dio.get(path);
+    var response = await dio.get(
+      path,
+      options: Options(responseType: ResponseType.bytes),
+    );
     if (response.statusCode == 200) {
       return response.data;
     }
