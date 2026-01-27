@@ -21,7 +21,8 @@ class HomePage extends GetView<HomeController> {
       key: _scaffoldKey,
       appBar: AppBar(
         title: Logo(),
-        backgroundColor: Color.fromRGBO(255, 131, 33, 1.0),
+        // backgroundColor: Color.fromRGBO(255, 131, 33, 1.0),
+        backgroundColor: Color(0xFF0099FF),
         actions: [
           IconButton(
             onPressed: () => _scaffoldKey.currentState?.openEndDrawer(),
@@ -106,7 +107,7 @@ class HomePage extends GetView<HomeController> {
                   ),
                   style: ButtonStyle(
                     backgroundColor: WidgetStatePropertyAll<Color>(
-                      Color.fromRGBO(255, 131, 33, 1.0),
+                      Color(0xFF048FDF),
                     ),
                     shape: WidgetStatePropertyAll<RoundedRectangleBorder>(
                       RoundedRectangleBorder(
@@ -127,7 +128,7 @@ class HomePage extends GetView<HomeController> {
 
           Container(
             width: double.infinity,
-            color: Color.fromRGBO(255, 131, 33, 1.0),
+            color: Color(0xFF048FDF),
             child: Center(
               child: Column(
                 children: [
@@ -166,7 +167,7 @@ class HomePage extends GetView<HomeController> {
             child: Container(
               // height: 300,
               width: double.infinity,
-              color: Color.fromRGBO(255, 131, 33, 1.0),
+              color: Color(0xFF048FDF),
               child: Container(
                 padding: EdgeInsets.all(15),
                 margin: EdgeInsets.all(15),

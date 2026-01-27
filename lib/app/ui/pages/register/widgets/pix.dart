@@ -67,7 +67,7 @@ class PIX extends GetView<RegisterController> {
             onTap: controller.processPIXPayment,
             child: Container(
               padding: EdgeInsets.all(20),
-              color: Color.fromRGBO(255, 131, 33, 1.0),
+              color: Color(0xFF0099FF),
               child: Text(
                 'Gerar pagamento com pix',
                 style: TextStyle(color: Colors.white),

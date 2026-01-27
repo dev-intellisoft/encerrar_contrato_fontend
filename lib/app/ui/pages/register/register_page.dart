@@ -20,7 +20,8 @@ class RegisterPage extends GetView<RegisterController> {
     return Scaffold(
       appBar: AppBar(
         title: Logo(),
-        backgroundColor: Color.fromRGBO(255, 131, 33, 1.0),
+        backgroundColor: Color(0xFF0099FF),
+        // backgroundColor: Color.fromRGBO(255, 131, 33, 1.0),
       ),
       body: Center(
         child: Obx(() {
@@ -53,7 +54,7 @@ class RegisterPage extends GetView<RegisterController> {
                                               .value
                                               .paymentType ==
                                           'pix'
-                                      ? Color.fromRGBO(255, 131, 33, 1.0)
+                                      ? Color(0xFF0099FF)
                                       : Colors.grey,
                                 ),
                                 child: Center(
@@ -78,7 +79,7 @@ class RegisterPage extends GetView<RegisterController> {
                                               .value
                                               .paymentType ==
                                           'cc'
-                                      ? Color.fromRGBO(255, 131, 33, 1.0)
+                                      ? Color(0xFF0099FF)
                                       : Colors.grey,
                                   // color:  Color.fromRGBO(255, 131, 33, 1.0)
                                 ),
@@ -185,7 +186,6 @@ class RegisterPage extends GetView<RegisterController> {
 
           return Column(
             children: [
-              Text(controller.solicitation.value.service),
               SizedBox(height: 10),
               Center(
                 child: Row(
@@ -202,7 +202,7 @@ class RegisterPage extends GetView<RegisterController> {
                           decoration: BoxDecoration(
                             color:
                                 controller.solicitation.value.service == 'close'
-                                ? Color.fromRGBO(255, 131, 33, 1.0)
+                                ? Color(0xFF0099FF)
                                 : Colors.grey,
                           ),
                           child: Center(
@@ -226,7 +226,7 @@ class RegisterPage extends GetView<RegisterController> {
                             color:
                                 controller.solicitation.value.service ==
                                     'transfer'
-                                ? Color.fromRGBO(255, 131, 33, 1.0)
+                                ? Color(0xFF0099FF)
                                 : Colors.grey,
                           ),
                           child: Center(

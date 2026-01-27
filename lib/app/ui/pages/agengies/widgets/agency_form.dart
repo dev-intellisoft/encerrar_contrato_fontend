@@ -33,7 +33,7 @@ class AgencyForm extends GetView<AgencyController> {
             ),
           ],
         ),
-        backgroundColor: Color.fromRGBO(255, 131, 33, 1.0),
+        backgroundColor: Color(0xFF0099FF),
         actions: [
           IconButton(
             onPressed: () => _scaffoldKey.currentState?.openEndDrawer(),

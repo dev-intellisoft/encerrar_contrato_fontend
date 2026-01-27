@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:encerrar_contrato/app/widgets/home_logo.dart';
 import 'package:encerrar_contrato/app/controllers/login_controller.dart';
 
 class LoginPage extends GetView<LoginController> {
@@ -7,7 +8,9 @@ class LoginPage extends GetView<LoginController> {
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((_) => controller.checkSession());
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => controller.checkSession(),
+    );
     return Scaffold(
       body: Center(
         child: Stack(
@@ -17,13 +20,16 @@ class LoginPage extends GetView<LoginController> {
                 Expanded(
                   child: Container(
                     height: double.infinity,
-                    color: Color.fromRGBO(54, 186, 253, 1),
+                    color: Color(0xFF048FDF),
+                    // color: Color.fromRGBO(54, 186, 253, 1),
                   ),
                 ),
                 Expanded(
                   child: Container(
                     height: double.infinity,
-                    color: Color.fromRGBO(255, 146, 75, 1),
+                    //#048fdf
+                    color: Color(0xFF048FDF),
+                    // color: Color.fromRGBO(255, 146, 75, 1),
                   ),
                 ),
               ],
@@ -33,7 +39,7 @@ class LoginPage extends GetView<LoginController> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('Login Page'),
+                  HomeLogo(),
                   TextFormField(
                     onChanged: (text) => controller.user.value.email = text,
                     decoration: InputDecoration(
@@ -48,31 +54,37 @@ class LoginPage extends GetView<LoginController> {
                     ),
                   ),
                   SizedBox(height: 10),
-                  ObxValue((show) =>TextFormField(
-                    onChanged: (text) => controller.user.value.password = text,
-                    obscureText: !show.value,
-                    decoration: InputDecoration(
-                      suffixIcon: IconButton(
-                        icon: show.value ? Icon(Icons.visibility_off) : Icon(Icons.visibility),
-                        onPressed: () => show.value = !show.value,
+                  ObxValue(
+                    (show) => TextFormField(
+                      onChanged: (text) =>
+                          controller.user.value.password = text,
+                      obscureText: !show.value,
+                      decoration: InputDecoration(
+                        suffixIcon: IconButton(
+                          icon: show.value
+                              ? Icon(Icons.visibility_off)
+                              : Icon(Icons.visibility),
+                          onPressed: () => show.value = !show.value,
+                        ),
+                        labelText: 'Password',
+                        hintText: 'Digite sua senha',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        filled: true,
+                        fillColor: Colors.white,
+                        prefixIcon: Icon(Icons.password),
                       ),
-                      labelText: 'Password',
-                      hintText: 'Digite sua senha',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      filled: true,
-                      fillColor: Colors.white,
-                      prefixIcon: Icon(Icons.password),
                     ),
-                  ), false.obs),
+                    false.obs,
+                  ),
                   SizedBox(height: 10),
                   SizedBox(
                     width: double.infinity,
                     height: 45,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color.fromRGBO(255, 146, 75, 1),
+                        backgroundColor: Color(0xFF0099FF),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
                           side: BorderSide(color: Colors.black, width: 1),
@@ -83,7 +95,12 @@ class LoginPage extends GetView<LoginController> {
                       child: Text('Login'),
                     ),
                   ),
-                  GestureDetector(child: Text('Esqueceu sua senha?')),
+                  GestureDetector(
+                    child: Text(
+                      'Esqueceu sua senha?',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
                 ],
               ),
             ),

@@ -477,9 +477,7 @@ class TransferForm extends GetView<RegisterController> {
                             onPressed: agree.value ? controller.transfer : null,
                             style: ButtonStyle(
                               backgroundColor: WidgetStatePropertyAll<Color>(
-                                agree.value
-                                    ? Color.fromRGBO(255, 131, 33, 1.0)
-                                    : Colors.grey,
+                                agree.value ? Color(0xFF0099FF) : Colors.grey,
                               ),
                               shape:
                                   WidgetStatePropertyAll<
@@ -511,7 +509,7 @@ class TransferForm extends GetView<RegisterController> {
                 ),
                 style: ButtonStyle(
                   backgroundColor: WidgetStatePropertyAll<Color>(
-                    Color.fromRGBO(255, 131, 33, 1.0),
+                    Color(0xFF0099FF),
                   ),
                   shape: WidgetStatePropertyAll<RoundedRectangleBorder>(
                     RoundedRectangleBorder(
