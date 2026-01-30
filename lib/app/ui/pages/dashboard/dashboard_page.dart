@@ -109,7 +109,9 @@ class DashboardPage extends GetView<DashboardController> {
                                 Text(controller.solicitation.value!.service!),
 
                                 if (controller.solicitation.value!.service ==
-                                    'transfer')
+                                        'transfer' ||
+                                    controller.solicitation.value!.service ==
+                                        'tranfer')
                                   Document(),
 
                                 for (var service

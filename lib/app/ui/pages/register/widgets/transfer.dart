@@ -192,9 +192,9 @@ class TransferForm extends GetView<RegisterController> {
                               text:
                                   controller.solicitation.value.address?.street,
                             ),
-                            onChanged: (text) => controller.solicitation.update(
-                              (s) => s!.address!.street = text,
-                            ),
+                            onChanged: (text) =>
+                                controller.solicitation.value.address!.street =
+                                    text,
                             decoration: InputDecoration(
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(25),
@@ -211,13 +211,11 @@ class TransferForm extends GetView<RegisterController> {
                         SizedBox(
                           width: 150,
                           child: TextFormField(
-                            controller: TextEditingController(
-                              text:
-                                  controller.solicitation.value.address?.number,
-                            ),
-                            onChanged: (text) => controller.solicitation.update(
-                              (s) => s!.address!.number = text,
-                            ),
+                            initialValue:
+                                controller.solicitation.value.address?.number,
+                            onChanged: (text) =>
+                                controller.solicitation.value.address!.number =
+                                    text,
                             decoration: InputDecoration(
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(25),
@@ -240,6 +238,9 @@ class TransferForm extends GetView<RegisterController> {
                         text:
                             controller.solicitation.value.address?.neighborhood,
                       ),
+                      onChanged: (text) =>
+                          controller.solicitation.value.address!.neighborhood =
+                              text,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(25),

@@ -9,6 +9,7 @@ class Agency {
   String? password;
   Uint8List? fileBytes; // <—
   String? fileName; // <—
+  String? agency;
 
   Agency({
     this.id,
@@ -18,6 +19,7 @@ class Agency {
     this.password,
     this.fileBytes,
     this.fileName,
+    this.agency,
   });
 
   factory Agency.fromJson(Map<String, dynamic> json) => Agency(
@@ -28,6 +30,7 @@ class Agency {
     password: json['password'],
     fileBytes: json['fileBytes'],
     fileName: json['fileName'],
+    agency: json['agency'],
   );
 
   Map<String, dynamic> toJson() => {
@@ -38,5 +41,6 @@ class Agency {
     'password': password,
     'fileBytes': fileBytes,
     'fileName': fileName,
+    'agency': agency,
   };
 }
