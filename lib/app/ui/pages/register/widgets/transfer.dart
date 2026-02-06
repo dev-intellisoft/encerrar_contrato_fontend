@@ -5,6 +5,19 @@ import 'package:get/get.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import '../../../../widgets/agency_logo.dart';
 
+Future<void> _selectDate(BuildContext context) async {
+  final DateTime? picked = await showDatePicker(
+    context: context,
+    initialDate: DateTime.now(),
+    firstDate: DateTime(2000),
+    lastDate: DateTime(2100),
+  );
+
+  if (picked != null) {
+    print("Selected date: $picked");
+  }
+}
+
 class TransferForm extends GetView<RegisterController> {
   @override
   Widget build(BuildContext context) {
@@ -365,7 +378,6 @@ class TransferForm extends GetView<RegisterController> {
                   Container(
                     margin: EdgeInsets.symmetric(vertical: 5),
                     child: TextFormField(
-                      controller: TextEditingController(),
                       decoration: InputDecoration(label: Text("Telefone")),
                     ),
                   ),

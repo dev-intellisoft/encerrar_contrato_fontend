@@ -119,6 +119,9 @@ class RegisterController extends GetxController {
         'creditCard': creditCard.toJson(),
       };
 
+      print(data);
+      print(solicitation.value.id);
+
       creditCardPaymentResponse.value = await paymentService
           .processCreditCardPayment(
             data: data,
@@ -151,12 +154,10 @@ class RegisterController extends GetxController {
     Get.back();
     try {
       isLoading.value = true;
-      var response = await registrationService.transfer(
+      solicitation.value = await registrationService.transfer(
         documents: documents.value,
         soliciation: solicitation.value,
       );
-      print("response => ");
-      print(response);
       Get.snackbar('Success', 'Transferência realizada com sucesso');
     } catch (e) {
       print(e);

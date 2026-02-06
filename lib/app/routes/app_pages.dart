@@ -26,7 +26,7 @@ class AppPages {
   static final routes = [
     GetPage(
       name: Routes.LOGIN,
-      page: () => const LoginPage(),
+      page: () => LoginPage(),
       binding: LoginBinding(),
       transition: Transition.noTransition,
     ),

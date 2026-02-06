@@ -17,12 +17,9 @@ class RegisterPage extends GetView<RegisterController> {
   Widget build(BuildContext context) {
     controller.solicitation.value.agencyId = agencyId;
     controller.getAgencyLogo(agencyId);
+
     return Scaffold(
-      appBar: AppBar(
-        title: Logo(),
-        backgroundColor: Color(0xFF0099FF),
-        // backgroundColor: Color.fromRGBO(255, 131, 33, 1.0),
-      ),
+      appBar: AppBar(title: Logo(), backgroundColor: Color(0xFF0099FF)),
       body: Center(
         child: Obx(() {
           if (controller.isLoading.value) return Spinner();
@@ -187,60 +184,9 @@ class RegisterPage extends GetView<RegisterController> {
           return Column(
             children: [
               SizedBox(height: 10),
-              Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () => controller.solicitation.update(
-                          (s) => s!.service = 'close',
-                        ),
-                        child: Container(
-                          padding: EdgeInsets.all(10),
-                          margin: EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                            color:
-                                controller.solicitation.value.service == 'close'
-                                ? Color(0xFF0099FF)
-                                : Colors.grey,
-                          ),
-                          child: Center(
-                            child: Text(
-                              'Encerrar Contrato',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () => controller.solicitation.update(
-                          (s) => s!.service = 'transfer',
-                        ),
-                        child: Container(
-                          margin: EdgeInsets.all(5),
-                          padding: EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color:
-                                controller.solicitation.value.service ==
-                                    'transfer'
-                                ? Color(0xFF0099FF)
-                                : Colors.grey,
-                          ),
-                          child: Center(
-                            child: Text(
-                              'Transferir Contrato',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              //type of registration switch
+              switchTypeOfRegistration(controller),
+
               if (controller.solicitation.value.service == "close") CloseForm(),
               if (controller.solicitation.value.service == "transfer")
                 TransferForm(),
@@ -250,4 +196,56 @@ class RegisterPage extends GetView<RegisterController> {
       ),
     );
   }
+}
+
+Widget switchTypeOfRegistration(var controller) {
+  return Center(
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Expanded(
+          child: GestureDetector(
+            onTap: () =>
+                controller.solicitation.update((s) => s!.service = 'close'),
+            child: Container(
+              padding: EdgeInsets.all(10),
+              margin: EdgeInsets.all(5),
+              decoration: BoxDecoration(
+                color: controller.solicitation.value.service == 'close'
+                    ? Color(0xFF0099FF)
+                    : Colors.grey,
+              ),
+              child: Center(
+                child: Text(
+                  'Encerrar Contrato',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ),
+          ),
+        ),
+        Expanded(
+          child: GestureDetector(
+            onTap: () =>
+                controller.solicitation.update((s) => s!.service = 'transfer'),
+            child: Container(
+              margin: EdgeInsets.all(5),
+              padding: EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: controller.solicitation.value.service == 'transfer'
+                    ? Color(0xFF0099FF)
+                    : Colors.grey,
+              ),
+              child: Center(
+                child: Text(
+                  'Transferir Contrato',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
 }
