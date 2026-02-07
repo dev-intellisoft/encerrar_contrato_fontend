@@ -376,9 +376,9 @@ class RegisterPage extends GetView<RegisterController> {
                                 // if (controller.solicitation.value.service ==
                                 //     "close") 
                                 //   CloseForm(),
-                                if (controller.solicitation.value.service ==
-                                    "transfer")
-                                  TransferForm(),  
+                                // if (controller.solicitation.value.service ==
+                                //     "transfer")
+                                //   TransferForm(),  
 
                                 const SizedBox(height: 12),
                                 Text(
