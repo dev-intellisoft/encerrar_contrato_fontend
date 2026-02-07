@@ -12,7 +12,8 @@ class CloseForm extends GetView<RegisterController> {
       (_) => controller.getServices("close"),
     );
     return Obx(
-      () => Expanded(
+      () => SizedBox(
+        height: 400,
         child: Container(
           margin: EdgeInsets.all(10),
           child: ListView(

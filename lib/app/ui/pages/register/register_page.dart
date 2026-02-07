@@ -33,18 +33,17 @@ class RegisterPage extends GetView<RegisterController> {
     final w = MediaQuery.of(context).size.width;
     final maxW = (w * 0.40).clamp(360.0, 720.0);
 
-    InputDecoration inputDec({
-      required String hint,
-      required IconData icon,
-    }) {
+    InputDecoration inputDec({required String hint, required IconData icon}) {
       return InputDecoration(
         hintText: hint,
         hintStyle: TextStyle(color: Colors.white.withOpacity(.55)),
         prefixIcon: Icon(icon, color: claro),
         filled: true,
         fillColor: Colors.white.withOpacity(.06),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 14,
+          vertical: 14,
+        ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide(color: Colors.white.withOpacity(.12)),
@@ -81,10 +80,7 @@ class RegisterPage extends GetView<RegisterController> {
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: Container(
-                height: 1,
-                color: Colors.white.withOpacity(.12),
-              ),
+              child: Container(height: 1, color: Colors.white.withOpacity(.12)),
             ),
           ],
         ),
@@ -140,10 +136,7 @@ class RegisterPage extends GetView<RegisterController> {
     }
 
     // ✅ Card “status” premium
-    Widget statusCard({
-      required String code,
-      required bool paidConfirmed,
-    }) {
+    Widget statusCard({required String code, required bool paidConfirmed}) {
       final ok = paidConfirmed;
       final Color accent = ok ? Colors.green : Colors.amber;
 
@@ -180,11 +173,7 @@ class RegisterPage extends GetView<RegisterController> {
             const SizedBox(height: 10),
             Row(
               children: [
-                Icon(
-                  Icons.check_circle_rounded,
-                  color: Colors.green,
-                  size: 28,
-                ),
+                Icon(Icons.check_circle_rounded, color: Colors.green, size: 28),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
@@ -276,7 +265,9 @@ class RegisterPage extends GetView<RegisterController> {
 
                   return SingleChildScrollView(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 18, vertical: 14),
+                      horizontal: 18,
+                      vertical: 14,
+                    ),
                     child: ConstrainedBox(
                       constraints: BoxConstraints(maxWidth: maxW),
                       child: Column(
@@ -288,61 +279,71 @@ class RegisterPage extends GetView<RegisterController> {
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-      //                           sectionHeader("Pagamento"),
+                                sectionHeader("Pagamento"),
 
-      //                           // Switch pix / cc só se não confirmado (mantive tua regra)
-      //                           if (controller
-      //                                   .creditCardPaymentResponse.value.status !=
-      //                               'CONFIRMED')
-      //                             premiumSwitch(
-      //                               leftText: "Pagar com PIX",
-      //                               rightText: "Cartão de crédito",
-      //                               leftActive: controller.solicitation.value
-      //                                       .paymentType ==
-      //                                   'pix',
-      //                               leftIcon: Icons.qr_code_rounded,
-      //                               rightIcon: Icons.credit_card_rounded,
-      //                               onLeft: () => controller.solicitation.update(
-      //                                 (s) => s!.paymentType = 'pix',
-      //                               ),
-      //                               onRight: controller.setPaymentTypeToCreditCard,
-      //                             ),
+                                // Switch pix / cc só se não confirmado (mantive tua regra)
+                                if (controller
+                                        .creditCardPaymentResponse
+                                        .value
+                                        .status !=
+                                    'CONFIRMED')
+                                  premiumSwitch(
+                                    leftText: "Pagar com PIX",
+                                    rightText: "Cartão de crédito",
+                                    leftActive:
+                                        controller
+                                            .solicitation
+                                            .value
+                                            .paymentType ==
+                                        'pix',
+                                    leftIcon: Icons.qr_code_rounded,
+                                    rightIcon: Icons.credit_card_rounded,
+                                    onLeft: () => controller.solicitation
+                                        .update((s) => s!.paymentType = 'pix'),
+                                    onRight:
+                                        controller.setPaymentTypeToCreditCard,
+                                  ),
 
-      //                           const SizedBox(height: 14),
+                                const SizedBox(height: 14),
 
-      //                           statusCard(
-      //                             code: "${controller.solicitation.value.id}",
-      //                             paidConfirmed: controller
-      //                                     .creditCardPaymentResponse.value.status ==
-      //                                 'CONFIRMED',
-      //                           ),
+                                statusCard(
+                                  code: "${controller.solicitation.value.id}",
+                                  paidConfirmed:
+                                      controller
+                                          .creditCardPaymentResponse
+                                          .value
+                                          .status ==
+                                      'CONFIRMED',
+                                ),
 
-      //                           const SizedBox(height: 16),
+                                const SizedBox(height: 16),
 
-      //                           // Conteúdo pagamento
-      //                           if (controller.solicitation.value.paymentType ==
-      //                               "pix")
-      //                             PIX(),
+                                // Conteúdo pagamento
+                                if (controller.solicitation.value.paymentType ==
+                                    "pix")
+                                  PIX(),
 
-      //                           if (controller.solicitation.value.paymentType ==
-      //                               "cc")
-      //                             if (controller.creditCardPaymentResponse.value
-      //                                     .status ==
-      //                                 'CONFIRMED')
-      //                               Success()
-      //                             else
-      //                               CreditCard(),
+                                if (controller.solicitation.value.paymentType ==
+                                    "cc")
+                                  if (controller
+                                          .creditCardPaymentResponse
+                                          .value
+                                          .status ==
+                                      'CONFIRMED')
+                                    Success()
+                                  else
+                                    CreditCard(),
 
-      //                           const SizedBox(height: 12),
-      //                           Text(
-      //                             "Encerrar Contrato • Registro",
-      //                             textAlign: TextAlign.center,
-      //                             style: TextStyle(
-      //                               color: Colors.white.withOpacity(.35),
-      //                               fontSize: 12,
-      //                               fontWeight: FontWeight.w600,
-      //                             ),
-      //                           ),
+                                const SizedBox(height: 12),
+                                Text(
+                                  "Encerrar Contrato • Registro",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: Colors.white.withOpacity(.35),
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
                               ],
                             )
                           else
@@ -358,28 +359,31 @@ class RegisterPage extends GetView<RegisterController> {
                                   rightText: "Transferir Contrato",
                                   leftActive:
                                       controller.solicitation.value.service ==
-                                          'close',
+                                      'close',
                                   leftIcon: Icons.lock_outline_rounded,
-                                  rightIcon:
-                                      Icons.swap_horiz_rounded,
-                                  onLeft: () => controller.solicitation
-                                      .update((s) => s!.service = 'close'),
-                                  onRight: () => controller.solicitation
-                                      .update((s) => s!.service = 'transfer'),
+                                  rightIcon: Icons.swap_horiz_rounded,
+                                  onLeft: () => controller.solicitation.update(
+                                    (s) => s!.service = 'close',
+                                  ),
+                                  onRight: () => controller.solicitation.update(
+                                    (s) => s!.service = 'transfer',
+                                  ),
                                 ),
 
                                 const SizedBox(height: 14),
 
-                                Text('${controller.solicitation.value.service} selected', style: const TextStyle(color: Colors.white)), 
+                                Text(
+                                  '${controller.solicitation.value.service} selected',
+                                  style: const TextStyle(color: Colors.white),
+                                ),
 
                                 // Forms (mantidos)
-                                // if (controller.solicitation.value.service ==
-                                //     "close") 
-                                //   CloseForm(),
+                                if (controller.solicitation.value.service ==
+                                    "close")
+                                  CloseForm(),
                                 if (controller.solicitation.value.service ==
                                     "transfer")
-                                  TransferForm(),  
-
+                                  TransferForm(),
                                 const SizedBox(height: 12),
                                 Text(
                                   "Encerrar Contrato • Registro",
@@ -437,16 +441,18 @@ class _SegmentButtonState extends State<_SegmentButton> {
     final Color bg = widget.active
         ? primario
         : _down
-            ? Colors.white.withOpacity(.10)
-            : _hover
-                ? Colors.white.withOpacity(.08)
-                : Colors.white.withOpacity(.06);
+        ? Colors.white.withOpacity(.10)
+        : _hover
+        ? Colors.white.withOpacity(.08)
+        : Colors.white.withOpacity(.06);
 
     final Color border = widget.active
         ? primario.withOpacity(.75)
         : Colors.white.withOpacity(.10);
 
-    final Color txt = widget.active ? Colors.white : Colors.white.withOpacity(.85);
+    final Color txt = widget.active
+        ? Colors.white
+        : Colors.white.withOpacity(.85);
 
     return MouseRegion(
       onEnter: (_) => setState(() => _hover = true),

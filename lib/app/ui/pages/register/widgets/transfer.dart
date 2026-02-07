@@ -25,7 +25,8 @@ class TransferForm extends GetView<RegisterController> {
       controller.getServices('transfer');
     });
     return Obx(
-      () => Expanded(
+      () => SizedBox(
+        height: 400,
         child: Container(
           margin: EdgeInsets.all(10),
           child: ListView(
