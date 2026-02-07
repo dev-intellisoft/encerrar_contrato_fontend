@@ -1,5 +1,5 @@
 import 'package:encerrar_contrato/app/widgets/logo.dart';
-import 'package:encerrar_contrato/app/widgets/search_icon.dart';
+// import 'package:encerrar_contrato/app/widgets/search_icon.dart'; // ❌ removido
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:encerrar_contrato/app/controllers/home_controller.dart';
@@ -56,6 +56,33 @@ class HomePage extends GetView<HomeController> {
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide(color: primario.withOpacity(.75), width: 1.4),
+        ),
+      );
+    }
+
+    // ✅ Wrapper para que los tiles queden redondos y con el color patrón
+    Widget _caseCard({required Widget child}) {
+      return Container(
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(.04),
+          borderRadius: BorderRadius.circular(18), // 👈 bordes bien curvos
+          border: Border.all(color: Colors.white.withOpacity(.10)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(.30),
+              blurRadius: 14,
+              offset: const Offset(0, 10),
+            ),
+            BoxShadow(
+              color: primario.withOpacity(.08),
+              blurRadius: 18,
+              offset: const Offset(0, 10),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(18),
+          child: child,
         ),
       );
     }
@@ -329,7 +356,8 @@ class HomePage extends GetView<HomeController> {
                                   label: 'Procurar',
                                   hint: 'Nome do cliente',
                                   icon: Icons.search,
-                                  prefixIcon: SearchIcon(),
+                                  // ✅ sin SearchIcon (rompía layout)
+                                  prefixIcon: Icon(Icons.search_rounded, color: claro),
                                 ),
                               ),
                             ],
@@ -387,87 +415,93 @@ class HomePage extends GetView<HomeController> {
                                                     ),
                                               )
                                               .map(
-                                                (s) => SolicitationTile(
-                                                  solicitation: s,
-                                                  onTap: (solicitation) {
-                                                    Get.dialog(
-                                                      AlertDialog(
-                                                        backgroundColor: bg2,
-                                                        shape: RoundedRectangleBorder(
-                                                          borderRadius: BorderRadius.circular(18),
-                                                        ),
-                                                        title: const Text(
-                                                          'Detalhes do contrato',
-                                                          style: TextStyle(
-                                                            color: ink,
-                                                            fontWeight: FontWeight.w900,
+                                                (s) => Padding(
+                                                  padding: const EdgeInsets.only(bottom: 10),
+                                                  child: _caseCard(
+                                                    // ✅ card redondo + color patrón, sin puntas
+                                                    child: SolicitationTile(
+                                                      solicitation: s,
+                                                      onTap: (solicitation) {
+                                                        Get.dialog(
+                                                          AlertDialog(
+                                                            backgroundColor: bg2,
+                                                            shape: RoundedRectangleBorder(
+                                                              borderRadius: BorderRadius.circular(18),
+                                                            ),
+                                                            title: const Text(
+                                                              'Detalhes do contrato',
+                                                              style: TextStyle(
+                                                                color: ink,
+                                                                fontWeight: FontWeight.w900,
+                                                              ),
+                                                            ),
+                                                            content: SizedBox(
+                                                              height: 320,
+                                                              child: Column(
+                                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                                children: [
+                                                                  Text(
+                                                                    '${solicitation.customer!.name}',
+                                                                    style: const TextStyle(
+                                                                      color: ink,
+                                                                      fontWeight: FontWeight.w900,
+                                                                    ),
+                                                                  ),
+                                                                  const SizedBox(height: 6),
+                                                                  Text(
+                                                                    '${solicitation.customer!.email}',
+                                                                    style: TextStyle(color: muted),
+                                                                  ),
+                                                                  Text(
+                                                                    '${solicitation.customer!.phone}',
+                                                                    style: TextStyle(color: muted),
+                                                                  ),
+                                                                  Text(
+                                                                    '${solicitation.customer!.cpf}',
+                                                                    style: TextStyle(color: muted),
+                                                                  ),
+                                                                  const SizedBox(height: 10),
+                                                                  Text(
+                                                                    '${solicitation.address!.street}, ${solicitation.address!.number} ${solicitation.address!.complement}',
+                                                                    style: TextStyle(color: muted),
+                                                                  ),
+                                                                  Text(
+                                                                    '${solicitation.address!.neighborhood}, ${solicitation.address!.city}, ${solicitation.address!.state}',
+                                                                    style: TextStyle(color: muted),
+                                                                  ),
+                                                                  const SizedBox(height: 12),
+                                                                  if (solicitation.status == SolicitationStatus.done)
+                                                                    Row(
+                                                                      children: [
+                                                                        Text('Encerrado', style: TextStyle(color: muted)),
+                                                                        const SizedBox(width: 6),
+                                                                        Done(),
+                                                                      ],
+                                                                    )
+                                                                  else if (solicitation.status == SolicitationStatus.processing)
+                                                                    Row(
+                                                                      children: [
+                                                                        Text('Em andamento', style: TextStyle(color: muted)),
+                                                                        const SizedBox(width: 6),
+                                                                        Processing(),
+                                                                      ],
+                                                                    )
+                                                                  else
+                                                                    Row(
+                                                                      children: [
+                                                                        Text('Pendente', style: TextStyle(color: muted)),
+                                                                        const SizedBox(width: 6),
+                                                                        Pending(),
+                                                                      ],
+                                                                    ),
+                                                                ],
+                                                              ),
+                                                            ),
                                                           ),
-                                                        ),
-                                                        content: SizedBox(
-                                                          height: 320,
-                                                          child: Column(
-                                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                                            children: [
-                                                              Text(
-                                                                '${solicitation.customer!.name}',
-                                                                style: const TextStyle(
-                                                                  color: ink,
-                                                                  fontWeight: FontWeight.w900,
-                                                                ),
-                                                              ),
-                                                              const SizedBox(height: 6),
-                                                              Text(
-                                                                '${solicitation.customer!.email}',
-                                                                style: TextStyle(color: muted),
-                                                              ),
-                                                              Text(
-                                                                '${solicitation.customer!.phone}',
-                                                                style: TextStyle(color: muted),
-                                                              ),
-                                                              Text(
-                                                                '${solicitation.customer!.cpf}',
-                                                                style: TextStyle(color: muted),
-                                                              ),
-                                                              const SizedBox(height: 10),
-                                                              Text(
-                                                                '${solicitation.address!.street}, ${solicitation.address!.number} ${solicitation.address!.complement}',
-                                                                style: TextStyle(color: muted),
-                                                              ),
-                                                              Text(
-                                                                '${solicitation.address!.neighborhood}, ${solicitation.address!.city}, ${solicitation.address!.state}',
-                                                                style: TextStyle(color: muted),
-                                                              ),
-                                                              const SizedBox(height: 12),
-                                                              if (solicitation.status == SolicitationStatus.done)
-                                                                Row(
-                                                                  children: [
-                                                                    Text('Encerrado', style: TextStyle(color: muted)),
-                                                                    const SizedBox(width: 6),
-                                                                    Done(),
-                                                                  ],
-                                                                )
-                                                              else if (solicitation.status == SolicitationStatus.processing)
-                                                                Row(
-                                                                  children: [
-                                                                    Text('Em andamento', style: TextStyle(color: muted)),
-                                                                    const SizedBox(width: 6),
-                                                                    Processing(),
-                                                                  ],
-                                                                )
-                                                              else
-                                                                Row(
-                                                                  children: [
-                                                                    Text('Pendente', style: TextStyle(color: muted)),
-                                                                    const SizedBox(width: 6),
-                                                                    Pending(),
-                                                                  ],
-                                                                ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    );
-                                                  },
+                                                        );
+                                                      },
+                                                    ),
+                                                  ),
                                                 ),
                                               )
                                               .toList(),

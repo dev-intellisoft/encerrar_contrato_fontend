@@ -20,7 +20,6 @@ class DashboardController extends GetxController {
   void onInit() {
     super.onInit();
   }
-
   Future<void> loadPdf(String document) async {
     try {
       // pdfController.value = null;
@@ -36,19 +35,6 @@ class DashboardController extends GetxController {
       isLoading.value = false;
     }
   }
-
-  // Future<void> loadDocument() async {
-  //   loading.value = true;
-  //   final res = await http.get(
-  //     Uri.parse(
-  //       'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-  //     ),
-  //   );
-  //   if (res.statusCode == 200) {
-  //     documentBytes.add(res.bodyBytes);
-  //   }
-  //   loading.value = false;
-  // }
 
   Future<void> listDocuments() async {
     print("object");

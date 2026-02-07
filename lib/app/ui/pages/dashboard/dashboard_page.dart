@@ -1,4 +1,5 @@
-import 'package:encerrar_contrato/app/ui/pages/dashboard/widgets/document.dart';
+import 'package:encerrar_contrato/app/ui/pages/dashboard/widgets/document.dart'
+    as doc_widget;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -7,8 +8,6 @@ import '../../../models/solicitation_model.dart';
 import '../../../widgets/drawer.dart';
 import '../../../widgets/logo.dart';
 import 'widgets/solicitation_tile.dart';
-import 'widgets/address.dart';
-import 'widgets/customer.dart';
 
 class DashboardPage extends GetView<DashboardController> {
   const DashboardPage({super.key});
@@ -52,6 +51,122 @@ class DashboardPage extends GetView<DashboardController> {
       );
     }
 
+    // =========================
+    // UI helpers (labels afuera)
+    // =========================
+    Widget sectionHeader(String title) {
+      return Padding(
+        padding: const EdgeInsets.only(top: 14, bottom: 10),
+        child: Row(
+          children: [
+            Container(
+              width: 10,
+              height: 10,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: claro,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Text(
+              title.toUpperCase(),
+              style: TextStyle(
+                color: Colors.white.withOpacity(.92),
+                fontWeight: FontWeight.w900,
+                fontSize: 13,
+                letterSpacing: .9,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Container(
+                height: 1,
+                color: Colors.white.withOpacity(.12),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    Widget fieldLabel(String text) {
+      return Padding(
+        padding: const EdgeInsets.only(left: 2, bottom: 6),
+        child: Text(
+          text,
+          style: TextStyle(
+            color: Colors.white.withOpacity(.90),
+            fontWeight: FontWeight.w800,
+            fontSize: 12,
+            letterSpacing: .2,
+          ),
+        ),
+      );
+    }
+
+    InputDecoration cleanInputDec({
+      required String hint,
+      IconData? icon,
+    }) {
+      return InputDecoration(
+        hintText: hint,
+        hintStyle: TextStyle(color: Colors.white.withOpacity(.55)),
+        prefixIcon: icon == null ? null : Icon(icon, color: claro),
+        filled: true,
+        fillColor: Colors.white.withOpacity(.06),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: Colors.white.withOpacity(.12)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: primario.withOpacity(.75), width: 1.4),
+        ),
+      );
+    }
+
+    // Campo editable simple usando el controller actual (GetX)
+    Widget editableField({
+      required String label,
+      required String value,
+      required ValueChanged<String> onChanged,
+      required String hint,
+      IconData? icon,
+      TextInputType? keyboardType,
+    }) {
+      final ctrl = TextEditingController(text: value);
+      ctrl.selection = TextSelection.fromPosition(
+        TextPosition(offset: ctrl.text.length),
+      );
+
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            fieldLabel(label),
+            TextFormField(
+              controller: ctrl,
+              onChanged: onChanged,
+              keyboardType: keyboardType,
+              style: const TextStyle(
+                color: ink,
+                fontWeight: FontWeight.w700,
+                fontSize: 13,
+              ),
+              cursorColor: primario,
+              decoration: cleanInputDec(hint: hint, icon: icon),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // =========================
+    // LEFT LIST
+    // =========================
     Widget leftList() {
       return Container(
         decoration: BoxDecoration(
@@ -75,7 +190,7 @@ class DashboardPage extends GetView<DashboardController> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
+            const Text(
               'Casos para atender:',
               style: TextStyle(
                 color: ink,
@@ -87,7 +202,7 @@ class DashboardPage extends GetView<DashboardController> {
             Expanded(
               child: Obx(
                 () => controller.loading.isTrue
-                    ? Center(
+                    ? const Center(
                         child: CircularProgressIndicator(color: primario),
                       )
                     : controller.solicitations.isEmpty
@@ -121,6 +236,9 @@ class DashboardPage extends GetView<DashboardController> {
       );
     }
 
+    // =========================
+    // RIGHT DETAILS
+    // =========================
     Widget rightDetails() {
       return Container(
         decoration: BoxDecoration(
@@ -144,7 +262,7 @@ class DashboardPage extends GetView<DashboardController> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
+            const Text(
               'Caso a ser atendido',
               style: TextStyle(
                 color: ink,
@@ -155,121 +273,255 @@ class DashboardPage extends GetView<DashboardController> {
             ),
             const SizedBox(height: 10),
 
-            // ✅ Scroll dentro del panel de detalles
             Expanded(
               child: Scrollbar(
                 thumbVisibility: true,
                 child: SingleChildScrollView(
-                  child: Obx(
-                    () => controller.solicitation.value!.id != null &&
-                            controller.solicitation.value!.id! != ''
-                        ? Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Customer(),
-                              const SizedBox(height: 10),
+                  child: Obx(() {
+                    final s = controller.solicitation.value;
+                    final has = s?.id != null && s!.id!.isNotEmpty;
 
-                              Address(),
-                              const SizedBox(height: 10),
+                    if (!has) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 30),
+                        child: Center(
+                          child: Text(
+                            'Selecione uma solicitação para ver os detalhes',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: muted,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ),
+                      );
+                    }
 
-                              Text(
-                                controller.solicitation.value!.service ?? '',
-                                style: TextStyle(
-                                  color: muted,
-                                  fontWeight: FontWeight.w700,
-                                ),
+                    final customer = s.customer;
+                    final address = s.address;
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        // ===== Cliente =====
+                        sectionHeader("Cliente"),
+
+                        editableField(
+                          label: "Nome",
+                          value: customer?.name ?? "",
+                          hint: "Digite o nome",
+                          icon: Icons.person,
+                          onChanged: (v) {
+                            if (customer != null) customer.name = v;
+                          },
+                        ),
+
+                        editableField(
+                          label: "CPF/CNPJ",
+                          value: customer?.cpf ?? "",
+                          hint: "Digite o CPF/CNPJ",
+                          icon: Icons.badge_outlined,
+                          onChanged: (v) {
+                            if (customer != null) customer.cpf = v;
+                          },
+                        ),
+
+                        editableField(
+                          label: "E-mail",
+                          value: customer?.email ?? "",
+                          hint: "Digite o e-mail",
+                          icon: Icons.email,
+                          keyboardType: TextInputType.emailAddress,
+                          onChanged: (v) {
+                            if (customer != null) customer.email = v;
+                          },
+                        ),
+
+                        editableField(
+                          label: "Telefone",
+                          value: customer?.phone ?? "",
+                          hint: "Digite o telefone",
+                          icon: Icons.phone,
+                          keyboardType: TextInputType.phone,
+                          onChanged: (v) {
+                            if (customer != null) customer.phone = v;
+                          },
+                        ),
+
+                        const SizedBox(height: 6),
+
+                        // ===== Endereço =====
+                        sectionHeader("Endereço"),
+
+                        editableField(
+                          label: "Rua",
+                          value: address?.street ?? "",
+                          hint: "Digite a rua",
+                          icon: Icons.location_on_outlined,
+                          onChanged: (v) {
+                            if (address != null) address.street = v;
+                          },
+                        ),
+
+                        Row(
+                          children: [
+                            Expanded(
+                              flex: 3,
+                              child: editableField(
+                                label: "Bairro",
+                                value: address?.neighborhood ?? "",
+                                hint: "Digite o bairro",
+                                icon: Icons.map_outlined,
+                                onChanged: (v) {
+                                  if (address != null) address.neighborhood = v;
+                                },
                               ),
-
-                              const SizedBox(height: 10),
-
-                              if (controller.solicitation.value!.service ==
-                                      'transfer' ||
-                                  controller.solicitation.value!.service ==
-                                      'tranfer')
-                                Document(),
-
-                              const SizedBox(height: 8),
-
-                              for (var service
-                                  in controller.solicitation.value!.services!)
-                                Padding(
-                                  padding: const EdgeInsets.only(bottom: 6),
-                                  child: Text(
-                                    'Serviço: ${service.name!}',
-                                    style: TextStyle(
-                                      color: Colors.white.withOpacity(.80),
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                ),
-
-                              const SizedBox(height: 14),
-
-                              // ===== Botones con hover + pressed =====
-                              if (controller.solicitation.value!.status ==
-                                  SolicitationStatus.pending)
-                                _ActionButton(
-                                  label: 'Iniciar atendimento',
-                                  icon: Icons.play_arrow_rounded,
-                                  baseColor: primario,
-                                  onPressed: () =>
-                                      controller.startSolicitation(),
-                                )
-                              else if (controller.solicitation.value!.status ==
-                                  SolicitationStatus.processing)
-                                _ActionButton(
-                                  label: 'Concluir atendimento',
-                                  icon: Icons.check_circle_outline_rounded,
-                                  baseColor: Colors.green,
-                                  onPressed: () => controller.endSolicitation(),
-                                ),
-
-                              const SizedBox(height: 12),
-
-                              // Status
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 10,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(.06),
-                                  borderRadius: BorderRadius.circular(14),
-                                  border: Border.all(
-                                      color: Colors.white.withOpacity(.10)),
-                                ),
-                                child: Text(
-                                  controller.solicitation.value!.status ==
-                                          SolicitationStatus.done
-                                      ? 'Concluído'
-                                      : controller.solicitation.value!.status ==
-                                              SolicitationStatus.processing
-                                          ? 'Em andamento'
-                                          : 'Não iniciado',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: muted,
-                                    fontWeight: FontWeight.w800,
-                                  ),
-                                ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              flex: 2,
+                              child: editableField(
+                                label: "Número",
+                                value: (address?.number ?? "").toString(),
+                                hint: "Nº",
+                                icon: Icons.pin_outlined,
+                                //keyboardType: TextInputType.number,
+                                onChanged: (v) {
+                                  // mantém só visual (front)
+                                  if (address != null) {
+                                    // se number for int, tente parse
+                                    address.number = v;
+                                  }
+                                },
                               ),
-                            ],
-                          )
-                        : Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 30),
-                            child: Center(
+                            ),
+                          ],
+                        ),
+
+                        editableField(
+                          label: "Cidade",
+                          value: address?.city ?? "",
+                          hint: "Digite a cidade",
+                          icon: Icons.location_city_outlined,
+                          onChanged: (v) {
+                            if (address != null) address.city = v;
+                          },
+                        ),
+
+                        editableField(
+                          label: "CEP",
+                          value: (address?.zipCode ?? ""),
+                          hint: "Digite o CEP",
+                          icon: Icons.markunread_mailbox_outlined,
+                          keyboardType: TextInputType.number,
+                          onChanged: (v) {
+                            if (address != null) {
+                              // soporta ambos nombres
+                               address.zipCode = v;
+                            }
+                          },
+                        ),
+
+                        const SizedBox(height: 6),
+
+                        // ===== Serviços =====
+                        sectionHeader("Serviços"),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 12,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(.06),
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(.12),
+                            ),
+                          ),
+                          child: Text(
+                            (s.service?.trim().isNotEmpty ?? false)
+                                ? s.service!.trim()
+                                : "-",
+                            style: TextStyle(
+                              color: Colors.white.withOpacity(.85),
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 10),
+
+                        if (s.services != null)
+                          ...s.services!.map(
+                            (sv) => Padding(
+                              padding: const EdgeInsets.only(bottom: 6),
                               child: Text(
-                                'Selecione uma solicitação para ver os detalhes',
-                                textAlign: TextAlign.center,
+                                "• ${sv.name ?? "-"}",
                                 style: TextStyle(
-                                  color: muted,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w800,
+                                  color: Colors.white.withOpacity(.80),
+                                  fontWeight: FontWeight.w700,
                                 ),
                               ),
                             ),
                           ),
-                  ),
+
+                        const SizedBox(height: 10),
+
+                        // ===== Documentos =====
+                        if (s.service == 'transfer' || s.service == 'tranfer') ...[
+                          sectionHeader("Documentos"),
+                          doc_widget.Document(),
+                          const SizedBox(height: 10),
+                        ],
+
+                        // ===== Botones =====
+                        if (s.status == SolicitationStatus.pending)
+                          _ActionButton(
+                            label: 'Iniciar atendimento',
+                            icon: Icons.play_arrow_rounded,
+                            baseColor: primario,
+                            onPressed: () => controller.startSolicitation(),
+                          )
+                        else if (s.status == SolicitationStatus.processing)
+                          _ActionButton(
+                            label: 'Concluir atendimento',
+                            icon: Icons.check_circle_outline_rounded,
+                            baseColor: Colors.green,
+                            onPressed: () => controller.endSolicitation(),
+                          ),
+
+                        const SizedBox(height: 12),
+
+                        // Status
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 10,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(.06),
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(.10),
+                            ),
+                          ),
+                          child: Text(
+                            s.status == SolicitationStatus.done
+                                ? 'Concluído'
+                                : s.status == SolicitationStatus.processing
+                                    ? 'Em andamento'
+                                    : 'Não iniciado',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: muted,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  }),
                 ),
               ),
             ),
@@ -303,8 +555,10 @@ class DashboardPage extends GetView<DashboardController> {
         actions: [
           IconButton(
             onPressed: () => _scaffoldKey.currentState?.openEndDrawer(),
-            icon: Icon(Icons.person_3_rounded,
-                color: Colors.white.withOpacity(.9)),
+            icon: Icon(
+              Icons.person_3_rounded,
+              color: Colors.white.withOpacity(.9),
+            ),
           ),
         ],
       ),
@@ -317,7 +571,6 @@ class DashboardPage extends GetView<DashboardController> {
               maxWidth: isNarrow ? 560 : 1200,
             ),
             child: isNarrow
-                // ✅ Mobile/narrow: columna con scroll natural
                 ? Column(
                     children: [
                       Expanded(
@@ -336,7 +589,6 @@ class DashboardPage extends GetView<DashboardController> {
                       ),
                     ],
                   )
-                // ✅ Desktop/wide: row como ya tenías
                 : Row(
                     children: [
                       SizedBox(width: 500, child: leftList()),
