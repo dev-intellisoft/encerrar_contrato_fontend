@@ -84,18 +84,17 @@ class CloseForm extends GetView<RegisterController> {
     }
   }
 
-  InputDecoration _dec({
-    required String label,
-    String? hint,
-    IconData? icon,
-  }) {
+  InputDecoration _dec({required String label, String? hint, IconData? icon}) {
     return InputDecoration(
       labelText: label,
       hintText: hint,
       filled: true,
       fillColor: _bgField,
       prefixIcon: icon != null ? Icon(icon, color: _claro) : null,
-      labelStyle: TextStyle(color: _ink.withOpacity(.92), fontWeight: FontWeight.w700),
+      labelStyle: TextStyle(
+        color: _ink.withOpacity(.92),
+        fontWeight: FontWeight.w700,
+      ),
       hintStyle: TextStyle(color: _ink.withOpacity(.75)),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18),
@@ -107,7 +106,10 @@ class CloseForm extends GetView<RegisterController> {
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18),
-        borderSide: BorderSide(color: Colors.redAccent.withOpacity(.85), width: 1.3),
+        borderSide: BorderSide(
+          color: Colors.redAccent.withOpacity(.85),
+          width: 1.3,
+        ),
       ),
       focusedErrorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18),
@@ -117,10 +119,8 @@ class CloseForm extends GetView<RegisterController> {
     );
   }
 
-  TextStyle get _fieldText => const TextStyle(
-        color: _ink,
-        fontWeight: FontWeight.w600,
-      );
+  TextStyle get _fieldText =>
+      const TextStyle(color: _ink, fontWeight: FontWeight.w600);
 
   @override
   Widget build(BuildContext context) {
@@ -128,23 +128,23 @@ class CloseForm extends GetView<RegisterController> {
       (_) => controller.getServices("close"),
     );
 
-    // ✅ controllers locales (datepicker + phone confirm)
-    final birthCtrl = TextEditingController(
-      text: controller.solicitation.value.customer?.birthDate ?? '',
-    );
+    // // ✅ controllers locales (datepicker + phone confirm)
+    // final birthCtrl = TextEditingController(
+    //   text: controller.solicitation.value.customer?.birthDate ?? '',
+    // );
 
-    final phoneCtrl = TextEditingController(
-      text: controller.solicitation.value.customer?.phone ?? '',
-    );
+    // final phoneCtrl = TextEditingController(
+    //   text: controller.solicitation.value.customer?.phone ?? '',
+    // );
 
-    final confirmPhoneCtrl = TextEditingController(
-      text: controller.solicitation.value.customer?.phone ?? '',
-    );
+    // final confirmPhoneCtrl = TextEditingController(
+    //   text: controller.solicitation.value.customer?.phone ?? '',
+    // );
 
-    final phoneMask = MaskTextInputFormatter(
-      mask: '(##) #####-####',
-      filter: {"#": RegExp(r'[0-9]')},
-    );
+    // final phoneMask = MaskTextInputFormatter(
+    //   mask: '(##) #####-####',
+    //   filter: {"#": RegExp(r'[0-9]')},
+    // );
 
     return Obx(
       () => SizedBox(
@@ -157,7 +157,9 @@ class CloseForm extends GetView<RegisterController> {
             child: ListView(
               children: [
                 Row(
-                  children: [AgencyLogo(imagePath: controller.agencyLogo.value)],
+                  children: [
+                    AgencyLogo(imagePath: controller.agencyLogo.value),
+                  ],
                 ),
                 const SizedBox(height: 20),
 
@@ -182,7 +184,8 @@ class CloseForm extends GetView<RegisterController> {
                     icon: Icons.person_outline_rounded,
                   ),
                   validator: (v) {
-                    if ((v ?? '').trim().isEmpty) return 'Informe seu nome completo';
+                    if ((v ?? '').trim().isEmpty)
+                      return 'Informe seu nome completo';
                     return null;
                   },
                 ),
@@ -219,24 +222,27 @@ class CloseForm extends GetView<RegisterController> {
                       child: TextFormField(
                         style: _fieldText,
                         cursorColor: _ink,
-                        controller: birthCtrl,
+                        // controller: birthCtrl,
                         readOnly: true,
-                        onTap: () => _pickBirthDate(context, birthCtrl),
+                        // onTap: () => _pickBirthDate(context, birthCtrl),
                         decoration: _dec(
                           label: 'Data de nascimento',
                           hint: 'Selecione no calendário',
                           icon: Icons.cake_outlined,
                         ),
                         validator: (v) {
-                          if ((v ?? '').trim().isEmpty) return 'Selecione a data';
+                          if ((v ?? '').trim().isEmpty)
+                            return 'Selecione a data';
                           final parts = v!.split('/');
                           if (parts.length != 3) return 'Data inválida';
                           final dd = int.tryParse(parts[0]);
                           final mm = int.tryParse(parts[1]);
                           final yy = int.tryParse(parts[2]);
-                          if (dd == null || mm == null || yy == null) return 'Data inválida';
+                          if (dd == null || mm == null || yy == null)
+                            return 'Data inválida';
                           final d = DateTime(yy, mm, dd);
-                          if (d.year != yy || d.month != mm || d.day != dd) return 'Data inválida';
+                          if (d.year != yy || d.month != mm || d.day != dd)
+                            return 'Data inválida';
                           return null;
                         },
                       ),
@@ -257,7 +263,8 @@ class CloseForm extends GetView<RegisterController> {
                           ),
                         ],
                         onChanged: (text) =>
-                            controller.solicitation.value.customer!.email = text,
+                            controller.solicitation.value.customer!.email =
+                                text,
                         decoration: _dec(
                           label: 'Email',
                           icon: Icons.email_outlined,
@@ -265,7 +272,8 @@ class CloseForm extends GetView<RegisterController> {
                         validator: (v) {
                           final s = (v ?? '').trim();
                           if (s.isEmpty) return 'Informe o email';
-                          if (!s.contains('@') || !s.contains('.')) return 'Email inválido';
+                          if (!s.contains('@') || !s.contains('.'))
+                            return 'Email inválido';
                           return null;
                         },
                       ),
@@ -277,10 +285,11 @@ class CloseForm extends GetView<RegisterController> {
                       child: TextFormField(
                         style: _fieldText,
                         cursorColor: _ink,
-                        controller: phoneCtrl,
-                        inputFormatters: [phoneMask],
+                        // controller: phoneCtrl,
+                        // inputFormatters: [phoneMask],
                         onChanged: (text) =>
-                            controller.solicitation.value.customer!.phone = text,
+                            controller.solicitation.value.customer!.phone =
+                                text,
                         decoration: _dec(
                           label: 'Telefone (WhatsApp)',
                           icon: Icons.phone_iphone_outlined,
@@ -302,7 +311,7 @@ class CloseForm extends GetView<RegisterController> {
                 TextFormField(
                   style: _fieldText,
                   cursorColor: _ink,
-                  controller: confirmPhoneCtrl,
+                  // controller: confirmPhoneCtrl,
                   inputFormatters: [
                     MaskTextInputFormatter(
                       mask: '(##) #####-####',
@@ -314,13 +323,13 @@ class CloseForm extends GetView<RegisterController> {
                     hint: 'Digite o mesmo número novamente',
                     icon: Icons.verified_outlined,
                   ),
-                  validator: (v) {
-                    final a = _digitsOnly(phoneCtrl.text);
-                    final b = _digitsOnly(v ?? '');
-                    if (b.isEmpty) return 'Confirme o telefone';
-                    if (a != b) return 'Os telefones não coincidem';
-                    return null;
-                  },
+                  // validator: (v) {
+                  //   final a = _digitsOnly(phoneCtrl.text);
+                  //   final b = _digitsOnly(v ?? '');
+                  //   if (b.isEmpty) return 'Confirme o telefone';
+                  //   if (a != b) return 'Os telefones não coincidem';
+                  //   return null;
+                  // },
                 ),
 
                 const SizedBox(height: 20),
@@ -391,10 +400,7 @@ class CloseForm extends GetView<RegisterController> {
                   controller: TextEditingController(
                     text: controller.solicitation.value.address?.neighborhood,
                   ),
-                  decoration: _dec(
-                    label: 'Bairro',
-                    icon: Icons.map_outlined,
-                  ),
+                  decoration: _dec(label: 'Bairro', icon: Icons.map_outlined),
                 ),
 
                 const SizedBox(height: 10),
@@ -470,8 +476,9 @@ class CloseForm extends GetView<RegisterController> {
                                   value: controller.services[index].selected,
                                   activeColor: _primario,
                                   checkColor: Colors.white,
-                                  onChanged: (value) => controller.services[index] =
-                                      service.copyWith(selected: value!),
+                                  onChanged: (value) =>
+                                      controller.services[index] = service
+                                          .copyWith(selected: value!),
                                 ),
                               ),
                               Expanded(
@@ -513,11 +520,17 @@ class CloseForm extends GetView<RegisterController> {
                     children: [
                       Text(
                         'Total:',
-                        style: TextStyle(color: _ink.withOpacity(.90), fontWeight: FontWeight.w800),
+                        style: TextStyle(
+                          color: _ink.withOpacity(.90),
+                          fontWeight: FontWeight.w800,
+                        ),
                       ),
                       Text(
                         "R\$ ${_priceTotal().toString()}",
-                        style: const TextStyle(color: _ink, fontWeight: FontWeight.w900),
+                        style: const TextStyle(
+                          color: _ink,
+                          fontWeight: FontWeight.w900,
+                        ),
                       ),
                     ],
                   ),
@@ -530,7 +543,10 @@ class CloseForm extends GetView<RegisterController> {
                       title: Text(
                         'Termo de Consentimento.',
                         textAlign: TextAlign.center,
-                        style: TextStyle(color: _ink.withOpacity(.95), fontWeight: FontWeight.w900),
+                        style: TextStyle(
+                          color: _ink.withOpacity(.95),
+                          fontWeight: FontWeight.w900,
+                        ),
                       ),
                       content: ObxValue(
                         (agree) => Column(
@@ -546,36 +562,49 @@ class CloseForm extends GetView<RegisterController> {
                               children: [
                                 Theme(
                                   data: Theme.of(context).copyWith(
-                                    unselectedWidgetColor: _ink.withOpacity(.70),
+                                    unselectedWidgetColor: _ink.withOpacity(
+                                      .70,
+                                    ),
                                   ),
                                   child: Checkbox(
                                     value: agree.value,
                                     activeColor: _primario,
                                     checkColor: Colors.white,
-                                    onChanged: (value) => agree.value = !agree.value,
+                                    onChanged: (value) =>
+                                        agree.value = !agree.value,
                                   ),
                                 ),
                                 Expanded(
                                   child: Text(
                                     'Li e aceito.',
-                                    style: TextStyle(color: _ink.withOpacity(.92), fontWeight: FontWeight.w700),
+                                    style: TextStyle(
+                                      color: _ink.withOpacity(.92),
+                                      fontWeight: FontWeight.w700,
+                                    ),
                                   ),
                                 ),
                               ],
                             ),
                             const SizedBox(height: 6),
-                            Text('Clique para assinar.', style: TextStyle(color: _ink.withOpacity(.85))),
+                            Text(
+                              'Clique para assinar.',
+                              style: TextStyle(color: _ink.withOpacity(.85)),
+                            ),
                             const SizedBox(height: 10),
                             ElevatedButton(
                               onPressed: agree.value
                                   ? () {
-                                      final ok = _formKey.currentState?.validate() ?? false;
+                                      final ok =
+                                          _formKey.currentState?.validate() ??
+                                          false;
                                       if (!ok) {
                                         Get.snackbar(
                                           'Atenção',
                                           'Verifique os campos (data e telefone).',
                                           snackPosition: SnackPosition.BOTTOM,
-                                          backgroundColor: const Color(0xFF0B0B12),
+                                          backgroundColor: const Color(
+                                            0xFF0B0B12,
+                                          ),
                                           colorText: Colors.white,
                                         );
                                         return;
@@ -585,20 +614,39 @@ class CloseForm extends GetView<RegisterController> {
                                   : null,
                               style: ButtonStyle(
                                 backgroundColor: WidgetStatePropertyAll<Color>(
-                                  agree.value ? const Color(0xFF0099FF) : Colors.grey,
+                                  agree.value
+                                      ? const Color(0xFF0099FF)
+                                      : Colors.grey,
                                 ),
-                                shape: WidgetStatePropertyAll<RoundedRectangleBorder>(
-                                  RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20),
-                                    side: BorderSide(color: Colors.white.withOpacity(.14), width: 1),
-                                  ),
-                                ),
-                                padding: const WidgetStatePropertyAll<EdgeInsetsGeometry>(
-                                  EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                                shape:
+                                    WidgetStatePropertyAll<
+                                      RoundedRectangleBorder
+                                    >(
+                                      RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(20),
+                                        side: BorderSide(
+                                          color: Colors.white.withOpacity(.14),
+                                          width: 1,
+                                        ),
+                                      ),
+                                    ),
+                                padding:
+                                    const WidgetStatePropertyAll<
+                                      EdgeInsetsGeometry
+                                    >(
+                                      EdgeInsets.symmetric(
+                                        vertical: 15,
+                                        horizontal: 20,
+                                      ),
+                                    ),
+                              ),
+                              child: const Text(
+                                'ENVIAR',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w900,
                                 ),
                               ),
-                              child: const Text('ENVIAR',
-                                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900)),
                             ),
                           ],
                         ),
@@ -607,11 +655,16 @@ class CloseForm extends GetView<RegisterController> {
                     ),
                   ),
                   style: ButtonStyle(
-                    backgroundColor: const WidgetStatePropertyAll<Color>(Color(0xFF0099FF)),
+                    backgroundColor: const WidgetStatePropertyAll<Color>(
+                      Color(0xFF0099FF),
+                    ),
                     shape: WidgetStatePropertyAll<RoundedRectangleBorder>(
                       RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
-                        side: BorderSide(color: Colors.white.withOpacity(.14), width: 1),
+                        side: BorderSide(
+                          color: Colors.white.withOpacity(.14),
+                          width: 1,
+                        ),
                       ),
                     ),
                     padding: const WidgetStatePropertyAll<EdgeInsetsGeometry>(
@@ -620,7 +673,10 @@ class CloseForm extends GetView<RegisterController> {
                   ),
                   child: const Text(
                     'ENVIAR INFORMAÇÕES',
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w900,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 100),
