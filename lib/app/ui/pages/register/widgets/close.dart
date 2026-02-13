@@ -128,10 +128,10 @@ class CloseForm extends GetView<RegisterController> {
       (_) => controller.getServices("close"),
     );
 
-    // // ✅ controllers locales (datepicker + phone confirm)
-    // final birthCtrl = TextEditingController(
-    //   text: controller.solicitation.value.customer?.birthDate ?? '',
-    // );
+    // ✅ controllers locales (datepicker + phone confirm)
+    final birthCtrl = TextEditingController(
+      text: controller.solicitation.value.customer?.birthDate ?? '',
+    );
 
     // final phoneCtrl = TextEditingController(
     //   text: controller.solicitation.value.customer?.phone ?? '',
@@ -222,9 +222,9 @@ class CloseForm extends GetView<RegisterController> {
                       child: TextFormField(
                         style: _fieldText,
                         cursorColor: _ink,
-                        // controller: birthCtrl,
+                        controller: birthCtrl,
                         readOnly: true,
-                        // onTap: () => _pickBirthDate(context, birthCtrl),
+                        onTap: () => _pickBirthDate(context, birthCtrl),
                         decoration: _dec(
                           label: 'Data de nascimento',
                           hint: 'Selecione no calendário',
