@@ -34,10 +34,10 @@ class CloseForm extends GetView<RegisterController> {
   // ✅ DatePicker con tema CLARO (texto negro)
   Future<void> _pickBirthDate(
     BuildContext context,
-    TextEditingController dateCtrl,
+    RegisterController controller,
   ) async {
     DateTime initial = DateTime.now().subtract(const Duration(days: 365 * 25));
-    final current = dateCtrl.text.trim();
+    final current = controller.solicitation.value.customer?.birthDate ?? '';
     final parts = current.split('/');
     if (parts.length == 3) {
       final dd = int.tryParse(parts[0]);
@@ -79,8 +79,7 @@ class CloseForm extends GetView<RegisterController> {
 
     if (picked != null) {
       final formatted = _formatBR(picked);
-      dateCtrl.text = formatted;
-      controller.solicitation.value.customer!.birthDate = formatted;
+      controller.solicitation.update((s) => s!.customer!.birthDate = formatted);
     }
   }
 
@@ -128,23 +127,10 @@ class CloseForm extends GetView<RegisterController> {
       (_) => controller.getServices("close"),
     );
 
-    // ✅ controllers locales (datepicker + phone confirm)
-    final birthCtrl = TextEditingController(
-      text: controller.solicitation.value.customer?.birthDate ?? '',
+    final phoneMask = MaskTextInputFormatter(
+      mask: '(##) #####-####',
+      filter: {"#": RegExp(r'[0-9]')},
     );
-
-    // final phoneCtrl = TextEditingController(
-    //   text: controller.solicitation.value.customer?.phone ?? '',
-    // );
-
-    // final confirmPhoneCtrl = TextEditingController(
-    //   text: controller.solicitation.value.customer?.phone ?? '',
-    // );
-
-    // final phoneMask = MaskTextInputFormatter(
-    //   mask: '(##) #####-####',
-    //   filter: {"#": RegExp(r'[0-9]')},
-    // );
 
     return Obx(
       () => SizedBox(
@@ -174,6 +160,8 @@ class CloseForm extends GetView<RegisterController> {
                 const SizedBox(height: 10),
 
                 TextFormField(
+                  initialValue:
+                      controller.solicitation.value.customer?.name ?? '',
                   style: _fieldText,
                   cursorColor: _ink,
                   onChanged: (text) =>
@@ -195,6 +183,8 @@ class CloseForm extends GetView<RegisterController> {
                   children: [
                     Expanded(
                       child: TextFormField(
+                        initialValue:
+                            controller.solicitation.value.customer?.cpf ?? '',
                         style: _fieldText,
                         cursorColor: _ink,
                         inputFormatters: [
@@ -220,16 +210,22 @@ class CloseForm extends GetView<RegisterController> {
                     // ✅ DATA con calendario
                     Expanded(
                       child: TextFormField(
+                        initialValue:
+                            controller.solicitation.value.customer?.birthDate ??
+                            '',
                         style: _fieldText,
                         cursorColor: _ink,
-                        controller: birthCtrl,
+                        // controller: birthCtrl,
                         readOnly: true,
-                        onTap: () => _pickBirthDate(context, birthCtrl),
+                        onTap: () => _pickBirthDate(context, controller),
                         decoration: _dec(
                           label: 'Data de nascimento',
                           hint: 'Selecione no calendário',
                           icon: Icons.cake_outlined,
                         ),
+                        onChanged: (text) =>
+                            controller.solicitation.value.customer!.birthDate =
+                                text,
                         validator: (v) {
                           if ((v ?? '').trim().isEmpty)
                             return 'Selecione a data';
@@ -255,6 +251,8 @@ class CloseForm extends GetView<RegisterController> {
                   children: [
                     Expanded(
                       child: TextFormField(
+                        initialValue:
+                            controller.solicitation.value.customer?.email ?? '',
                         style: _fieldText,
                         cursorColor: _ink,
                         inputFormatters: [
@@ -283,10 +281,12 @@ class CloseForm extends GetView<RegisterController> {
                     // ✅ TELEFONE (principal)
                     Expanded(
                       child: TextFormField(
+                        initialValue:
+                            controller.solicitation.value.customer?.phone ?? '',
                         style: _fieldText,
                         cursorColor: _ink,
                         // controller: phoneCtrl,
-                        // inputFormatters: [phoneMask],
+                        inputFormatters: [phoneMask],
                         onChanged: (text) =>
                             controller.solicitation.value.customer!.phone =
                                 text,
@@ -309,9 +309,11 @@ class CloseForm extends GetView<RegisterController> {
 
                 // ✅ TELEFONE (confirmación)
                 TextFormField(
+                  initialValue:
+                      controller.solicitation.value.customer?.confirmPhone ??
+                      '',
                   style: _fieldText,
                   cursorColor: _ink,
-                  // controller: confirmPhoneCtrl,
                   inputFormatters: [
                     MaskTextInputFormatter(
                       mask: '(##) #####-####',
@@ -323,6 +325,9 @@ class CloseForm extends GetView<RegisterController> {
                     hint: 'Digite o mesmo número novamente',
                     icon: Icons.verified_outlined,
                   ),
+                  onChanged: (text) =>
+                      controller.solicitation.value.customer!.confirmPhone =
+                          text,
                   // validator: (v) {
                   //   final a = _digitsOnly(phoneCtrl.text);
                   //   final b = _digitsOnly(v ?? '');
@@ -344,6 +349,7 @@ class CloseForm extends GetView<RegisterController> {
                 const SizedBox(height: 10),
 
                 TextFormField(
+                  // initialValue: controller.cep.value ?? '',
                   style: _fieldText,
                   cursorColor: _ink,
                   inputFormatters: [
@@ -358,6 +364,8 @@ class CloseForm extends GetView<RegisterController> {
                     icon: Icons.location_on_outlined,
                   ),
                 ),
+
+                const SizedBox(height: 10),
 
                 Row(
                   children: [
@@ -380,9 +388,9 @@ class CloseForm extends GetView<RegisterController> {
                       child: TextFormField(
                         style: _fieldText,
                         cursorColor: _ink,
-                        onChanged: (text) => controller.solicitation.update(
-                          (s) => s!.address!.number = text,
-                        ),
+                        onChanged: (text) =>
+                            controller.solicitation.value.address!.number =
+                                text,
                         decoration: _dec(
                           label: 'Número',
                           icon: Icons.numbers_outlined,

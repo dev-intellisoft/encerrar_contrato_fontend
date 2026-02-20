@@ -41,7 +41,6 @@ class SolicitationServices {
   Future<Solicitation> startSolicitation(String id) async {
     var response = await dio.put('/solicitations/${id}/start');
     if (response.statusCode == 200) {
-      print(response.data);
       return Solicitation.fromJson(response.data);
     }
     throw Exception('Failed to start solicitation');

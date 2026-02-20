@@ -2,12 +2,14 @@ import 'dart:convert';
 
 class PIX {
   final bool success;
+  final bool? paid;
   final String encodedImage;
   final String payload;
   final DateTime? expirationDate;
   final String description;
 
   PIX({
+    required this.paid,
     required this.success,
     required this.encodedImage,
     required this.payload,
@@ -23,6 +25,7 @@ class PIX {
     String? description,
   }) {
     return PIX(
+      paid: paid ?? this.paid,
       success: success ?? this.success,
       encodedImage: encodedImage ?? this.encodedImage,
       payload: payload ?? this.payload,
@@ -43,6 +46,7 @@ class PIX {
     }
 
     return PIX(
+      paid: json['paid'] as bool? ?? false,
       success: json['success'] as bool? ?? false,
       encodedImage: json['encodedImage'] as String? ?? '',
       payload: json['payload'] as String? ?? '',
@@ -52,6 +56,7 @@ class PIX {
   }
 
   Map<String, dynamic> toJson() => {
+    'paid': paid,
     'success': success,
     'encodedImage': encodedImage,
     'payload': payload,
@@ -66,6 +71,7 @@ class PIX {
 }
 
 class PIXResponse {
+  bool? paid;
   bool? success;
   String? encodedImage;
   String? payload;
@@ -73,6 +79,7 @@ class PIXResponse {
   String? description;
 
   PIXResponse({
+    this.paid,
     this.success,
     this.encodedImage,
     this.payload,
@@ -88,6 +95,7 @@ class PIXResponse {
     String? description,
   }) {
     return PIXResponse(
+      paid: paid ?? this.paid,
       success: success ?? this.success,
       encodedImage: encodedImage ?? this.encodedImage,
       payload: payload ?? this.payload,
@@ -117,6 +125,7 @@ class PIXResponse {
   }
 
   Map<String, dynamic> toJson() => {
+    'paid': paid,
     'success': success,
     'encodedImage': encodedImage,
     'payload': payload,

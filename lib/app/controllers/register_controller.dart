@@ -23,7 +23,7 @@ class RegisterController extends GetxController {
   Rx<Solicitation> solicitation = Solicitation(
     customer: Customer(),
     address: Address(),
-    services: [],
+    items: [],
   ).obs;
   Rx<ASAASCreditCardHolderInfo> creditCardHolderInfo =
       ASAASCreditCardHolderInfo().obs;
@@ -79,7 +79,7 @@ class RegisterController extends GetxController {
   Future<void> register() async {
     for (var s in services) {
       if (s.selected) {
-        solicitation.update((e) => e!.services?.add(s));
+        solicitation.update((e) => e!.items?.add(s));
       }
     }
     Get.back();

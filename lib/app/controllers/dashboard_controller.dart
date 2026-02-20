@@ -20,6 +20,7 @@ class DashboardController extends GetxController {
   void onInit() {
     super.onInit();
   }
+
   Future<void> loadPdf(String document) async {
     try {
       // pdfController.value = null;

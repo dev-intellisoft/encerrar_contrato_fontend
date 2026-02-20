@@ -8,6 +8,7 @@ class LoginPage extends GetView<LoginController> {
 
   @override
   Widget build(BuildContext context) {
+    print('LoginPage build');
     WidgetsBinding.instance.addPostFrameCallback(
       (_) => controller.checkSession(),
     );
@@ -42,7 +43,10 @@ class LoginPage extends GetView<LoginController> {
         suffixIcon: suffixIcon,
         filled: true,
         fillColor: Colors.white.withOpacity(.06),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 14,
+          vertical: 14,
+        ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide(color: Colors.white.withOpacity(.12)),
@@ -63,11 +67,7 @@ class LoginPage extends GetView<LoginController> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              bg,
-              Color.lerp(bg, secundario, .06)!,
-              bg,
-            ],
+            colors: [bg, Color.lerp(bg, secundario, .06)!, bg],
           ),
         ),
         child: Stack(

@@ -39,7 +39,10 @@ class DashboardPage extends GetView<DashboardController> {
         prefixIcon: Icon(Icons.search, color: claro),
         filled: true,
         fillColor: Colors.white.withOpacity(.06),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 14,
+          vertical: 10,
+        ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide(color: Colors.white.withOpacity(.12)),
@@ -79,10 +82,7 @@ class DashboardPage extends GetView<DashboardController> {
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: Container(
-                height: 1,
-                color: Colors.white.withOpacity(.12),
-              ),
+              child: Container(height: 1, color: Colors.white.withOpacity(.12)),
             ),
           ],
         ),
@@ -104,18 +104,17 @@ class DashboardPage extends GetView<DashboardController> {
       );
     }
 
-    InputDecoration cleanInputDec({
-      required String hint,
-      IconData? icon,
-    }) {
+    InputDecoration cleanInputDec({required String hint, IconData? icon}) {
       return InputDecoration(
         hintText: hint,
         hintStyle: TextStyle(color: Colors.white.withOpacity(.55)),
         prefixIcon: icon == null ? null : Icon(icon, color: claro),
         filled: true,
         fillColor: Colors.white.withOpacity(.06),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 14,
+          vertical: 14,
+        ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide(color: Colors.white.withOpacity(.12)),
@@ -206,29 +205,29 @@ class DashboardPage extends GetView<DashboardController> {
                         child: CircularProgressIndicator(color: primario),
                       )
                     : controller.solicitations.isEmpty
-                        ? Center(
-                            child: Text(
-                              'Nenhuma solicitação encontrada',
-                              style: TextStyle(
-                                color: Colors.white.withOpacity(.70),
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          )
-                        : Scrollbar(
-                            thumbVisibility: true,
-                            child: ListView(
-                              children: controller.solicitations
-                                  .map(
-                                    (s) => SolicitationTile(
-                                      solicitation: s,
-                                      onTap: (v) =>
-                                          controller.solicitation.value = v,
-                                    ),
-                                  )
-                                  .toList(),
-                            ),
+                    ? Center(
+                        child: Text(
+                          'Nenhuma solicitação encontrada',
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(.70),
+                            fontWeight: FontWeight.w700,
                           ),
+                        ),
+                      )
+                    : Scrollbar(
+                        thumbVisibility: true,
+                        child: ListView(
+                          children: controller.solicitations
+                              .map(
+                                (s) => SolicitationTile(
+                                  solicitation: s,
+                                  onTap: (v) =>
+                                      controller.solicitation.value = v,
+                                ),
+                              )
+                              .toList(),
+                        ),
+                      ),
               ),
             ),
           ],
@@ -418,7 +417,7 @@ class DashboardPage extends GetView<DashboardController> {
                           onChanged: (v) {
                             if (address != null) {
                               // soporta ambos nombres
-                               address.zipCode = v;
+                              address.zipCode = v;
                             }
                           },
                         ),
@@ -452,8 +451,8 @@ class DashboardPage extends GetView<DashboardController> {
 
                         const SizedBox(height: 10),
 
-                        if (s.services != null)
-                          ...s.services!.map(
+                        if (s.items != null)
+                          ...s.items!.map(
                             (sv) => Padding(
                               padding: const EdgeInsets.only(bottom: 6),
                               child: Text(
@@ -469,7 +468,8 @@ class DashboardPage extends GetView<DashboardController> {
                         const SizedBox(height: 10),
 
                         // ===== Documentos =====
-                        if (s.service == 'transfer' || s.service == 'tranfer') ...[
+                        if (s.service == 'transfer' ||
+                            s.service == 'tranfer') ...[
                           sectionHeader("Documentos"),
                           doc_widget.Document(),
                           const SizedBox(height: 10),
@@ -510,8 +510,8 @@ class DashboardPage extends GetView<DashboardController> {
                             s.status == SolicitationStatus.done
                                 ? 'Concluído'
                                 : s.status == SolicitationStatus.processing
-                                    ? 'Em andamento'
-                                    : 'Não iniciado',
+                                ? 'Em andamento'
+                                : 'Não iniciado',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               color: muted,
@@ -546,9 +546,7 @@ class DashboardPage extends GetView<DashboardController> {
             SizedBox(
               width: 260,
               height: 44,
-              child: TextFormField(
-                decoration: _searchDec(),
-              ),
+              child: TextFormField(decoration: _searchDec()),
             ),
           ],
         ),
@@ -567,9 +565,7 @@ class DashboardPage extends GetView<DashboardController> {
         padding: const EdgeInsets.all(16),
         child: Center(
           child: ConstrainedBox(
-            constraints: BoxConstraints(
-              maxWidth: isNarrow ? 560 : 1200,
-            ),
+            constraints: BoxConstraints(maxWidth: isNarrow ? 560 : 1200),
             child: isNarrow
                 ? Column(
                     children: [
@@ -632,8 +628,8 @@ class _ActionButtonState extends State<_ActionButton> {
     final bg = _down
         ? widget.baseColor.withOpacity(.75)
         : _hover
-            ? widget.baseColor.withOpacity(.92)
-            : widget.baseColor;
+        ? widget.baseColor.withOpacity(.92)
+        : widget.baseColor;
 
     final border = _hover || _down
         ? Colors.white.withOpacity(.22)

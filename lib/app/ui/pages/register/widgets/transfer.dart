@@ -33,18 +33,17 @@ class TransferForm extends GetView<RegisterController> {
     return '$dd/$mm/$yyyy';
   }
 
-  InputDecoration _dec({
-    required String label,
-    String? hint,
-    IconData? icon,
-  }) {
+  InputDecoration _dec({required String label, String? hint, IconData? icon}) {
     return InputDecoration(
       labelText: label,
       hintText: hint,
       filled: true,
       fillColor: _bgField,
       prefixIcon: icon != null ? Icon(icon, color: _claro) : null,
-      labelStyle: TextStyle(color: _ink.withOpacity(.92), fontWeight: FontWeight.w700),
+      labelStyle: TextStyle(
+        color: _ink.withOpacity(.92),
+        fontWeight: FontWeight.w700,
+      ),
       hintStyle: TextStyle(color: _ink.withOpacity(.75)),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18),
@@ -56,7 +55,10 @@ class TransferForm extends GetView<RegisterController> {
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18),
-        borderSide: BorderSide(color: Colors.redAccent.withOpacity(.85), width: 1.3),
+        borderSide: BorderSide(
+          color: Colors.redAccent.withOpacity(.85),
+          width: 1.3,
+        ),
       ),
       focusedErrorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18),
@@ -66,18 +68,22 @@ class TransferForm extends GetView<RegisterController> {
     );
   }
 
-  TextStyle get _fieldText => const TextStyle(color: _ink, fontWeight: FontWeight.w600);
+  TextStyle get _fieldText =>
+      const TextStyle(color: _ink, fontWeight: FontWeight.w600);
 
   TextStyle _titleStyle() => TextStyle(
-        color: _ink.withOpacity(.95),
-        fontWeight: FontWeight.w900,
-        fontSize: 16,
-      );
+    color: _ink.withOpacity(.95),
+    fontWeight: FontWeight.w900,
+    fontSize: 16,
+  );
 
   // ✅ DatePicker con tema CLARO (texto negro)
-  Future<void> _pickBirthDate(BuildContext context, TextEditingController dateCtrl) async {
+  Future<void> _pickBirthDate(
+    BuildContext context,
+    RegisterController controller,
+  ) async {
     DateTime initial = DateTime.now().subtract(const Duration(days: 365 * 25));
-    final current = dateCtrl.text.trim();
+    final current = controller.solicitation.value.customer?.birthDate ?? '';
     final parts = current.split('/');
     if (parts.length == 3) {
       final dd = int.tryParse(parts[0]);
@@ -119,8 +125,7 @@ class TransferForm extends GetView<RegisterController> {
 
     if (picked != null) {
       final formatted = _formatBR(picked);
-      dateCtrl.text = formatted;
-      controller.solicitation.value.customer!.birthDate = formatted;
+      controller.solicitation.update((s) => s!.customer!.birthDate = formatted);
     }
   }
 
@@ -158,21 +163,15 @@ class TransferForm extends GetView<RegisterController> {
         child: Center(
           child: Text(
             '$n',
-            style: TextStyle(
-              color: text,
-              fontWeight: FontWeight.w900,
-            ),
+            style: TextStyle(color: text, fontWeight: FontWeight.w900),
           ),
         ),
       );
     }
 
     Widget line() => Expanded(
-          child: Container(
-            height: 2,
-            color: Colors.white.withOpacity(.12),
-          ),
-        );
+      child: Container(height: 2, color: Colors.white.withOpacity(.12)),
+    );
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -269,10 +268,16 @@ class TransferForm extends GetView<RegisterController> {
                   child: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 220),
                     child: _step.value == 1
-                        ? _step1CurrentHolder(context, birthCtrl, phoneCtrl, confirmPhoneCtrl, phoneMask)
+                        ? _step1CurrentHolder(
+                            context,
+                            birthCtrl,
+                            phoneCtrl,
+                            confirmPhoneCtrl,
+                            phoneMask,
+                          )
                         : _step.value == 2
-                            ? _step2NewHolderDocuments(context)
-                            : _step3ServicesAndTotal(context),
+                        ? _step2NewHolderDocuments(context)
+                        : _step3ServicesAndTotal(context),
                   ),
                 ),
               ),
@@ -294,7 +299,9 @@ class TransferForm extends GetView<RegisterController> {
                         onPressed: _step.value == 1 ? null : _goBack,
                         style: OutlinedButton.styleFrom(
                           foregroundColor: Colors.white,
-                          side: BorderSide(color: Colors.white.withOpacity(.16)),
+                          side: BorderSide(
+                            color: Colors.white.withOpacity(.16),
+                          ),
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14),
@@ -309,7 +316,9 @@ class TransferForm extends GetView<RegisterController> {
                     const SizedBox(width: 10),
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: _step.value < 3 ? _goNext : () {}, // paso 3 no avanza
+                        onPressed: _step.value < 3
+                            ? _goNext
+                            : () {}, // paso 3 no avanza
                         style: ElevatedButton.styleFrom(
                           backgroundColor: _primario,
                           foregroundColor: Colors.white,
@@ -353,15 +362,18 @@ class TransferForm extends GetView<RegisterController> {
           const SizedBox(height: 12),
 
           TextFormField(
+            initialValue: controller.solicitation.value.customer!.name ?? '',
             style: _fieldText,
             cursorColor: _ink,
-            onChanged: (text) => controller.solicitation.value.customer!.name = text,
+            onChanged: (text) =>
+                controller.solicitation.value.customer!.name = text,
             decoration: _dec(
               label: 'Nome completo',
               hint: 'Digite seu nome completo',
               icon: Icons.person_outline_rounded,
             ),
-            validator: (v) => (v ?? '').trim().isEmpty ? 'Informe o nome completo' : null,
+            validator: (v) =>
+                (v ?? '').trim().isEmpty ? 'Informe o nome completo' : null,
           ),
 
           const SizedBox(height: 10),
@@ -369,6 +381,8 @@ class TransferForm extends GetView<RegisterController> {
             children: [
               Expanded(
                 child: TextFormField(
+                  initialValue:
+                      controller.solicitation.value.customer!.cpf ?? '',
                   style: _fieldText,
                   cursorColor: _ink,
                   inputFormatters: [
@@ -377,25 +391,30 @@ class TransferForm extends GetView<RegisterController> {
                       filter: {"#": RegExp(r'[0-9]')},
                     ),
                   ],
-                  onChanged: (text) => controller.solicitation.value.customer!.cpf = text,
+                  onChanged: (text) =>
+                      controller.solicitation.value.customer!.cpf = text,
                   decoration: _dec(label: 'CPF', icon: Icons.badge_outlined),
-                  validator: (v) => (v ?? '').trim().isEmpty ? 'Informe o CPF' : null,
+                  validator: (v) =>
+                      (v ?? '').trim().isEmpty ? 'Informe o CPF' : null,
                 ),
               ),
               const SizedBox(width: 10),
               Expanded(
                 child: TextFormField(
+                  initialValue:
+                      controller.solicitation.value.customer!.birthDate ?? '',
                   style: _fieldText,
                   cursorColor: _ink,
-                  controller: birthCtrl,
+                  // controller: birthCtrl,
                   readOnly: true,
-                  onTap: () => _pickBirthDate(context, birthCtrl),
+                  onTap: () => _pickBirthDate(context, controller),
                   decoration: _dec(
                     label: 'Data de nascimento',
                     hint: 'Selecione no calendário',
                     icon: Icons.cake_outlined,
                   ),
-                  validator: (v) => (v ?? '').trim().isEmpty ? 'Selecione a data' : null,
+                  validator: (v) =>
+                      (v ?? '').trim().isEmpty ? 'Selecione a data' : null,
                 ),
               ),
             ],
@@ -406,17 +425,23 @@ class TransferForm extends GetView<RegisterController> {
             children: [
               Expanded(
                 child: TextFormField(
+                  initialValue:
+                      controller.solicitation.value.customer!.email ?? '',
                   style: _fieldText,
                   cursorColor: _ink,
                   inputFormatters: [
-                    FilteringTextInputFormatter.deny(RegExp(r'[^a-zA-Z0-9@.]+')),
+                    FilteringTextInputFormatter.deny(
+                      RegExp(r'[^a-zA-Z0-9@.]+'),
+                    ),
                   ],
-                  onChanged: (text) => controller.solicitation.value.customer!.email = text,
+                  onChanged: (text) =>
+                      controller.solicitation.value.customer!.email = text,
                   decoration: _dec(label: 'Email', icon: Icons.email_outlined),
                   validator: (v) {
                     final s = (v ?? '').trim();
                     if (s.isEmpty) return 'Informe o email';
-                    if (!s.contains('@') || !s.contains('.')) return 'Email inválido';
+                    if (!s.contains('@') || !s.contains('.'))
+                      return 'Email inválido';
                     return null;
                   },
                 ),
@@ -424,12 +449,18 @@ class TransferForm extends GetView<RegisterController> {
               const SizedBox(width: 10),
               Expanded(
                 child: TextFormField(
+                  initialValue:
+                      controller.solicitation.value.customer!.phone ?? '',
                   style: _fieldText,
                   cursorColor: _ink,
-                  controller: phoneCtrl,
+                  // controller: phoneCtrl,
                   inputFormatters: [phoneMask],
-                  onChanged: (text) => controller.solicitation.value.customer!.phone = text,
-                  decoration: _dec(label: 'Telefone (WhatsApp)', icon: Icons.phone_iphone_outlined),
+                  onChanged: (text) =>
+                      controller.solicitation.value.customer!.phone = text,
+                  decoration: _dec(
+                    label: 'Telefone (WhatsApp)',
+                    icon: Icons.phone_iphone_outlined,
+                  ),
                   validator: (v) {
                     final d = _digitsOnly(v ?? '');
                     if (d.isEmpty) return 'Informe o telefone';
@@ -443,9 +474,13 @@ class TransferForm extends GetView<RegisterController> {
 
           const SizedBox(height: 10),
           TextFormField(
+            initialValue:
+                controller.solicitation.value.customer!.confirmPhone ?? '',
             style: _fieldText,
             cursorColor: _ink,
-            controller: confirmPhoneCtrl,
+            // controller: confirmPhoneCtrl,
+            onChanged: (text) =>
+                controller.solicitation.value.customer!.confirmPhone = text,
             inputFormatters: [
               MaskTextInputFormatter(
                 mask: '(##) #####-####',
@@ -493,7 +528,8 @@ class TransferForm extends GetView<RegisterController> {
                   controller: TextEditingController(
                     text: controller.solicitation.value.address?.street,
                   ),
-                  onChanged: (text) => controller.solicitation.value.address!.street = text,
+                  onChanged: (text) =>
+                      controller.solicitation.value.address!.street = text,
                   decoration: _dec(label: 'Rua', icon: Icons.signpost_outlined),
                 ),
               ),
@@ -504,8 +540,12 @@ class TransferForm extends GetView<RegisterController> {
                   style: _fieldText,
                   cursorColor: _ink,
                   initialValue: controller.solicitation.value.address?.number,
-                  onChanged: (text) => controller.solicitation.value.address!.number = text,
-                  decoration: _dec(label: 'Número', icon: Icons.numbers_outlined),
+                  onChanged: (text) =>
+                      controller.solicitation.value.address!.number = text,
+                  decoration: _dec(
+                    label: 'Número',
+                    icon: Icons.numbers_outlined,
+                  ),
                 ),
               ),
             ],
@@ -518,7 +558,8 @@ class TransferForm extends GetView<RegisterController> {
             controller: TextEditingController(
               text: controller.solicitation.value.address?.neighborhood,
             ),
-            onChanged: (text) => controller.solicitation.value.address!.neighborhood = text,
+            onChanged: (text) =>
+                controller.solicitation.value.address!.neighborhood = text,
             decoration: _dec(label: 'Bairro', icon: Icons.map_outlined),
           ),
 
@@ -532,8 +573,13 @@ class TransferForm extends GetView<RegisterController> {
                   controller: TextEditingController(
                     text: controller.solicitation.value.address?.city,
                   ),
-                  onChanged: (text) => controller.solicitation.update((s) => s!.address!.city = text),
-                  decoration: _dec(label: 'Cidade', icon: Icons.location_city_outlined),
+                  onChanged: (text) => controller.solicitation.update(
+                    (s) => s!.address!.city = text,
+                  ),
+                  decoration: _dec(
+                    label: 'Cidade',
+                    icon: Icons.location_city_outlined,
+                  ),
                 ),
               ),
               const SizedBox(width: 10),
@@ -545,7 +591,9 @@ class TransferForm extends GetView<RegisterController> {
                   controller: TextEditingController(
                     text: controller.solicitation.value.address?.state,
                   ),
-                  onChanged: (text) => controller.solicitation.update((s) => s!.address!.state = text),
+                  onChanged: (text) => controller.solicitation.update(
+                    (s) => s!.address!.state = text,
+                  ),
                   decoration: _dec(label: 'UF', icon: Icons.flag_outlined),
                 ),
               ),
@@ -572,11 +620,18 @@ class TransferForm extends GetView<RegisterController> {
             style: _fieldText,
             cursorColor: _ink,
             readOnly: true,
-            controller: TextEditingController(text: controller.documents.value.documentPhotoName ?? ''),
+            controller: TextEditingController(
+              text: controller.documents.value.documentPhotoName ?? '',
+            ),
             onTap: controller.pickDocumentPhoto,
-            decoration: _dec(label: 'Foto do documento', hint: 'Toque para selecionar', icon: Icons.file_present_outlined),
+            decoration: _dec(
+              label: 'Foto do documento',
+              hint: 'Toque para selecionar',
+              icon: Icons.file_present_outlined,
+            ),
             validator: (v) {
-              if ((controller.documents.value.documentPhotoName ?? '').isEmpty) {
+              if ((controller.documents.value.documentPhotoName ?? '')
+                  .isEmpty) {
                 return 'Selecione a foto do documento';
               }
               return null;
@@ -588,11 +643,18 @@ class TransferForm extends GetView<RegisterController> {
             style: _fieldText,
             cursorColor: _ink,
             readOnly: true,
-            controller: TextEditingController(text: controller.documents.value.photoWithDocumentName ?? ''),
+            controller: TextEditingController(
+              text: controller.documents.value.photoWithDocumentName ?? '',
+            ),
             onTap: controller.pickPhotoWithDocument,
-            decoration: _dec(label: 'Foto com documento', hint: 'Toque para selecionar', icon: Icons.badge_outlined),
+            decoration: _dec(
+              label: 'Foto com documento',
+              hint: 'Toque para selecionar',
+              icon: Icons.badge_outlined,
+            ),
             validator: (v) {
-              if ((controller.documents.value.photoWithDocumentName ?? '').isEmpty) {
+              if ((controller.documents.value.photoWithDocumentName ?? '')
+                  .isEmpty) {
                 return 'Selecione a foto com documento';
               }
               return null;
@@ -604,9 +666,15 @@ class TransferForm extends GetView<RegisterController> {
             style: _fieldText,
             cursorColor: _ink,
             readOnly: true,
-            controller: TextEditingController(text: controller.documents.value.lastInvoiceName ?? ''),
+            controller: TextEditingController(
+              text: controller.documents.value.lastInvoiceName ?? '',
+            ),
             onTap: controller.pickLastInvoice,
-            decoration: _dec(label: 'Última fatura do serviço', hint: 'Toque para selecionar', icon: Icons.receipt_long_outlined),
+            decoration: _dec(
+              label: 'Última fatura do serviço',
+              hint: 'Toque para selecionar',
+              icon: Icons.receipt_long_outlined,
+            ),
           ),
 
           const SizedBox(height: 10),
@@ -614,16 +682,25 @@ class TransferForm extends GetView<RegisterController> {
             style: _fieldText,
             cursorColor: _ink,
             readOnly: true,
-            controller: TextEditingController(text: controller.documents.value.contractName ?? ''),
+            controller: TextEditingController(
+              text: controller.documents.value.contractName ?? '',
+            ),
             onTap: controller.pickContract,
-            decoration: _dec(label: 'Inserir contrato (locação / compra e venda)', hint: 'Toque para selecionar', icon: Icons.description_outlined),
+            decoration: _dec(
+              label: 'Inserir contrato (locação / compra e venda)',
+              hint: 'Toque para selecionar',
+              icon: Icons.description_outlined,
+            ),
           ),
 
           const SizedBox(height: 10),
           TextFormField(
             style: _fieldText,
             cursorColor: _ink,
-            decoration: _dec(label: 'Telefone (novo titular)', icon: Icons.phone_outlined),
+            decoration: _dec(
+              label: 'Telefone (novo titular)',
+              icon: Icons.phone_outlined,
+            ),
           ),
         ],
       ),
@@ -643,7 +720,10 @@ class TransferForm extends GetView<RegisterController> {
 
           Text(
             'Serviço a encerrar:',
-            style: TextStyle(color: _ink.withOpacity(.92), fontWeight: FontWeight.w800),
+            style: TextStyle(
+              color: _ink.withOpacity(.92),
+              fontWeight: FontWeight.w800,
+            ),
           ),
           const SizedBox(height: 8),
 
@@ -667,13 +747,17 @@ class TransferForm extends GetView<RegisterController> {
                           value: controller.services[index].selected,
                           activeColor: _primario,
                           checkColor: Colors.white,
-                          onChanged: (value) => controller.services[index] = service.copyWith(selected: value!),
+                          onChanged: (value) => controller.services[index] =
+                              service.copyWith(selected: value!),
                         ),
                       ),
                       Expanded(
                         child: Text(
                           service.name ?? '',
-                          style: TextStyle(color: _ink.withOpacity(.92), fontWeight: FontWeight.w700),
+                          style: TextStyle(
+                            color: _ink.withOpacity(.92),
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                     ],
@@ -683,7 +767,8 @@ class TransferForm extends GetView<RegisterController> {
                     child: TextFormField(
                       style: _fieldText,
                       cursorColor: _ink,
-                      onChanged: (text) => controller.services[index] = service.copyWith(companyName: text),
+                      onChanged: (text) => controller.services[index] = service
+                          .copyWith(companyName: text),
                       decoration: _dec(
                         label: 'Empresa prestadora do serviço',
                         hint: 'Ex: Copel, Sanepar, Vivo...',
@@ -708,9 +793,20 @@ class TransferForm extends GetView<RegisterController> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Total:', style: TextStyle(color: _ink.withOpacity(.90), fontWeight: FontWeight.w800)),
-                Text("R\$ ${_priceTotal().toString()}",
-                    style: const TextStyle(color: _ink, fontWeight: FontWeight.w900)),
+                Text(
+                  'Total:',
+                  style: TextStyle(
+                    color: _ink.withOpacity(.90),
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                Text(
+                  "R\$ ${_priceTotal().toString()}",
+                  style: const TextStyle(
+                    color: _ink,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
               ],
             ),
           ),
@@ -724,7 +820,10 @@ class TransferForm extends GetView<RegisterController> {
                 title: Text(
                   'Termo de Consentimento.',
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: _ink.withOpacity(.95), fontWeight: FontWeight.w900),
+                  style: TextStyle(
+                    color: _ink.withOpacity(.95),
+                    fontWeight: FontWeight.w900,
+                  ),
                 ),
                 content: ObxValue(
                   (agree) => Column(
@@ -752,7 +851,10 @@ class TransferForm extends GetView<RegisterController> {
                           Expanded(
                             child: Text(
                               'Li e aceito.',
-                              style: TextStyle(color: _ink.withOpacity(.92), fontWeight: FontWeight.w700),
+                              style: TextStyle(
+                                color: _ink.withOpacity(.92),
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
                           ),
                         ],
@@ -762,20 +864,25 @@ class TransferForm extends GetView<RegisterController> {
                         onPressed: agree.value
                             ? () {
                                 // ✅ valida todo antes de enviar
-                                final ok1 = _formStep1.currentState?.validate() ?? false;
-                                final ok2 = _formStep2.currentState?.validate() ?? false;
-                                final ok3 = _formStep3.currentState?.validate() ?? true;
+                                // final ok1 =
+                                //     _formStep1.currentState?.validate() ??
+                                //     false;
+                                // final ok2 =
+                                //     _formStep2.currentState?.validate() ??
+                                //     false;
+                                // final ok3 =
+                                //     _formStep3.currentState?.validate() ?? true;
 
-                                if (!ok1 || !ok2 || !ok3) {
-                                  Get.snackbar(
-                                    'Atenção',
-                                    'Há campos pendentes. Revise os passos 1 e 2.',
-                                    snackPosition: SnackPosition.BOTTOM,
-                                    backgroundColor: _bgCard,
-                                    colorText: Colors.white,
-                                  );
-                                  return;
-                                }
+                                // if (!ok1 || !ok2 || !ok3) {
+                                //   Get.snackbar(
+                                //     'Atenção',
+                                //     'Há campos pendentes. Revise os passos 1 e 2.',
+                                //     snackPosition: SnackPosition.BOTTOM,
+                                //     backgroundColor: _bgCard,
+                                //     colorText: Colors.white,
+                                //   );
+                                //   return;
+                                // }
 
                                 controller.transfer();
                               }
@@ -787,16 +894,26 @@ class TransferForm extends GetView<RegisterController> {
                           shape: WidgetStatePropertyAll<RoundedRectangleBorder>(
                             RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(14),
-                              side: BorderSide(color: Colors.white.withOpacity(.14), width: 1),
+                              side: BorderSide(
+                                color: Colors.white.withOpacity(.14),
+                                width: 1,
+                              ),
                             ),
                           ),
-                          padding: const WidgetStatePropertyAll<EdgeInsetsGeometry>(
-                            EdgeInsets.symmetric(vertical: 14, horizontal: 18),
-                          ),
+                          padding:
+                              const WidgetStatePropertyAll<EdgeInsetsGeometry>(
+                                EdgeInsets.symmetric(
+                                  vertical: 14,
+                                  horizontal: 18,
+                                ),
+                              ),
                         ),
                         child: const Text(
                           'ENVIAR',
-                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900),
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w900,
+                          ),
                         ),
                       ),
                     ],
@@ -809,9 +926,14 @@ class TransferForm extends GetView<RegisterController> {
               backgroundColor: const Color(0xFF0099FF),
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 14),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
             ),
-            child: const Text('ENVIAR INFORMAÇÕES', style: TextStyle(fontWeight: FontWeight.w900)),
+            child: const Text(
+              'ENVIAR INFORMAÇÕES',
+              style: TextStyle(fontWeight: FontWeight.w900),
+            ),
           ),
 
           const SizedBox(height: 80),
