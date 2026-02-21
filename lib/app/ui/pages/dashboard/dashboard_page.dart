@@ -472,7 +472,7 @@ class DashboardPage extends GetView<DashboardController> {
                               (sv) => Padding(
                                 padding: const EdgeInsets.only(bottom: 6),
                                 child: Text(
-                                  "• ${sv.name ?? "-"}",
+                                  "• ${sv.name ?? "-"} ${sv.companyName ?? "-"}",
                                   style: TextStyle(
                                     color: Colors.white.withOpacity(.80),
                                     fontWeight: FontWeight.w700,
