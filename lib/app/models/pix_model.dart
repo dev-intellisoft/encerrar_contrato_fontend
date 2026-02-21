@@ -77,6 +77,7 @@ class PIXResponse {
   String? payload;
   DateTime? expirationDate;
   String? description;
+  double? value;
 
   PIXResponse({
     this.paid,
@@ -85,6 +86,7 @@ class PIXResponse {
     this.payload,
     this.expirationDate,
     this.description,
+    this.value,
   });
 
   PIXResponse copyWith({
@@ -93,6 +95,7 @@ class PIXResponse {
     String? payload,
     DateTime? expirationDate,
     String? description,
+    double? value,
   }) {
     return PIXResponse(
       paid: paid ?? this.paid,
@@ -101,6 +104,7 @@ class PIXResponse {
       payload: payload ?? this.payload,
       expirationDate: expirationDate ?? this.expirationDate,
       description: description ?? this.description,
+      value: value ?? this.value,
     );
   }
 
@@ -121,6 +125,7 @@ class PIXResponse {
       payload: json['payload'] as String? ?? '',
       expirationDate: parsedDate,
       description: json['description'] as String? ?? '',
+      value: json['value'] ?? 0,
     );
   }
 
@@ -131,5 +136,6 @@ class PIXResponse {
     'payload': payload,
     'expirationDate': expirationDate?.toUtc().toIso8601String() ?? '',
     'description': description,
+    'value': value,
   };
 }

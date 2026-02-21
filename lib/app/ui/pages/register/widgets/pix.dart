@@ -55,7 +55,11 @@ class PIX extends GetView<RegisterController> {
               ),
               child: Column(
                 children: [
-                  Text('Scaneie o código QR para pagar'),
+                  Text(
+                    'Scaneie o código QR para pagar',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  SizedBox(height: 10),
                   Image.memory(
                     base64Decode(controller.pixResponse.value.encodedImage!),
                     width: 200,
@@ -107,6 +111,12 @@ class PIX extends GetView<RegisterController> {
                       ),
                     ),
                     false.obs,
+                  ),
+
+                  SizedBox(height: 20),
+                  Text(
+                    'Total: R\$ ${controller.pixResponse.value.value}',
+                    style: TextStyle(color: Colors.white),
                   ),
                 ],
               ),

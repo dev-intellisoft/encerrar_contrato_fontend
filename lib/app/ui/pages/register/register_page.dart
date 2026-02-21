@@ -46,10 +46,7 @@ class RegisterPage extends GetView<RegisterController> {
     // ✅ Mantengo tu helper, PERO ahora combina con el Theme global
     // (si CloseForm/TransferForm lo usan, heredará todo bien)
     InputDecoration inputDec({required String hint, required IconData icon}) {
-      return InputDecoration(
-        hintText: hint,
-        prefixIcon: Icon(icon),
-      );
+      return InputDecoration(hintText: hint, prefixIcon: Icon(icon));
     }
 
     Widget sectionHeader(String title) {
@@ -160,7 +157,17 @@ class RegisterPage extends GetView<RegisterController> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              'Código: $code',
+              'Número de protocolo: $code',
+              style: TextStyle(
+                color: Colors.white.withOpacity(.90),
+                fontSize: 12,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            const SizedBox(height: 10),
+
+            Text(
+              'Total a pagar: R\$ ${controller.solicitation.value.items?.where((e) => e.selected).map((e) => e.price ?? 0).fold(0, (a, b) => a + b) ?? 0}',
               style: TextStyle(
                 color: Colors.white.withOpacity(.90),
                 fontSize: 12,
@@ -170,7 +177,11 @@ class RegisterPage extends GetView<RegisterController> {
             const SizedBox(height: 10),
             Row(
               children: [
-                const Icon(Icons.check_circle_rounded, color: Colors.green, size: 28),
+                const Icon(
+                  Icons.check_circle_rounded,
+                  color: Colors.green,
+                  size: 28,
+                ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
@@ -261,7 +272,10 @@ class RegisterPage extends GetView<RegisterController> {
                   if (controller.isLoading.value) return Spinner();
 
                   return SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 18,
+                      vertical: 14,
+                    ),
                     child: ConstrainedBox(
                       constraints: BoxConstraints(maxWidth: maxW),
                       child: Column(
@@ -275,14 +289,20 @@ class RegisterPage extends GetView<RegisterController> {
                               children: [
                                 sectionHeader("Pagamento"),
 
-                                if (controller.creditCardPaymentResponse.value.status !=
+                                if (controller
+                                        .creditCardPaymentResponse
+                                        .value
+                                        .status !=
                                     'CONFIRMED')
                                   premiumSwitch(
                                     leftText: "Pagar com PIX",
                                     rightText: "Cartão de crédito",
                                     leftActive:
-                                        controller.solicitation.value.paymentType ==
-                                            'pix',
+                                        controller
+                                            .solicitation
+                                            .value
+                                            .paymentType ==
+                                        'pix',
                                     leftIcon: Icons.qr_code_rounded,
                                     rightIcon: Icons.credit_card_rounded,
                                     onLeft: () => controller.solicitation
@@ -294,10 +314,14 @@ class RegisterPage extends GetView<RegisterController> {
                                 const SizedBox(height: 14),
 
                                 statusCard(
-                                  code: "${controller.solicitation.value.id}",
+                                  code:
+                                      "${controller.solicitation.value.protocol}",
                                   paidConfirmed:
-                                      controller.creditCardPaymentResponse.value.status ==
-                                          'CONFIRMED',
+                                      controller
+                                          .creditCardPaymentResponse
+                                          .value
+                                          .status ==
+                                      'CONFIRMED',
                                 ),
 
                                 const SizedBox(height: 16),
@@ -308,7 +332,10 @@ class RegisterPage extends GetView<RegisterController> {
 
                                 if (controller.solicitation.value.paymentType ==
                                     "cc")
-                                  if (controller.creditCardPaymentResponse.value.status ==
+                                  if (controller
+                                          .creditCardPaymentResponse
+                                          .value
+                                          .status ==
                                       'CONFIRMED')
                                     Success()
                                   else
@@ -338,7 +365,7 @@ class RegisterPage extends GetView<RegisterController> {
                                   rightText: "Transferir Contrato",
                                   leftActive:
                                       controller.solicitation.value.service ==
-                                          'close',
+                                      'close',
                                   leftIcon: Icons.lock_outline_rounded,
                                   rightIcon: Icons.swap_horiz_rounded,
                                   onLeft: () => controller.solicitation.update(
@@ -429,10 +456,10 @@ class _SegmentButtonState extends State<_SegmentButton> {
     final Color bg = widget.active
         ? primario
         : _down
-            ? Colors.white.withOpacity(.12)
-            : _hover
-                ? Colors.white.withOpacity(.11)
-                : Colors.white.withOpacity(.09);
+        ? Colors.white.withOpacity(.12)
+        : _hover
+        ? Colors.white.withOpacity(.11)
+        : Colors.white.withOpacity(.09);
 
     final Color border = widget.active
         ? primario.withOpacity(.85)
