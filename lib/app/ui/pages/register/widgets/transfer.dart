@@ -253,16 +253,23 @@ class TransferForm extends GetView<RegisterController> {
           margin: const EdgeInsets.all(10),
           child: Column(
             children: [
-              Row(
-                children: [
-                  AgencyLogo(imagePath: controller.agency.value.image!),
-                  SizedBox(width: 20),
-                  Text(
-                    '${controller.agency.value.name}',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ],
-              ),
+                Obx(() => controller.loadingAgency.value
+                    ? const Center(
+                        child: CircularProgressIndicator(),
+                      )
+                    : Row(
+                        children: [
+                          AgencyLogo(
+                            imagePath: controller.agency.value.image ??
+                                'assets/default_agency.png',
+                          ),
+                          const SizedBox(width: 20),
+                          Text(
+                            '${controller.agency.value.name}',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ],
+                      )),
               const SizedBox(height: 10),
 
               // ✅ Header pasos
