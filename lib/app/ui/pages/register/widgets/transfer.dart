@@ -72,10 +72,10 @@ class TransferForm extends GetView<RegisterController> {
       const TextStyle(color: _ink, fontWeight: FontWeight.w600);
 
   TextStyle _titleStyle() => TextStyle(
-    color: _ink.withOpacity(.95),
-    fontWeight: FontWeight.w900,
-    fontSize: 16,
-  );
+        color: _ink.withOpacity(.95),
+        fontWeight: FontWeight.w900,
+        fontSize: 16,
+      );
 
   // ✅ DatePicker con tema CLARO (texto negro)
   Future<void> _pickBirthDate(
@@ -170,8 +170,8 @@ class TransferForm extends GetView<RegisterController> {
     }
 
     Widget line() => Expanded(
-      child: Container(height: 2, color: Colors.white.withOpacity(.12)),
-    );
+          child: Container(height: 2, color: Colors.white.withOpacity(.12)),
+        );
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -276,8 +276,8 @@ class TransferForm extends GetView<RegisterController> {
                             phoneMask,
                           )
                         : _step.value == 2
-                        ? _step2NewHolderDocuments(context)
-                        : _step3ServicesAndTotal(context),
+                            ? _step2NewHolderDocuments(context)
+                            : _step3ServicesAndTotal(context),
                   ),
                 ),
               ),
@@ -316,9 +316,8 @@ class TransferForm extends GetView<RegisterController> {
                     const SizedBox(width: 10),
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: _step.value < 3
-                            ? _goNext
-                            : () {}, // paso 3 no avanza
+                        onPressed:
+                            _step.value < 3 ? _goNext : () {}, // paso 3 no avanza
                         style: ElevatedButton.styleFrom(
                           backgroundColor: _primario,
                           foregroundColor: Colors.white,
@@ -381,8 +380,7 @@ class TransferForm extends GetView<RegisterController> {
             children: [
               Expanded(
                 child: TextFormField(
-                  initialValue:
-                      controller.solicitation.value.customer!.cpf ?? '',
+                  initialValue: controller.solicitation.value.customer!.cpf ?? '',
                   style: _fieldText,
                   cursorColor: _ink,
                   inputFormatters: [
@@ -440,8 +438,9 @@ class TransferForm extends GetView<RegisterController> {
                   validator: (v) {
                     final s = (v ?? '').trim();
                     if (s.isEmpty) return 'Informe o email';
-                    if (!s.contains('@') || !s.contains('.'))
+                    if (!s.contains('@') || !s.contains('.')) {
                       return 'Email inválido';
+                    }
                     return null;
                   },
                 ),
@@ -630,8 +629,7 @@ class TransferForm extends GetView<RegisterController> {
               icon: Icons.file_present_outlined,
             ),
             validator: (v) {
-              if ((controller.documents.value.documentPhotoName ?? '')
-                  .isEmpty) {
+              if ((controller.documents.value.documentPhotoName ?? '').isEmpty) {
                 return 'Selecione a foto do documento';
               }
               return null;
@@ -697,10 +695,8 @@ class TransferForm extends GetView<RegisterController> {
           TextFormField(
             style: _fieldText,
             cursorColor: _ink,
-            decoration: _dec(
-              label: 'Telefone (novo titular)',
-              icon: Icons.phone_outlined,
-            ),
+            decoration:
+                _dec(label: 'Telefone (novo titular)', icon: Icons.phone_outlined),
           ),
         ],
       ),
@@ -767,8 +763,8 @@ class TransferForm extends GetView<RegisterController> {
                     child: TextFormField(
                       style: _fieldText,
                       cursorColor: _ink,
-                      onChanged: (text) => controller.services[index] = service
-                          .copyWith(companyName: text),
+                      onChanged: (text) => controller.services[index] =
+                          service.copyWith(companyName: text),
                       decoration: _dec(
                         label: 'Empresa prestadora do serviço',
                         hint: 'Ex: Copel, Sanepar, Vivo...',
@@ -783,28 +779,96 @@ class TransferForm extends GetView<RegisterController> {
           ),
 
           const SizedBox(height: 6),
+
+          // ✅✅✅ TOTAL (APENAS ESTÉTICA - mais chamativo)
           Container(
-            padding: const EdgeInsets.all(14),
+            margin: const EdgeInsets.only(top: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
             decoration: BoxDecoration(
-              color: _bgCard,
-              borderRadius: BorderRadius.circular(18),
-              border: Border.all(color: Colors.white.withOpacity(.10)),
+              borderRadius: BorderRadius.circular(20),
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  _primario.withOpacity(.22),
+                  _claro.withOpacity(.12),
+                ],
+              ),
+              border: Border.all(color: Colors.white.withOpacity(.14), width: 1),
+              boxShadow: [
+                BoxShadow(
+                  color: _primario.withOpacity(.22),
+                  blurRadius: 18,
+                  offset: const Offset(0, 10),
+                ),
+              ],
             ),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'Total:',
-                  style: TextStyle(
-                    color: _ink.withOpacity(.90),
-                    fontWeight: FontWeight.w800,
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(.08),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(
+                      color: Colors.white.withOpacity(.12),
+                      width: 1,
+                    ),
+                  ),
+                  child: Icon(
+                    Icons.currency_exchange_rounded,
+                    color: _claro.withOpacity(.95),
+                    size: 22,
                   ),
                 ),
-                Text(
-                  "R\$ ${_priceTotal().toString()}",
-                  style: const TextStyle(
-                    color: _ink,
-                    fontWeight: FontWeight.w900,
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Total',
+                        style: TextStyle(
+                          color: _ink.withOpacity(.78),
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: .6,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        "R\$ ${_priceTotal().toString()}",
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: _ink.withOpacity(.98),
+                          fontWeight: FontWeight.w900,
+                          fontSize: 22,
+                          letterSpacing: .2,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(.06),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(
+                      color: Colors.white.withOpacity(.10),
+                      width: 1,
+                    ),
+                  ),
+                  child: Text(
+                    'BRL',
+                    style: TextStyle(
+                      color: _ink.withOpacity(.78),
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 1.2,
+                    ),
                   ),
                 ),
               ],
@@ -863,27 +927,6 @@ class TransferForm extends GetView<RegisterController> {
                       ElevatedButton(
                         onPressed: agree.value
                             ? () {
-                                // ✅ valida todo antes de enviar
-                                // final ok1 =
-                                //     _formStep1.currentState?.validate() ??
-                                //     false;
-                                // final ok2 =
-                                //     _formStep2.currentState?.validate() ??
-                                //     false;
-                                // final ok3 =
-                                //     _formStep3.currentState?.validate() ?? true;
-
-                                // if (!ok1 || !ok2 || !ok3) {
-                                //   Get.snackbar(
-                                //     'Atenção',
-                                //     'Há campos pendentes. Revise os passos 1 e 2.',
-                                //     snackPosition: SnackPosition.BOTTOM,
-                                //     backgroundColor: _bgCard,
-                                //     colorText: Colors.white,
-                                //   );
-                                //   return;
-                                // }
-
                                 controller.transfer();
                               }
                             : null,
@@ -902,11 +945,11 @@ class TransferForm extends GetView<RegisterController> {
                           ),
                           padding:
                               const WidgetStatePropertyAll<EdgeInsetsGeometry>(
-                                EdgeInsets.symmetric(
-                                  vertical: 14,
-                                  horizontal: 18,
-                                ),
-                              ),
+                            EdgeInsets.symmetric(
+                              vertical: 14,
+                              horizontal: 18,
+                            ),
+                          ),
                         ),
                         child: const Text(
                           'ENVIAR',

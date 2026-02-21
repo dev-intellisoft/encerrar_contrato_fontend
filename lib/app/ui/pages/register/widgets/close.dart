@@ -215,7 +215,6 @@ class CloseForm extends GetView<RegisterController> {
                             '',
                         style: _fieldText,
                         cursorColor: _ink,
-                        // controller: birthCtrl,
                         readOnly: true,
                         onTap: () => _pickBirthDate(context, controller),
                         decoration: _dec(
@@ -285,7 +284,6 @@ class CloseForm extends GetView<RegisterController> {
                             controller.solicitation.value.customer?.phone ?? '',
                         style: _fieldText,
                         cursorColor: _ink,
-                        // controller: phoneCtrl,
                         inputFormatters: [phoneMask],
                         onChanged: (text) =>
                             controller.solicitation.value.customer!.phone =
@@ -328,13 +326,6 @@ class CloseForm extends GetView<RegisterController> {
                   onChanged: (text) =>
                       controller.solicitation.value.customer!.confirmPhone =
                           text,
-                  // validator: (v) {
-                  //   final a = _digitsOnly(phoneCtrl.text);
-                  //   final b = _digitsOnly(v ?? '');
-                  //   if (b.isEmpty) return 'Confirme o telefone';
-                  //   if (a != b) return 'Os telefones não coincidem';
-                  //   return null;
-                  // },
                 ),
 
                 const SizedBox(height: 20),
@@ -349,7 +340,6 @@ class CloseForm extends GetView<RegisterController> {
                 const SizedBox(height: 10),
 
                 TextFormField(
-                  // initialValue: controller.cep.value ?? '',
                   style: _fieldText,
                   cursorColor: _ink,
                   inputFormatters: [
@@ -521,23 +511,103 @@ class CloseForm extends GetView<RegisterController> {
                   ),
                 ),
 
+                // ✅✅✅ TOTAL (APENAS ESTÉTICA - mais chamativo)
                 Container(
-                  margin: const EdgeInsets.all(10),
+                  margin: const EdgeInsets.fromLTRB(10, 6, 10, 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 14,
+                  ),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        _primario.withOpacity(.22),
+                        _claro.withOpacity(.12),
+                      ],
+                    ),
+                    border: Border.all(
+                      color: Colors.white.withOpacity(.14),
+                      width: 1,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: _primario.withOpacity(.22),
+                        blurRadius: 18,
+                        offset: const Offset(0, 10),
+                      ),
+                    ],
+                  ),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        'Total:',
-                        style: TextStyle(
-                          color: _ink.withOpacity(.90),
-                          fontWeight: FontWeight.w800,
+                      Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(.08),
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(
+                            color: Colors.white.withOpacity(.12),
+                            width: 1,
+                          ),
+                        ),
+                        child: Icon(
+                          Icons.receipt_long_outlined,
+                          color: _claro.withOpacity(.95),
+                          size: 22,
                         ),
                       ),
-                      Text(
-                        "R\$ ${_priceTotal().toString()}",
-                        style: const TextStyle(
-                          color: _ink,
-                          fontWeight: FontWeight.w900,
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Total',
+                              style: TextStyle(
+                                color: _ink.withOpacity(.78),
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: .6,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              "R\$ ${_priceTotal().toString()}",
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                color: _ink.withOpacity(.98),
+                                fontWeight: FontWeight.w900,
+                                fontSize: 22, // ✅ mayor
+                                letterSpacing: .2,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(.06),
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(
+                            color: Colors.white.withOpacity(.10),
+                            width: 1,
+                          ),
+                        ),
+                        child: Text(
+                          'BRL',
+                          style: TextStyle(
+                            color: _ink.withOpacity(.78),
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 1.2,
+                          ),
                         ),
                       ),
                     ],
