@@ -1,7 +1,6 @@
 import 'package:encerrar_contrato/app/widgets/pending.dart';
 import 'package:encerrar_contrato/app/widgets/processing.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import '../../../../models/solicitation_model.dart';
 import '../../../../widgets/done.dart';
 import '../../../../widgets/agency_logo.dart';
@@ -52,6 +51,7 @@ class SolicitationTile extends StatelessWidget {
                 Text(
                   "${solicitation.address?.street ?? "-"}, "
                   "${solicitation.address?.number ?? "-"}, "
+                  "${solicitation.address?.city ?? "-"}, "
                   "${solicitation.address?.state ?? "-"}",
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -65,7 +65,25 @@ class SolicitationTile extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 10),
-          AgencyLogo(imagePath: solicitation.agencyLogo ?? ""),
+          if (solicitation.paymentType.toLowerCase() == 'pix')
+            Tooltip(
+              message: solicitation.paymentStatus.toLowerCase() == 'paid'
+                  ? 'Pago'
+                  : 'Pendente',
+              child: Icon(Icons.monetization_on, color: Colors.white),
+            )
+          else if (solicitation.paymentType.toLowerCase() == 'credit_card')
+            Tooltip(
+              message: solicitation.paymentStatus.toLowerCase() == 'paid'
+                  ? 'Pago'
+                  : 'Pendente',
+              child: Icon(Icons.credit_card_outlined, color: Colors.white),
+            ),
+          const SizedBox(width: 50),
+          Tooltip(
+            message: solicitation.agency,
+            child: AgencyLogo(imagePath: solicitation.agencyLogo ?? ""),
+          ),
         ],
       ),
     );

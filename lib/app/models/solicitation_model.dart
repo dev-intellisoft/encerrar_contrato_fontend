@@ -29,6 +29,7 @@ class Solicitation {
   ASAASCreditCardHolderInfo? creditCardHolderInfo;
   ASAASCreditCard? creditCard;
   int? protocol;
+  String? agency;
 
   Solicitation({
     this.id,
@@ -49,6 +50,7 @@ class Solicitation {
     this.creditCardHolderInfo,
     this.creditCard,
     this.protocol,
+    this.agency,
   });
 
   Map<String, dynamic> toJson() {
@@ -72,6 +74,7 @@ class Solicitation {
       'credit_card_holder_info': creditCardHolderInfo,
       'credit_card': creditCard,
       'protocol': protocol,
+      'agency': agency,
     };
   }
 
@@ -97,6 +100,7 @@ class Solicitation {
       creditCardHolderInfo: map['credit_card_holder_info'],
       creditCard: map['credit_card'],
       protocol: map['protocol'],
+      agency: map['agency'],
     );
   }
 }
