@@ -1,7 +1,6 @@
 import 'package:encerrar_contrato/app/widgets/pending.dart';
 import 'package:encerrar_contrato/app/widgets/processing.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import '../../../../models/solicitation_model.dart';
 import '../../../../widgets/done.dart';
 import '../../../../widgets/agency_logo.dart';
