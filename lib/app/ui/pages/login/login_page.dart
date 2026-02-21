@@ -8,11 +8,9 @@ class LoginPage extends GetView<LoginController> {
 
   @override
   Widget build(BuildContext context) {
-    print('LoginPage build');
-
-    // WidgetsBinding.instance.addPostFrameCallback(
-    //   (_) => controller.checkSession(),
-    // );
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => controller.checkSession(),
+    );
 
     // ===== PALETA (dark premium) =====
     const primario = Color(0xFF5E17EB);
