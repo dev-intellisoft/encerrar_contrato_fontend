@@ -30,8 +30,8 @@ class SolicitationTile extends StatelessWidget {
           solicitation.status == SolicitationStatus.done
               ? Tooltip(message: 'Concluído', child: Done())
               : SolicitationStatus.processing == solicitation.status
-                  ? Tooltip(message: 'Iniciado', child: Processing())
-                  : Tooltip(message: 'Não iniciado', child: Pending()),
+              ? Tooltip(message: 'Iniciado', child: Processing())
+              : Tooltip(message: 'Não iniciado', child: Pending()),
           const SizedBox(width: 10),
           Expanded(
             child: Column(
@@ -80,11 +80,7 @@ class _HoverTile extends StatefulWidget {
   final VoidCallback? onTap;
   final bool selected;
 
-  const _HoverTile({
-    required this.child,
-    this.onTap,
-    this.selected = false,
-  });
+  const _HoverTile({required this.child, this.onTap, this.selected = false});
 
   @override
   State<_HoverTile> createState() => _HoverTileState();
@@ -103,16 +99,16 @@ class _HoverTileState extends State<_HoverTile> {
     final Color bg = widget.selected
         ? primario.withOpacity(.20)
         : _down
-            ? bgCard.withOpacity(.85)
-            : _hover
-                ? bgCard.withOpacity(.95)
-                : bgCard;
+        ? bgCard.withOpacity(.85)
+        : _hover
+        ? bgCard.withOpacity(.95)
+        : bgCard;
 
     final Color borderColor = widget.selected
         ? primario.withOpacity(.95)
         : _hover
-            ? primario.withOpacity(.45)
-            : Colors.white.withOpacity(.08);
+        ? primario.withOpacity(.45)
+        : Colors.white.withOpacity(.08);
 
     return MouseRegion(
       onEnter: (_) => setState(() => _hover = true),

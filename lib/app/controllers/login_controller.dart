@@ -7,17 +7,41 @@ import 'package:get_storage/get_storage.dart';
 import '../services/login_services.dart';
 
 class LoginController extends GetxController {
-  final LoginServices service = Get.find<LoginServices> ();
+  final LoginServices service = Get.find<LoginServices>();
 
   Rx<User> user = User().obs;
-  Rx<AccessToken> accessToken =  AccessToken().obs;
+  Rx<AccessToken> accessToken = AccessToken().obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    checkSession();
+
+    print('=================>LoginController onInit');
+  }
+
+  @override
+  void onClose() {
+    super.onClose();
+    print('=================>LoginController onClose');
+  }
+
+  @override
+  void onReady() {
+    super.onReady();
+    print('=================>LoginController onReady');
+  }
+
   Future<void> login() async {
     try {
-      accessToken.value = await service.login(user.value.email!, user.value.password!);
+      accessToken.value = await service.login(
+        user.value.email!,
+        user.value.password!,
+      );
       GetStorage().write('token', accessToken.value.toJson());
       user.value = await service.me();
       GetStorage().write('user', user.value.toJson());
-      if(user.value.agency == 'encerrar' || user.value.agency == '') {
+      if (user.value.agency == 'encerrar' || user.value.agency == '') {
         return Get.offAllNamed(Routes.DASHBOARD);
       }
       return Get.offAllNamed(Routes.HOME);
@@ -36,13 +60,13 @@ class LoginController extends GetxController {
       if (!(user.value.id! != "")) {
         throw Exception('No session');
       }
-      if(user.value.agency == 'encerrar' || user.value.agency == '') {
+      if (user.value.agency == 'encerrar' || user.value.agency == '') {
         return Get.offAllNamed(Routes.DASHBOARD);
       }
       return Get.offAllNamed(Routes.HOME);
-    } catch(e) {
+    } catch (e) {
       GetStorage().remove('token');
-      Get.snackbar('Error', e.toString());
+      Get.snackbar('Error=======>', e.toString());
     }
   }
 }

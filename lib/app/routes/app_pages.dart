@@ -29,6 +29,7 @@ class AppPages {
       page: () => LoginPage(),
       binding: LoginBinding(),
       transition: Transition.noTransition,
+      preventDuplicates: false,
     ),
     GetPage(
       name: Routes.HOME,

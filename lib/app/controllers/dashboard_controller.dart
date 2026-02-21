@@ -19,6 +19,7 @@ class DashboardController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    getSolicitations();
   }
 
   Future<void> loadPdf(String document) async {
@@ -38,7 +39,6 @@ class DashboardController extends GetxController {
   }
 
   Future<void> listDocuments() async {
-    print("object");
     try {
       documents.value = await service.listDocument(solicitation.value!.id!);
     } catch (e) {

@@ -9,9 +9,10 @@ class LoginPage extends GetView<LoginController> {
   @override
   Widget build(BuildContext context) {
     print('LoginPage build');
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) => controller.checkSession(),
-    );
+
+    // WidgetsBinding.instance.addPostFrameCallback(
+    //   (_) => controller.checkSession(),
+    // );
 
     // ===== PALETA (dark premium) =====
     const primario = Color(0xFF5E17EB);
@@ -60,125 +61,110 @@ class LoginPage extends GetView<LoginController> {
 
     return Scaffold(
       backgroundColor: bg,
-      body: Container(
-        width: double.infinity,
-        decoration: BoxDecoration(
-          // background suave (dark) com glow
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [bg, Color.lerp(bg, secundario, .06)!, bg],
+      resizeToAvoidBottomInset: true, // ✅
+      body: GestureDetector(
+        behavior: HitTestBehavior.translucent, // ✅ captura taps no vazio
+        onTap: () => FocusScope.of(context).unfocus(), // ✅ fecha teclado
+        child: Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            // background suave (dark) com glow
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [bg, Color.lerp(bg, secundario, .06)!, bg],
+            ),
           ),
-        ),
-        child: Stack(
-          children: [
-            // glow decorativo
-            Positioned(
-              top: -120,
-              left: -120,
-              child: Container(
-                width: 260,
-                height: 260,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: primario.withOpacity(.18),
-                ),
-              ),
-            ),
-            Positioned(
-              bottom: -140,
-              right: -140,
-              child: Container(
-                width: 320,
-                height: 320,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: claro.withOpacity(.12),
-                ),
-              ),
-            ),
-
-            SafeArea(
-              child: Center(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 18,
-                    vertical: 14,
+          child: Stack(
+            children: [
+              // glow decorativo
+              Positioned(
+                top: -120,
+                left: -120,
+                child: Container(
+                  width: 260,
+                  height: 260,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: primario.withOpacity(.18),
                   ),
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(maxWidth: maxW),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const SizedBox(height: 14),
+                ),
+              ),
+              Positioned(
+                bottom: -140,
+                right: -140,
+                child: Container(
+                  width: 320,
+                  height: 320,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: claro.withOpacity(.12),
+                  ),
+                ),
+              ),
 
-                        // Logo (mantido)
-                        HomeLogo(),
-                        const SizedBox(height: 18),
+              SafeArea(
+                child: Center(
+                  child: SingleChildScrollView(
+                    keyboardDismissBehavior:
+                        ScrollViewKeyboardDismissBehavior.onDrag, // ✅
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 18,
+                      vertical: 14,
+                    ),
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(maxWidth: maxW),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const SizedBox(height: 14),
 
-                        // Card (login)
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(18),
-                          decoration: BoxDecoration(
-                            color: bg2,
-                            borderRadius: BorderRadius.circular(26),
-                            border: Border.all(
-                              color: Colors.white.withOpacity(.08),
+                          // Logo (mantido)
+                          HomeLogo(),
+                          const SizedBox(height: 18),
+
+                          // Card (login)
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(18),
+                            decoration: BoxDecoration(
+                              color: bg2,
+                              borderRadius: BorderRadius.circular(26),
+                              border: Border.all(
+                                color: Colors.white.withOpacity(.08),
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(.40),
+                                  blurRadius: 24,
+                                  offset: const Offset(0, 14),
+                                ),
+                                BoxShadow(
+                                  color: primario.withOpacity(.10),
+                                  blurRadius: 30,
+                                  offset: const Offset(0, 10),
+                                ),
+                              ],
                             ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(.40),
-                                blurRadius: 24,
-                                offset: const Offset(0, 14),
-                              ),
-                              BoxShadow(
-                                color: primario.withOpacity(.10),
-                                blurRadius: 30,
-                                offset: const Offset(0, 10),
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              const Text(
-                                "Entrar",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: ink,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w900,
-                                  letterSpacing: .2,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                const Text(
+                                  "Entrar",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: ink,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w900,
+                                    letterSpacing: .2,
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(height: 16),
+                                const SizedBox(height: 16),
 
-                              // Email
-                              TextFormField(
-                                onChanged: (text) =>
-                                    controller.user.value.email = text,
-                                style: const TextStyle(
-                                  color: ink,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                                cursorColor: primario,
-                                decoration: _inputDec(
-                                  label: "E-mail",
-                                  hint: "Digite seu email",
-                                  icon: Icons.email,
-                                ),
-                              ),
-
-                              const SizedBox(height: 12),
-
-                              // Password (GetX mantido)
-                              ObxValue(
-                                (show) => TextFormField(
+                                // Email
+                                TextFormField(
                                   onChanged: (text) =>
-                                      controller.user.value.password = text,
-                                  obscureText: !show.value,
+                                      controller.user.value.email = text,
                                   style: const TextStyle(
                                     color: ink,
                                     fontSize: 14,
@@ -186,88 +172,116 @@ class LoginPage extends GetView<LoginController> {
                                   ),
                                   cursorColor: primario,
                                   decoration: _inputDec(
-                                    label: "Senha",
-                                    hint: "Digite sua senha",
-                                    icon: Icons.password,
-                                    suffixIcon: IconButton(
-                                      icon: Icon(
-                                        show.value
-                                            ? Icons.visibility_off
-                                            : Icons.visibility,
-                                        color: Colors.white.withOpacity(.70),
-                                      ),
-                                      onPressed: () => show.value = !show.value,
-                                    ),
+                                    label: "E-mail",
+                                    hint: "Digite seu email",
+                                    icon: Icons.email,
                                   ),
                                 ),
-                                false.obs,
-                              ),
 
-                              const SizedBox(height: 16),
+                                const SizedBox(height: 12),
 
-                              // Botão
-                              SizedBox(
-                                width: double.infinity,
-                                height: 48,
-                                child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: primario,
-                                    foregroundColor: Colors.white,
-                                    elevation: 0,
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 14,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(14),
-                                    ),
-                                  ),
-                                  onPressed: controller.login,
-                                  child: const Text(
-                                    "Login",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w900,
-                                      letterSpacing: .2,
+                                // Password (GetX mantido)
+                                ObxValue(
+                                  (show) => TextFormField(
+                                    onChanged: (text) =>
+                                        controller.user.value.password = text,
+                                    obscureText: !show.value,
+                                    style: const TextStyle(
+                                      color: ink,
                                       fontSize: 14,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                    cursorColor: primario,
+                                    decoration: _inputDec(
+                                      label: "Senha",
+                                      hint: "Digite sua senha",
+                                      icon: Icons.password,
+                                      suffixIcon: IconButton(
+                                        icon: Icon(
+                                          show.value
+                                              ? Icons.visibility_off
+                                              : Icons.visibility,
+                                          color: Colors.white.withOpacity(.70),
+                                        ),
+                                        onPressed: () =>
+                                            show.value = !show.value,
+                                      ),
+                                    ),
+                                  ),
+                                  false.obs,
+                                ),
+
+                                const SizedBox(height: 16),
+
+                                // Botão
+                                SizedBox(
+                                  width: double.infinity,
+                                  height: 48,
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: primario,
+                                      foregroundColor: Colors.white,
+                                      elevation: 0,
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 14,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(14),
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      FocusScope.of(context).unfocus(); // ✅
+                                      controller.login();
+                                    },
+                                    child: const Text(
+                                      "Login",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w900,
+                                        letterSpacing: .2,
+                                        fontSize: 14,
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
 
-                              const SizedBox(height: 12),
+                                const SizedBox(height: 12),
 
-                              GestureDetector(
-                                child: Text(
-                                  "Esqueceu sua senha?",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: Colors.white.withOpacity(.60),
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 12,
+                                GestureDetector(
+                                  onTap: () =>
+                                      FocusScope.of(context).unfocus(), // ✅
+                                  child: Text(
+                                    "Esqueceu sua senha?",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: Colors.white.withOpacity(.60),
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 12,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
 
-                        const SizedBox(height: 14),
+                          const SizedBox(height: 14),
 
-                        Text(
-                          "Encerrar Contrato • Mobile",
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(.35),
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
+                          Text(
+                            "Encerrar Contrato • Mobile",
+                            style: TextStyle(
+                              color: Colors.white.withOpacity(.35),
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 10),
-                      ],
+                          const SizedBox(height: 10),
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

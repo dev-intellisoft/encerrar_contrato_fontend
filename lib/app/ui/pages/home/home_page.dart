@@ -11,13 +11,14 @@ import '../../../widgets/processing.dart';
 import '../dashboard/widgets/solicitation_tile.dart';
 import '../../../widgets/agency_logo.dart';
 
+final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
 class HomePage extends GetView<HomeController> {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((_) => controller.load());
-    final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+    // WidgetsBinding.instance.addPostFrameCallback((_) => controller.load());
 
     // ===== PALETA (dark premium) =====
     const primario = Color(0xFF5E17EB);
@@ -48,7 +49,10 @@ class HomePage extends GetView<HomeController> {
         prefixIcon: prefixIcon ?? Icon(icon, color: claro),
         filled: true,
         fillColor: Colors.white.withOpacity(.06),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 14,
+          vertical: 12,
+        ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide(color: Colors.white.withOpacity(.12)),
@@ -80,10 +84,7 @@ class HomePage extends GetView<HomeController> {
             ),
           ],
         ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(18),
-          child: child,
-        ),
+        child: ClipRRect(borderRadius: BorderRadius.circular(18), child: child),
       );
     }
 
@@ -98,7 +99,10 @@ class HomePage extends GetView<HomeController> {
         actions: [
           IconButton(
             onPressed: () => _scaffoldKey.currentState?.openEndDrawer(),
-            icon: Icon(Icons.person_3_rounded, color: Colors.white.withOpacity(.9)),
+            icon: Icon(
+              Icons.person_3_rounded,
+              color: Colors.white.withOpacity(.9),
+            ),
           ),
         ],
       ),
@@ -109,11 +113,7 @@ class HomePage extends GetView<HomeController> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              bg,
-              Color.lerp(bg, secundario, .06)!,
-              bg,
-            ],
+            colors: [bg, Color.lerp(bg, secundario, .06)!, bg],
           ),
         ),
         child: Stack(
@@ -147,7 +147,10 @@ class HomePage extends GetView<HomeController> {
             SafeArea(
               child: Center(
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 18,
+                    vertical: 14,
+                  ),
                   child: ConstrainedBox(
                     constraints: BoxConstraints(maxWidth: maxW),
                     child: Column(
@@ -159,7 +162,9 @@ class HomePage extends GetView<HomeController> {
                           decoration: BoxDecoration(
                             color: bg2,
                             borderRadius: BorderRadius.circular(24),
-                            border: Border.all(color: Colors.white.withOpacity(.08)),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(.08),
+                            ),
                             boxShadow: [
                               BoxShadow(
                                 color: Colors.black.withOpacity(.40),
@@ -181,7 +186,9 @@ class HomePage extends GetView<HomeController> {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      AgencyLogo(imagePath: controller.avatar.value),
+                                      AgencyLogo(
+                                        imagePath: controller.avatar.value,
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -219,23 +226,29 @@ class HomePage extends GetView<HomeController> {
                                         child: Obx(() {
                                           if (controller.loading.value) {
                                             return Center(
-                                              child: CircularProgressIndicator(color: primario),
+                                              child: CircularProgressIndicator(
+                                                color: primario,
+                                              ),
                                             );
                                           }
                                           return Column(
-                                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.stretch,
                                             children: [
                                               Text(
                                                 'Enviar link por e-mail',
                                                 style: TextStyle(
-                                                  color: Colors.white.withOpacity(.70),
+                                                  color: Colors.white
+                                                      .withOpacity(.70),
                                                   fontWeight: FontWeight.w700,
                                                 ),
                                               ),
                                               const SizedBox(height: 10),
 
                                               TextField(
-                                                onChanged: (value) => controller.name.value = value,
+                                                onChanged: (value) =>
+                                                    controller.name.value =
+                                                        value,
                                                 style: const TextStyle(
                                                   color: ink,
                                                   fontWeight: FontWeight.w700,
@@ -250,7 +263,9 @@ class HomePage extends GetView<HomeController> {
                                               const SizedBox(height: 10),
 
                                               TextFormField(
-                                                onChanged: (value) => controller.email.value = value,
+                                                onChanged: (value) =>
+                                                    controller.email.value =
+                                                        value,
                                                 style: const TextStyle(
                                                   color: ink,
                                                   fontWeight: FontWeight.w700,
@@ -268,19 +283,25 @@ class HomePage extends GetView<HomeController> {
                                               SizedBox(
                                                 height: 46,
                                                 child: ElevatedButton(
-                                                  onPressed: controller.sendEmail,
+                                                  onPressed:
+                                                      controller.sendEmail,
                                                   style: ElevatedButton.styleFrom(
                                                     backgroundColor: primario,
-                                                    foregroundColor: Colors.white,
+                                                    foregroundColor:
+                                                        Colors.white,
                                                     elevation: 0,
                                                     shape: RoundedRectangleBorder(
-                                                      borderRadius: BorderRadius.circular(14),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            14,
+                                                          ),
                                                     ),
                                                   ),
                                                   child: const Text(
                                                     'Enviar',
                                                     style: TextStyle(
-                                                      fontWeight: FontWeight.w900,
+                                                      fontWeight:
+                                                          FontWeight.w900,
                                                       letterSpacing: .2,
                                                     ),
                                                   ),
@@ -299,7 +320,10 @@ class HomePage extends GetView<HomeController> {
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(14),
                                     ),
-                                    padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 18),
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 14,
+                                      horizontal: 18,
+                                    ),
                                   ),
                                   child: const Text(
                                     'Cadastrar informações',
@@ -322,7 +346,9 @@ class HomePage extends GetView<HomeController> {
                           decoration: BoxDecoration(
                             color: bg2,
                             borderRadius: BorderRadius.circular(22),
-                            border: Border.all(color: Colors.white.withOpacity(.08)),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(.08),
+                            ),
                             boxShadow: [
                               BoxShadow(
                                 color: primario.withOpacity(.10),
@@ -345,7 +371,8 @@ class HomePage extends GetView<HomeController> {
                               ),
                               const SizedBox(height: 10),
                               TextFormField(
-                                onChanged: (value) => controller.search.value = value,
+                                onChanged: (value) =>
+                                    controller.search.value = value,
                                 style: const TextStyle(
                                   color: ink,
                                   fontWeight: FontWeight.w700,
@@ -357,7 +384,10 @@ class HomePage extends GetView<HomeController> {
                                   hint: 'Nome do cliente',
                                   icon: Icons.search,
                                   // ✅ sin SearchIcon (rompía layout)
-                                  prefixIcon: Icon(Icons.search_rounded, color: claro),
+                                  prefixIcon: Icon(
+                                    Icons.search_rounded,
+                                    color: claro,
+                                  ),
                                 ),
                               ),
                             ],
@@ -372,7 +402,9 @@ class HomePage extends GetView<HomeController> {
                           decoration: BoxDecoration(
                             color: bg2,
                             borderRadius: BorderRadius.circular(22),
-                            border: Border.all(color: Colors.white.withOpacity(.08)),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(.08),
+                            ),
                             boxShadow: [
                               BoxShadow(
                                 color: Colors.black.withOpacity(.45),
@@ -391,7 +423,9 @@ class HomePage extends GetView<HomeController> {
                             child: Obx(
                               () => controller.loading.value
                                   ? Center(
-                                      child: CircularProgressIndicator(color: primario),
+                                      child: CircularProgressIndicator(
+                                        color: primario,
+                                      ),
                                     )
                                   : ListView(
                                       children: controller.solicitations.isEmpty
@@ -400,111 +434,179 @@ class HomePage extends GetView<HomeController> {
                                                 child: Text(
                                                   'Nenhum solicitação!',
                                                   style: TextStyle(
-                                                    color: Colors.white.withOpacity(.70),
+                                                    color: Colors.white
+                                                        .withOpacity(.70),
                                                     fontWeight: FontWeight.w700,
                                                   ),
                                                 ),
-                                              )
+                                              ),
                                             ]
                                           : controller.solicitations
-                                              .where(
-                                                (s) => s.customer!.name!
-                                                    .toLowerCase()
-                                                    .contains(
-                                                      controller.search.value.toLowerCase(),
-                                                    ),
-                                              )
-                                              .map(
-                                                (s) => Padding(
-                                                  padding: const EdgeInsets.only(bottom: 10),
-                                                  child: _caseCard(
-                                                    // ✅ card redondo + color patrón, sin puntas
-                                                    child: SolicitationTile(
-                                                      solicitation: s,
-                                                      onTap: (solicitation) {
-                                                        Get.dialog(
-                                                          AlertDialog(
-                                                            backgroundColor: bg2,
-                                                            shape: RoundedRectangleBorder(
-                                                              borderRadius: BorderRadius.circular(18),
-                                                            ),
-                                                            title: const Text(
-                                                              'Detalhes do contrato',
-                                                              style: TextStyle(
-                                                                color: ink,
-                                                                fontWeight: FontWeight.w900,
+                                                .where(
+                                                  (s) => s.customer!.name!
+                                                      .toLowerCase()
+                                                      .contains(
+                                                        controller.search.value
+                                                            .toLowerCase(),
+                                                      ),
+                                                )
+                                                .map(
+                                                  (s) => Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                          bottom: 10,
+                                                        ),
+                                                    child: _caseCard(
+                                                      // ✅ card redondo + color patrón, sin puntas
+                                                      child: SolicitationTile(
+                                                        solicitation: s,
+                                                        onTap: (solicitation) {
+                                                          Get.dialog(
+                                                            AlertDialog(
+                                                              backgroundColor:
+                                                                  bg2,
+                                                              shape: RoundedRectangleBorder(
+                                                                borderRadius:
+                                                                    BorderRadius.circular(
+                                                                      18,
+                                                                    ),
+                                                              ),
+                                                              title: const Text(
+                                                                'Detalhes do contrato',
+                                                                style: TextStyle(
+                                                                  color: ink,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w900,
+                                                                ),
+                                                              ),
+                                                              content: SizedBox(
+                                                                height: 320,
+                                                                child: Column(
+                                                                  crossAxisAlignment:
+                                                                      CrossAxisAlignment
+                                                                          .start,
+                                                                  children: [
+                                                                    Text(
+                                                                      '${solicitation.customer!.name}',
+                                                                      style: const TextStyle(
+                                                                        color:
+                                                                            ink,
+                                                                        fontWeight:
+                                                                            FontWeight.w900,
+                                                                      ),
+                                                                    ),
+                                                                    const SizedBox(
+                                                                      height: 6,
+                                                                    ),
+                                                                    Text(
+                                                                      '${solicitation.customer!.email}',
+                                                                      style: TextStyle(
+                                                                        color:
+                                                                            muted,
+                                                                      ),
+                                                                    ),
+                                                                    Text(
+                                                                      '${solicitation.customer!.phone}',
+                                                                      style: TextStyle(
+                                                                        color:
+                                                                            muted,
+                                                                      ),
+                                                                    ),
+                                                                    Text(
+                                                                      '${solicitation.customer!.cpf}',
+                                                                      style: TextStyle(
+                                                                        color:
+                                                                            muted,
+                                                                      ),
+                                                                    ),
+                                                                    const SizedBox(
+                                                                      height:
+                                                                          10,
+                                                                    ),
+                                                                    Text(
+                                                                      '${solicitation.address!.street}, ${solicitation.address!.number} ${solicitation.address!.complement}',
+                                                                      style: TextStyle(
+                                                                        color:
+                                                                            muted,
+                                                                      ),
+                                                                    ),
+                                                                    Text(
+                                                                      '${solicitation.address!.neighborhood}, ${solicitation.address!.city}, ${solicitation.address!.state}',
+                                                                      style: TextStyle(
+                                                                        color:
+                                                                            muted,
+                                                                      ),
+                                                                    ),
+                                                                    const SizedBox(
+                                                                      height:
+                                                                          12,
+                                                                    ),
+                                                                    if (solicitation
+                                                                            .status ==
+                                                                        SolicitationStatus
+                                                                            .done)
+                                                                      Row(
+                                                                        children: [
+                                                                          Text(
+                                                                            'Encerrado',
+                                                                            style: TextStyle(
+                                                                              color: muted,
+                                                                            ),
+                                                                          ),
+                                                                          const SizedBox(
+                                                                            width:
+                                                                                6,
+                                                                          ),
+                                                                          Done(),
+                                                                        ],
+                                                                      )
+                                                                    else if (solicitation
+                                                                            .status ==
+                                                                        SolicitationStatus
+                                                                            .processing)
+                                                                      Row(
+                                                                        children: [
+                                                                          Text(
+                                                                            'Em andamento',
+                                                                            style: TextStyle(
+                                                                              color: muted,
+                                                                            ),
+                                                                          ),
+                                                                          const SizedBox(
+                                                                            width:
+                                                                                6,
+                                                                          ),
+                                                                          Processing(),
+                                                                        ],
+                                                                      )
+                                                                    else
+                                                                      Row(
+                                                                        children: [
+                                                                          Text(
+                                                                            'Pendente',
+                                                                            style: TextStyle(
+                                                                              color: muted,
+                                                                            ),
+                                                                          ),
+                                                                          const SizedBox(
+                                                                            width:
+                                                                                6,
+                                                                          ),
+                                                                          Pending(),
+                                                                        ],
+                                                                      ),
+                                                                  ],
+                                                                ),
                                                               ),
                                                             ),
-                                                            content: SizedBox(
-                                                              height: 320,
-                                                              child: Column(
-                                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                                children: [
-                                                                  Text(
-                                                                    '${solicitation.customer!.name}',
-                                                                    style: const TextStyle(
-                                                                      color: ink,
-                                                                      fontWeight: FontWeight.w900,
-                                                                    ),
-                                                                  ),
-                                                                  const SizedBox(height: 6),
-                                                                  Text(
-                                                                    '${solicitation.customer!.email}',
-                                                                    style: TextStyle(color: muted),
-                                                                  ),
-                                                                  Text(
-                                                                    '${solicitation.customer!.phone}',
-                                                                    style: TextStyle(color: muted),
-                                                                  ),
-                                                                  Text(
-                                                                    '${solicitation.customer!.cpf}',
-                                                                    style: TextStyle(color: muted),
-                                                                  ),
-                                                                  const SizedBox(height: 10),
-                                                                  Text(
-                                                                    '${solicitation.address!.street}, ${solicitation.address!.number} ${solicitation.address!.complement}',
-                                                                    style: TextStyle(color: muted),
-                                                                  ),
-                                                                  Text(
-                                                                    '${solicitation.address!.neighborhood}, ${solicitation.address!.city}, ${solicitation.address!.state}',
-                                                                    style: TextStyle(color: muted),
-                                                                  ),
-                                                                  const SizedBox(height: 12),
-                                                                  if (solicitation.status == SolicitationStatus.done)
-                                                                    Row(
-                                                                      children: [
-                                                                        Text('Encerrado', style: TextStyle(color: muted)),
-                                                                        const SizedBox(width: 6),
-                                                                        Done(),
-                                                                      ],
-                                                                    )
-                                                                  else if (solicitation.status == SolicitationStatus.processing)
-                                                                    Row(
-                                                                      children: [
-                                                                        Text('Em andamento', style: TextStyle(color: muted)),
-                                                                        const SizedBox(width: 6),
-                                                                        Processing(),
-                                                                      ],
-                                                                    )
-                                                                  else
-                                                                    Row(
-                                                                      children: [
-                                                                        Text('Pendente', style: TextStyle(color: muted)),
-                                                                        const SizedBox(width: 6),
-                                                                        Pending(),
-                                                                      ],
-                                                                    ),
-                                                                ],
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        );
-                                                      },
+                                                          );
+                                                        },
+                                                      ),
                                                     ),
                                                   ),
-                                                ),
-                                              )
-                                              .toList(),
+                                                )
+                                                .toList(),
                                     ),
                             ),
                           ),

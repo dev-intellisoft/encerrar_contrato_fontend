@@ -9,15 +9,16 @@ import '../../../widgets/drawer.dart';
 import '../../../widgets/logo.dart';
 import 'widgets/solicitation_tile.dart';
 
+final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
 class DashboardPage extends GetView<DashboardController> {
   const DashboardPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) => controller.getSolicitations(),
-    );
+    // WidgetsBinding.instance.addPostFrameCallback(
+    //   (_) => controller.getSolicitations(),
+    // );
 
     // ===== PALETA (dark premium) =====
     const primario = Color(0xFF5E17EB);
@@ -321,6 +322,7 @@ class DashboardPage extends GetView<DashboardController> {
                           value: customer?.cpf ?? "",
                           hint: "Digite o CPF/CNPJ",
                           icon: Icons.badge_outlined,
+                          keyboardType: TextInputType.number,
                           onChanged: (v) {
                             if (customer != null) customer.cpf = v;
                           },
