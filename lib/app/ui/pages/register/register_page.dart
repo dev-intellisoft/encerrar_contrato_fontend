@@ -378,20 +378,6 @@ class RegisterPage extends GetView<RegisterController> {
 
                                 const SizedBox(height: 14),
 
-                                Text(
-                                  '${controller.solicitation.value.service} selected',
-                                  style: TextStyle(
-                                    color: ink,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-
-                                // Forms (mantidos)
-                                // ✅ IMPORTANTE: dentro de CloseForm/TransferForm,
-                                // usa TextFormField con:
-                                // style: TextStyle(color: Colors.white)
-                                // cursorColor: Colors.white
-                                // decoration: inputDec(...)
                                 if (controller.solicitation.value.service ==
                                     "close")
                                   CloseForm(),

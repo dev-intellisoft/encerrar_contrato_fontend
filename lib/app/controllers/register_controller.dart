@@ -1,3 +1,4 @@
+import 'package:encerrar_contrato/app/models/agency_model.dart';
 import 'package:encerrar_contrato/app/services/payment_service.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:get/get.dart';
@@ -32,7 +33,7 @@ class RegisterController extends GetxController {
   RxString cep = ''.obs;
   Rx<Documents> documents = Documents().obs;
 
-  RxString agencyLogo = ''.obs;
+  Rx<Agency> agency = Agency().obs;
 
   bool isValidCEP(String cep) {
     cep = cep.replaceAll(RegExp(r'\D'), '');
@@ -42,8 +43,7 @@ class RegisterController extends GetxController {
 
   Future<void> getAgencyLogo(String agencyId) async {
     try {
-      var logo = await registrationService.getAgencyLogo(agencyId);
-      agencyLogo.value = logo;
+      agency.value = await registrationService.getAgencyLogo(agencyId);
       // solicitation.update((s) => s!.agencyLogo = logo);
     } catch (e) {
       Get.snackbar('Error', e.toString());
