@@ -34,6 +34,7 @@ class RegisterController extends GetxController {
   Rx<Documents> documents = Documents().obs;
 
   Rx<Agency> agency = Agency().obs;
+  RxBool loadingAgency = false.obs;
 
   bool isValidCEP(String cep) {
     cep = cep.replaceAll(RegExp(r'\D'), '');
@@ -43,10 +44,13 @@ class RegisterController extends GetxController {
 
   Future<void> getAgencyLogo(String agencyId) async {
     try {
+      loadingAgency.value = true;
       agency.value = await registrationService.getAgencyLogo(agencyId);
       // solicitation.update((s) => s!.agencyLogo = logo);
     } catch (e) {
       Get.snackbar('Error', e.toString());
+    } finally {
+      loadingAgency.value = false;
     }
   }
 
