@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
+import 'package:encerrar_contrato/app/models/agency_model.dart';
 import '../models/address_model.dart';
 import '../models/solicitation_model.dart';
 import '../models/service_model.dart';
@@ -8,10 +9,10 @@ class RegistrationServices {
   final Dio dio;
   RegistrationServices(this.dio);
 
-  Future<String> getAgencyLogo(String agencyId) async {
+  Future<Agency> getAgencyLogo(String agencyId) async {
     var response = await dio.get('/agency/logo/$agencyId');
     if (response.statusCode == 200) {
-      return response.data;
+      return Agency.fromJson(response.data);
     }
     throw Exception('Failed to get agency logo');
   }

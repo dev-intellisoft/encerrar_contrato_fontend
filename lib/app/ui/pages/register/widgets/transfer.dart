@@ -254,7 +254,14 @@ class TransferForm extends GetView<RegisterController> {
           child: Column(
             children: [
               Row(
-                children: [AgencyLogo(imagePath: controller.agencyLogo.value!)],
+                children: [
+                  AgencyLogo(imagePath: controller.agency.value.image!),
+                  SizedBox(width: 20),
+                  Text(
+                    '${controller.agency.value.name}',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ],
               ),
               const SizedBox(height: 10),
 
