@@ -1,3 +1,4 @@
+import 'package:encerrar_contrato/app/routes/app_pages.dart';
 import 'package:encerrar_contrato/app/widgets/logo.dart';
 // import 'package:encerrar_contrato/app/widgets/search_icon.dart'; // ❌ removido
 import 'package:get/get.dart';
@@ -326,8 +327,43 @@ class HomePage extends GetView<HomeController> {
                                     ),
                                   ),
                                   child: const Text(
-                                    'Cadastrar informações',
+                                    'Enviar link para o cliente',
                                     style: TextStyle(
+                                      fontWeight: FontWeight.w900,
+                                      letterSpacing: .2,
+                                    ),
+                                  ),
+                                ),
+                              ),
+
+                              SizedBox(height: 10),
+
+                              SizedBox(
+                                height: 48,
+                                child: ElevatedButton(
+                                  onPressed: () =>
+                                      Get.toNamed(Routes.AGENCY_REGISTRY),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color.fromARGB(
+                                      255,
+                                      255,
+                                      255,
+                                      255,
+                                    ),
+                                    foregroundColor: Colors.white,
+                                    elevation: 0,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(14),
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 14,
+                                      horizontal: 18,
+                                    ),
+                                  ),
+                                  child: const Text(
+                                    'Preencher dados do clinte',
+                                    style: TextStyle(
+                                      color: primario,
                                       fontWeight: FontWeight.w900,
                                       letterSpacing: .2,
                                     ),

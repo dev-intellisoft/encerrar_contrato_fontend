@@ -275,15 +275,16 @@ class DashboardPage extends GetView<DashboardController> {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 10),
-              Text(
-                'Número de protolo: ${controller.solicitation.value!.protocol}',
-                style: TextStyle(
-                  color: ink,
-                  fontWeight: FontWeight.w900,
-                  fontSize: 14,
+              if (controller.solicitation.value!.protocol != null)
+                Text(
+                  'Número de protolo: ${controller.solicitation.value!.protocol}',
+                  style: TextStyle(
+                    color: ink,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 14,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-                textAlign: TextAlign.center,
-              ),
               const SizedBox(height: 10),
 
               Expanded(
