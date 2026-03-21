@@ -90,6 +90,8 @@ class RegisterPage extends GetView<RegisterController> {
       required VoidCallback onRight,
       IconData? leftIcon,
       IconData? rightIcon,
+      Key? leftKey,
+      Key? rightKey,
     }) {
       return Container(
         padding: const EdgeInsets.all(6),
@@ -109,6 +111,7 @@ class RegisterPage extends GetView<RegisterController> {
           children: [
             Expanded(
               child: _SegmentButton(
+                key: leftKey,
                 label: leftText,
                 icon: leftIcon,
                 active: leftActive,
@@ -118,6 +121,7 @@ class RegisterPage extends GetView<RegisterController> {
             const SizedBox(width: 8),
             Expanded(
               child: _SegmentButton(
+                key: rightKey,
                 label: rightText,
                 icon: rightIcon,
                 active: !leftActive,
@@ -374,16 +378,28 @@ class RegisterPage extends GetView<RegisterController> {
                                   onRight: () => controller.solicitation.update(
                                     (s) => s!.service = 'transfer',
                                   ),
+                                  leftKey: const Key(
+                                    'register_tab_close',
+                                  ),
+                                  rightKey: const Key(
+                                    'register_tab_transfer',
+                                  ),
                                 ),
 
                                 const SizedBox(height: 14),
 
                                 if (controller.solicitation.value.service ==
                                     "close")
-                                  CloseForm(),
+                                  KeyedSubtree(
+                                    key: const Key('register_close_form'),
+                                    child: CloseForm(),
+                                  ),
                                 if (controller.solicitation.value.service ==
                                     "transfer")
-                                  TransferForm(),
+                                  KeyedSubtree(
+                                    key: const Key('register_transfer_form'),
+                                    child: TransferForm(),
+                                  ),
 
                                 const SizedBox(height: 12),
                                 Text(
@@ -421,6 +437,7 @@ class _SegmentButton extends StatefulWidget {
   final VoidCallback onTap;
 
   const _SegmentButton({
+    super.key,
     required this.label,
     required this.active,
     required this.onTap,

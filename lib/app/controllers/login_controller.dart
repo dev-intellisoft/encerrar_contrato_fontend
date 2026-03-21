@@ -11,6 +11,8 @@ class LoginController extends GetxController {
 
   Rx<User> user = User().obs;
   Rx<AccessToken> accessToken = AccessToken().obs;
+  bool _sessionCheckInProgress = false;
+  bool _sessionChecked = false;
 
   @override
   void onInit() {
@@ -55,18 +57,25 @@ class LoginController extends GetxController {
   }
 
   Future<void> checkSession() async {
+    if (_sessionCheckInProgress || _sessionChecked) return;
+    _sessionCheckInProgress = true;
     try {
       user.value = await service.checkSession();
       if (!(user.value.id! != "")) {
         throw Exception('No session');
       }
       if (user.value.agency == 'encerrar' || user.value.agency == '') {
+        _sessionChecked = true;
         return Get.offAllNamed(Routes.DASHBOARD);
       }
+      _sessionChecked = true;
       return Get.offAllNamed(Routes.HOME);
     } catch (e) {
       GetStorage().remove('token');
       Get.snackbar('Error=======>', e.toString());
+      _sessionChecked = true;
+    } finally {
+      _sessionCheckInProgress = false;
     }
   }
 }

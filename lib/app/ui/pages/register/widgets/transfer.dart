@@ -33,13 +33,19 @@ class TransferForm extends GetView<RegisterController> {
     return '$dd/$mm/$yyyy';
   }
 
-  InputDecoration _dec({required String label, String? hint, IconData? icon}) {
+  InputDecoration _dec({
+    required String label,
+    String? hint,
+    IconData? icon,
+    Widget? suffixIcon,
+  }) {
     return InputDecoration(
       labelText: label,
       hintText: hint,
       filled: true,
       fillColor: _bgField,
       prefixIcon: icon != null ? Icon(icon, color: _claro) : null,
+      suffixIcon: suffixIcon,
       labelStyle: TextStyle(
         color: _ink.withOpacity(.92),
         fontWeight: FontWeight.w700,
@@ -125,6 +131,7 @@ class TransferForm extends GetView<RegisterController> {
 
     if (picked != null) {
       final formatted = _formatBR(picked);
+      controller.birthDateController.text = formatted;
       controller.solicitation.update((s) => s!.customer!.birthDate = formatted);
     }
   }
@@ -248,107 +255,110 @@ class TransferForm extends GetView<RegisterController> {
 
     return Obx(
       () => SizedBox(
-        height: 400,
+        height: 520,
         child: Container(
           margin: const EdgeInsets.all(10),
-          child: Column(
-            children: [
-                Obx(() => controller.loadingAgency.value
-                    ? const Center(
-                        child: CircularProgressIndicator(),
-                      )
-                    : Row(
-                        children: [
-                          AgencyLogo(
-                            imagePath: controller.agency.value.image ??
-                                'assets/default_agency.png',
-                          ),
-                          const SizedBox(width: 20),
-                          Text(
-                            '${controller.agency.value.name}',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ],
-                      )),
-              const SizedBox(height: 10),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Obx(
+              () => controller.loadingAgency.value
+                  ? const Center(child: CircularProgressIndicator())
+                  : Row(
+                      children: [
+                        AgencyLogo(
+                          imagePath:
+                              controller.agency.value.image ??
+                              'assets/default_agency.png',
+                        ),
+                        const SizedBox(width: 20),
+                        Text(
+                          '${controller.agency.value.name}',
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      ],
+                    ),
+            ),
+            const SizedBox(height: 10),
 
-              // ✅ Header pasos
-              _stepsHeader(_step.value),
-              const SizedBox(height: 12),
+            // ✅ Header pasos
+            _stepsHeader(_step.value),
+            const SizedBox(height: 12),
 
-              // ✅ Contenido por pasos
-              Expanded(
-                child: SingleChildScrollView(
-                  child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 220),
-                    child: _step.value == 1
-                        ? _step1CurrentHolder(
-                            context,
-                            birthCtrl,
-                            phoneCtrl,
-                            confirmPhoneCtrl,
-                            phoneMask,
-                          )
-                        : _step.value == 2
-                            ? _step2NewHolderDocuments(context)
-                            : _step3ServicesAndTotal(context),
+            // ✅ Contenido por pasos
+            SizedBox(
+              height: 300,
+              child: SingleChildScrollView(
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 220),
+                  child: _step.value == 1
+                      ? _step1CurrentHolder(
+                          context,
+                          birthCtrl,
+                          phoneCtrl,
+                          confirmPhoneCtrl,
+                          phoneMask,
+                        )
+                      : _step.value == 2
+                          ? _step2NewHolderDocuments(context)
+                          : _step3ServicesAndTotal(context),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 10),
+
+            // ✅ barra inferior de navegación
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              decoration: BoxDecoration(
+                color: _bgCard,
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(color: Colors.white.withOpacity(.10)),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: _step.value == 1 ? null : _goBack,
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        side: BorderSide(
+                          color: Colors.white.withOpacity(.16),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      ),
+                      child: const Text(
+                        'Voltar',
+                        style: TextStyle(fontWeight: FontWeight.w900),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-
-              const SizedBox(height: 10),
-
-              // ✅ barra inferior de navegación
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                decoration: BoxDecoration(
-                  color: _bgCard,
-                  borderRadius: BorderRadius.circular(18),
-                  border: Border.all(color: Colors.white.withOpacity(.10)),
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton(
-                        onPressed: _step.value == 1 ? null : _goBack,
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: Colors.white,
-                          side: BorderSide(
-                            color: Colors.white.withOpacity(.16),
-                          ),
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                        ),
-                        child: const Text(
-                          'Voltar',
-                          style: TextStyle(fontWeight: FontWeight.w900),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed:
+                          _step.value < 3 ? _goNext : () {}, // paso 3 no avanza
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _primario,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed:
-                            _step.value < 3 ? _goNext : () {}, // paso 3 no avanza
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: _primario,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                        ),
-                        child: Text(
-                          _step.value < 3 ? 'Siguiente' : 'Último passo',
-                          style: const TextStyle(fontWeight: FontWeight.w900),
-                        ),
+                      child: Text(
+                        _step.value < 3 ? 'Siguiente' : 'Último passo',
+                        style: const TextStyle(fontWeight: FontWeight.w900),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
+            ),
             ],
           ),
         ),
@@ -413,18 +423,27 @@ class TransferForm extends GetView<RegisterController> {
               const SizedBox(width: 10),
               Expanded(
                 child: TextFormField(
-                  initialValue:
-                      controller.solicitation.value.customer!.birthDate ?? '',
+                  controller: controller.birthDateController,
                   style: _fieldText,
                   cursorColor: _ink,
-                  // controller: birthCtrl,
-                  readOnly: true,
-                  onTap: () => _pickBirthDate(context, controller),
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [
+                    MaskTextInputFormatter(
+                      mask: '##/##/####',
+                      filter: {"#": RegExp(r'[0-9]')},
+                    ),
+                  ],
                   decoration: _dec(
                     label: 'Data de nascimento',
                     hint: 'Selecione no calendário',
                     icon: Icons.cake_outlined,
+                    suffixIcon: IconButton(
+                      icon: const Icon(Icons.calendar_month_outlined),
+                      onPressed: () => _pickBirthDate(context, controller),
+                    ),
                   ),
+                  onChanged: (text) =>
+                      controller.solicitation.value.customer!.birthDate = text,
                   validator: (v) =>
                       (v ?? '').trim().isEmpty ? 'Selecione a data' : null,
                 ),
@@ -521,6 +540,7 @@ class TransferForm extends GetView<RegisterController> {
           TextFormField(
             style: _fieldText,
             cursorColor: _ink,
+            controller: controller.cepController,
             inputFormatters: [
               MaskTextInputFormatter(
                 mask: '##.###-###',

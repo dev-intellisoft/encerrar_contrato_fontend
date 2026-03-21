@@ -1,6 +1,7 @@
 import 'package:encerrar_contrato/app/models/agency_model.dart';
 import 'package:encerrar_contrato/app/services/payment_service.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../models/address_model.dart';
@@ -35,6 +36,8 @@ class RegisterController extends GetxController {
 
   Rx<Agency> agency = Agency().obs;
   RxBool loadingAgency = false.obs;
+  final TextEditingController cepController = TextEditingController();
+  final TextEditingController birthDateController = TextEditingController();
 
   bool isValidCEP(String cep) {
     cep = cep.replaceAll(RegExp(r'\D'), '');
@@ -65,6 +68,13 @@ class RegisterController extends GetxController {
     if (isValidCEP(cep.value)) {
       searchCep(text);
     }
+  }
+
+  @override
+  void onClose() {
+    cepController.dispose();
+    birthDateController.dispose();
+    super.onClose();
   }
 
   Future<void> getServices(String type) async {

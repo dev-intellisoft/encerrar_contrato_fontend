@@ -79,17 +79,24 @@ class CloseForm extends GetView<RegisterController> {
 
     if (picked != null) {
       final formatted = _formatBR(picked);
+      controller.birthDateController.text = formatted;
       controller.solicitation.update((s) => s!.customer!.birthDate = formatted);
     }
   }
 
-  InputDecoration _dec({required String label, String? hint, IconData? icon}) {
+  InputDecoration _dec({
+    required String label,
+    String? hint,
+    IconData? icon,
+    Widget? suffixIcon,
+  }) {
     return InputDecoration(
       labelText: label,
       hintText: hint,
       filled: true,
       fillColor: _bgField,
       prefixIcon: icon != null ? Icon(icon, color: _claro) : null,
+      suffixIcon: suffixIcon,
       labelStyle: TextStyle(
         color: _ink.withOpacity(.92),
         fontWeight: FontWeight.w700,
@@ -134,7 +141,7 @@ class CloseForm extends GetView<RegisterController> {
 
     return Obx(
       () => SizedBox(
-        height: 400,
+        height: 520,
         child: Container(
           margin: const EdgeInsets.all(10),
           child: Form(
@@ -142,11 +149,11 @@ class CloseForm extends GetView<RegisterController> {
             autovalidateMode: AutovalidateMode.onUserInteraction,
             child: ListView(
               children: [
-                Obx(
-                  () => controller.loadingAgency.value
-                      ? const Center(child: CircularProgressIndicator())
-                      : Row(
-                          children: [
+              Obx(
+                () => controller.loadingAgency.value
+                    ? const Center(child: CircularProgressIndicator())
+                    : Row(
+                        children: [
                             AgencyLogo(
                               imagePath:
                                   controller.agency.value.image ??
@@ -223,17 +230,24 @@ class CloseForm extends GetView<RegisterController> {
                     // ✅ DATA con calendario
                     Expanded(
                       child: TextFormField(
-                        initialValue:
-                            controller.solicitation.value.customer?.birthDate ??
-                            '',
+                        controller: controller.birthDateController,
                         style: _fieldText,
                         cursorColor: _ink,
-                        readOnly: true,
-                        onTap: () => _pickBirthDate(context, controller),
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          MaskTextInputFormatter(
+                            mask: '##/##/####',
+                            filter: {"#": RegExp(r'[0-9]')},
+                          ),
+                        ],
                         decoration: _dec(
                           label: 'Data de nascimento',
                           hint: 'Selecione no calendário',
                           icon: Icons.cake_outlined,
+                          suffixIcon: IconButton(
+                            icon: const Icon(Icons.calendar_month_outlined),
+                            onPressed: () => _pickBirthDate(context, controller),
+                          ),
                         ),
                         onChanged: (text) =>
                             controller.solicitation.value.customer!.birthDate =
@@ -355,6 +369,7 @@ class CloseForm extends GetView<RegisterController> {
                 TextFormField(
                   style: _fieldText,
                   cursorColor: _ink,
+                  controller: controller.cepController,
                   inputFormatters: [
                     MaskTextInputFormatter(
                       mask: '##.###-###',
