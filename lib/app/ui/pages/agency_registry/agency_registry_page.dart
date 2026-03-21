@@ -1,3 +1,13 @@
+// import 'package:flutter/material.dart';
+// import 'package:get/get.dart';
+
+// class AgencyRegistryPage extends GetView {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container();
+//   }
+// }
+
 // =================== register_page.dart ===================
 // ✅ RegisterPage ajustado para:
 // - textos más claros (menos opacidad apagada)
@@ -6,25 +16,25 @@
 // - mantiene tu look premium
 // =========================================================
 
-import 'package:encerrar_contrato/app/ui/pages/register/widgets/credit_card.dart';
-import 'package:encerrar_contrato/app/ui/pages/register/widgets/pix.dart';
+import 'package:encerrar_contrato/app/controllers/agency_controller.dart';
+// import 'package:encerrar_contrato/app/ui/pages/register/widgets/credit_card.dart';
+// import 'package:encerrar_contrato/app/ui/pages/register/widgets/pix.dart';
 import 'package:encerrar_contrato/app/ui/pages/register/widgets/spinner.dart';
-import 'package:encerrar_contrato/app/ui/pages/register/widgets/success.dart';
-import 'package:encerrar_contrato/app/ui/pages/register/widgets/transfer.dart';
+// import 'package:encerrar_contrato/app/ui/pages/register/widgets/success.dart';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:encerrar_contrato/app/controllers/register_controller.dart';
 import '../../../widgets/logo.dart';
 import 'widgets/close.dart';
+import 'widgets/transfer.dart';
 
-class RegisterPage extends GetView<RegisterController> {
-  final String agencyId;
-  const RegisterPage({super.key, required this.agencyId});
+class AgencyRegistryPage extends GetView<AgencyController> {
+  const AgencyRegistryPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    controller.solicitation.value.agencyId = agencyId;
-    controller.getAgencyLogo(agencyId);
+    // controller.solicitation.value.agencyId = agencyId;
+    // controller.getAgencyLogo(agencyId);
 
     // ===== PALETA (dark premium) =====
     const primario = Color(0xFF5E17EB);
@@ -90,8 +100,6 @@ class RegisterPage extends GetView<RegisterController> {
       required VoidCallback onRight,
       IconData? leftIcon,
       IconData? rightIcon,
-      Key? leftKey,
-      Key? rightKey,
     }) {
       return Container(
         padding: const EdgeInsets.all(6),
@@ -111,7 +119,6 @@ class RegisterPage extends GetView<RegisterController> {
           children: [
             Expanded(
               child: _SegmentButton(
-                key: leftKey,
                 label: leftText,
                 icon: leftIcon,
                 active: leftActive,
@@ -121,7 +128,6 @@ class RegisterPage extends GetView<RegisterController> {
             const SizedBox(width: 8),
             Expanded(
               child: _SegmentButton(
-                key: rightKey,
                 label: rightText,
                 icon: rightIcon,
                 active: !leftActive,
@@ -170,14 +176,14 @@ class RegisterPage extends GetView<RegisterController> {
             ),
             const SizedBox(height: 10),
 
-            Text(
-              'Total a pagar: R\$ ${controller.solicitation.value.items?.where((e) => e.selected).map((e) => e.price ?? 0).fold(0, (a, b) => a + b) ?? 0}',
-              style: TextStyle(
-                color: Colors.white.withOpacity(.90),
-                fontSize: 12,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
+            // Text(
+            //   'Total a pagar: R\$ ${controller.solicitation.value.items?.where((e) => e.selected).map((e) => e.price ?? 0).fold(0, (a, b) => a + b) ?? 0}',
+            //   style: TextStyle(
+            //     color: Colors.white.withOpacity(.90),
+            //     fontSize: 12,
+            //     fontWeight: FontWeight.w800,
+            //   ),
+            // ),
             const SizedBox(height: 10),
             Row(
               children: [
@@ -291,68 +297,25 @@ class RegisterPage extends GetView<RegisterController> {
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                sectionHeader("Pagamento"),
-
-                                if (controller
-                                        .creditCardPaymentResponse
-                                        .value
-                                        .status !=
-                                    'CONFIRMED')
-                                  premiumSwitch(
-                                    leftText: "Pagar com PIX",
-                                    rightText: "Cartão de crédito",
-                                    leftActive:
-                                        controller
-                                            .solicitation
-                                            .value
-                                            .paymentType ==
-                                        'pix',
-                                    leftIcon: Icons.qr_code_rounded,
-                                    rightIcon: Icons.credit_card_rounded,
-                                    onLeft: () => controller.solicitation
-                                        .update((s) => s!.paymentType = 'pix'),
-                                    onRight:
-                                        controller.setPaymentTypeToCreditCard,
-                                  ),
-
-                                const SizedBox(height: 14),
-
-                                statusCard(
-                                  code:
-                                      "${controller.solicitation.value.protocol}",
-                                  paidConfirmed:
-                                      controller
-                                          .creditCardPaymentResponse
-                                          .value
-                                          .status ==
-                                      'CONFIRMED',
+                                Text(
+                                  'Solicitação recebida com sucesso',
+                                  style: TextStyle(color: Colors.white),
                                 ),
 
-                                const SizedBox(height: 16),
-
-                                if (controller.solicitation.value.paymentType ==
-                                    "pix")
-                                  PIX(),
-
-                                if (controller.solicitation.value.paymentType ==
-                                    "cc")
-                                  if (controller
-                                          .creditCardPaymentResponse
-                                          .value
-                                          .status ==
-                                      'CONFIRMED')
-                                    Success()
-                                  else
-                                    CreditCard(),
-
-                                const SizedBox(height: 12),
-                                Text(
-                                  "Encerrar Contrato • Registro",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: subtle,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w700,
+                                SizedBox(height: 10),
+                                ElevatedButton(
+                                  onPressed: controller.New,
+                                  child: Text(
+                                    'Nova solicitação',
+                                    style: TextStyle(color: Colors.blue),
+                                  ),
+                                ),
+                                SizedBox(height: 10),
+                                ElevatedButton(
+                                  onPressed: () => Get.back(),
+                                  child: Text(
+                                    'Voltar',
+                                    style: TextStyle(color: Colors.blue),
                                   ),
                                 ),
                               ],
@@ -378,29 +341,16 @@ class RegisterPage extends GetView<RegisterController> {
                                   onRight: () => controller.solicitation.update(
                                     (s) => s!.service = 'transfer',
                                   ),
-                                  leftKey: const Key(
-                                    'register_tab_close',
-                                  ),
-                                  rightKey: const Key(
-                                    'register_tab_transfer',
-                                  ),
                                 ),
 
                                 const SizedBox(height: 14),
 
                                 if (controller.solicitation.value.service ==
                                     "close")
-                                  KeyedSubtree(
-                                    key: const Key('register_close_form'),
-                                    child: CloseForm(),
-                                  ),
+                                  CloseForm(),
                                 if (controller.solicitation.value.service ==
                                     "transfer")
-                                  KeyedSubtree(
-                                    key: const Key('register_transfer_form'),
-                                    child: TransferForm(),
-                                  ),
-
+                                  TransferForm(),
                                 const SizedBox(height: 12),
                                 Text(
                                   "Encerrar Contrato • Registro",
@@ -437,7 +387,6 @@ class _SegmentButton extends StatefulWidget {
   final VoidCallback onTap;
 
   const _SegmentButton({
-    super.key,
     required this.label,
     required this.active,
     required this.onTap,

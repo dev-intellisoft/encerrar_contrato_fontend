@@ -1,7 +1,6 @@
 import 'package:encerrar_contrato/app/widgets/pending.dart';
 import 'package:encerrar_contrato/app/widgets/processing.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import '../../../../models/solicitation_model.dart';
 import '../../../../widgets/done.dart';
 import '../../../../widgets/agency_logo.dart';
@@ -30,8 +29,8 @@ class SolicitationTile extends StatelessWidget {
           solicitation.status == SolicitationStatus.done
               ? Tooltip(message: 'Concluído', child: Done())
               : SolicitationStatus.processing == solicitation.status
-                  ? Tooltip(message: 'Iniciado', child: Processing())
-                  : Tooltip(message: 'Não iniciado', child: Pending()),
+              ? Tooltip(message: 'Iniciado', child: Processing())
+              : Tooltip(message: 'Não iniciado', child: Pending()),
           const SizedBox(width: 10),
           Expanded(
             child: Column(
@@ -52,6 +51,7 @@ class SolicitationTile extends StatelessWidget {
                 Text(
                   "${solicitation.address?.street ?? "-"}, "
                   "${solicitation.address?.number ?? "-"}, "
+                  "${solicitation.address?.city ?? "-"}, "
                   "${solicitation.address?.state ?? "-"}",
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -65,7 +65,25 @@ class SolicitationTile extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 10),
-          AgencyLogo(imagePath: solicitation.agencyLogo ?? ""),
+          if (solicitation.paymentType.toLowerCase() == 'pix')
+            Tooltip(
+              message: solicitation.paymentStatus.toLowerCase() == 'paid'
+                  ? 'Pago'
+                  : 'Pendente',
+              child: Icon(Icons.monetization_on, color: Colors.white),
+            )
+          else if (solicitation.paymentType.toLowerCase() == 'credit_card')
+            Tooltip(
+              message: solicitation.paymentStatus.toLowerCase() == 'paid'
+                  ? 'Pago'
+                  : 'Pendente',
+              child: Icon(Icons.credit_card_outlined, color: Colors.white),
+            ),
+          const SizedBox(width: 50),
+          Tooltip(
+            message: solicitation.agency,
+            child: AgencyLogo(imagePath: solicitation.agencyLogo ?? ""),
+          ),
         ],
       ),
     );
@@ -80,11 +98,7 @@ class _HoverTile extends StatefulWidget {
   final VoidCallback? onTap;
   final bool selected;
 
-  const _HoverTile({
-    required this.child,
-    this.onTap,
-    this.selected = false,
-  });
+  const _HoverTile({required this.child, this.onTap, this.selected = false});
 
   @override
   State<_HoverTile> createState() => _HoverTileState();
@@ -103,16 +117,16 @@ class _HoverTileState extends State<_HoverTile> {
     final Color bg = widget.selected
         ? primario.withOpacity(.20)
         : _down
-            ? bgCard.withOpacity(.85)
-            : _hover
-                ? bgCard.withOpacity(.95)
-                : bgCard;
+        ? bgCard.withOpacity(.85)
+        : _hover
+        ? bgCard.withOpacity(.95)
+        : bgCard;
 
     final Color borderColor = widget.selected
         ? primario.withOpacity(.95)
         : _hover
-            ? primario.withOpacity(.45)
-            : Colors.white.withOpacity(.08);
+        ? primario.withOpacity(.45)
+        : Colors.white.withOpacity(.08);
 
     return MouseRegion(
       onEnter: (_) => setState(() => _hover = true),

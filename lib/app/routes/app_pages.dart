@@ -1,3 +1,4 @@
+import 'package:encerrar_contrato/app/ui/pages/agency_registry/agency_registry_page.dart';
 import 'package:encerrar_contrato/app/ui/pages/agengies/widgets/agency_form.dart';
 import 'package:get/get.dart';
 import '../bindings/agencies_binding.dart';
@@ -29,6 +30,7 @@ class AppPages {
       page: () => LoginPage(),
       binding: LoginBinding(),
       transition: Transition.noTransition,
+      preventDuplicates: false,
     ),
     GetPage(
       name: Routes.HOME,
@@ -69,6 +71,12 @@ class AppPages {
     GetPage(
       name: Routes.AGENCY_FORM,
       page: () => AgencyForm(),
+      binding: AgenciesBinding(),
+    ),
+
+    GetPage(
+      name: Routes.AGENCY_REGISTRY,
+      page: () => AgencyRegistryPage(),
       binding: AgenciesBinding(),
     ),
   ];

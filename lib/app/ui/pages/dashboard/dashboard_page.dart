@@ -9,15 +9,16 @@ import '../../../widgets/drawer.dart';
 import '../../../widgets/logo.dart';
 import 'widgets/solicitation_tile.dart';
 
+final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
 class DashboardPage extends GetView<DashboardController> {
   const DashboardPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) => controller.getSolicitations(),
-    );
+    // WidgetsBinding.instance.addPostFrameCallback(
+    //   (_) => controller.getSolicitations(),
+    // );
 
     // ===== PALETA (dark premium) =====
     const primario = Color(0xFF5E17EB);
@@ -39,7 +40,10 @@ class DashboardPage extends GetView<DashboardController> {
         prefixIcon: Icon(Icons.search, color: claro),
         filled: true,
         fillColor: Colors.white.withOpacity(.06),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 14,
+          vertical: 10,
+        ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide(color: Colors.white.withOpacity(.12)),
@@ -79,10 +83,7 @@ class DashboardPage extends GetView<DashboardController> {
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: Container(
-                height: 1,
-                color: Colors.white.withOpacity(.12),
-              ),
+              child: Container(height: 1, color: Colors.white.withOpacity(.12)),
             ),
           ],
         ),
@@ -104,18 +105,17 @@ class DashboardPage extends GetView<DashboardController> {
       );
     }
 
-    InputDecoration cleanInputDec({
-      required String hint,
-      IconData? icon,
-    }) {
+    InputDecoration cleanInputDec({required String hint, IconData? icon}) {
       return InputDecoration(
         hintText: hint,
         hintStyle: TextStyle(color: Colors.white.withOpacity(.55)),
         prefixIcon: icon == null ? null : Icon(icon, color: claro),
         filled: true,
         fillColor: Colors.white.withOpacity(.06),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 14,
+          vertical: 14,
+        ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide(color: Colors.white.withOpacity(.12)),
@@ -206,29 +206,31 @@ class DashboardPage extends GetView<DashboardController> {
                         child: CircularProgressIndicator(color: primario),
                       )
                     : controller.solicitations.isEmpty
-                        ? Center(
-                            child: Text(
-                              'Nenhuma solicitação encontrada',
-                              style: TextStyle(
-                                color: Colors.white.withOpacity(.70),
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          )
-                        : Scrollbar(
-                            thumbVisibility: true,
-                            child: ListView(
-                              children: controller.solicitations
-                                  .map(
-                                    (s) => SolicitationTile(
-                                      solicitation: s,
-                                      onTap: (v) =>
-                                          controller.solicitation.value = v,
-                                    ),
-                                  )
-                                  .toList(),
-                            ),
+                    ? Center(
+                        child: Text(
+                          'Nenhuma solicitação encontrada',
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(.70),
+                            fontWeight: FontWeight.w700,
                           ),
+                        ),
+                      )
+                    : Scrollbar(
+                        thumbVisibility: true,
+                        child: ListView(
+                          children: controller.solicitations
+                              .map(
+                                (s) => SolicitationTile(
+                                  isSelected:
+                                      s.id == controller.solicitation.value!.id,
+                                  solicitation: s,
+                                  onTap: (v) =>
+                                      controller.solicitation.value = v,
+                                ),
+                              )
+                              .toList(),
+                        ),
+                      ),
               ),
             ),
           ],
@@ -240,292 +242,308 @@ class DashboardPage extends GetView<DashboardController> {
     // RIGHT DETAILS
     // =========================
     Widget rightDetails() {
-      return Container(
-        decoration: BoxDecoration(
-          color: bg2,
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: Colors.white.withOpacity(.08)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(.40),
-              blurRadius: 22,
-              offset: const Offset(0, 14),
-            ),
-            BoxShadow(
-              color: primario.withOpacity(.10),
-              blurRadius: 26,
-              offset: const Offset(0, 10),
-            ),
-          ],
-        ),
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const Text(
-              'Caso a ser atendido',
-              style: TextStyle(
-                color: ink,
-                fontWeight: FontWeight.w900,
-                fontSize: 14,
+      return Obx(
+        () => Container(
+          decoration: BoxDecoration(
+            color: bg2,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: Colors.white.withOpacity(.08)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(.40),
+                blurRadius: 22,
+                offset: const Offset(0, 14),
               ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 10),
+              BoxShadow(
+                color: primario.withOpacity(.10),
+                blurRadius: 26,
+                offset: const Offset(0, 10),
+              ),
+            ],
+          ),
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Text(
+                'Caso a ser atendido',
+                style: TextStyle(
+                  color: ink,
+                  fontWeight: FontWeight.w900,
+                  fontSize: 14,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 10),
+              if (controller.solicitation.value!.protocol != null)
+                Text(
+                  'Número de protolo: ${controller.solicitation.value!.protocol}',
+                  style: TextStyle(
+                    color: ink,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 14,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              const SizedBox(height: 10),
 
-            Expanded(
-              child: Scrollbar(
-                thumbVisibility: true,
-                child: SingleChildScrollView(
-                  child: Obx(() {
-                    final s = controller.solicitation.value;
-                    final has = s?.id != null && s!.id!.isNotEmpty;
+              Expanded(
+                child: Scrollbar(
+                  thumbVisibility: true,
+                  child: SingleChildScrollView(
+                    child: Obx(() {
+                      final s = controller.solicitation.value;
+                      final has = s?.id != null && s!.id!.isNotEmpty;
 
-                    if (!has) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 30),
-                        child: Center(
-                          child: Text(
-                            'Selecione uma solicitação para ver os detalhes',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: muted,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-                        ),
-                      );
-                    }
-
-                    final customer = s.customer;
-                    final address = s.address;
-
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        // ===== Cliente =====
-                        sectionHeader("Cliente"),
-
-                        editableField(
-                          label: "Nome",
-                          value: customer?.name ?? "",
-                          hint: "Digite o nome",
-                          icon: Icons.person,
-                          onChanged: (v) {
-                            if (customer != null) customer.name = v;
-                          },
-                        ),
-
-                        editableField(
-                          label: "CPF/CNPJ",
-                          value: customer?.cpf ?? "",
-                          hint: "Digite o CPF/CNPJ",
-                          icon: Icons.badge_outlined,
-                          onChanged: (v) {
-                            if (customer != null) customer.cpf = v;
-                          },
-                        ),
-
-                        editableField(
-                          label: "E-mail",
-                          value: customer?.email ?? "",
-                          hint: "Digite o e-mail",
-                          icon: Icons.email,
-                          keyboardType: TextInputType.emailAddress,
-                          onChanged: (v) {
-                            if (customer != null) customer.email = v;
-                          },
-                        ),
-
-                        editableField(
-                          label: "Telefone",
-                          value: customer?.phone ?? "",
-                          hint: "Digite o telefone",
-                          icon: Icons.phone,
-                          keyboardType: TextInputType.phone,
-                          onChanged: (v) {
-                            if (customer != null) customer.phone = v;
-                          },
-                        ),
-
-                        const SizedBox(height: 6),
-
-                        // ===== Endereço =====
-                        sectionHeader("Endereço"),
-
-                        editableField(
-                          label: "Rua",
-                          value: address?.street ?? "",
-                          hint: "Digite a rua",
-                          icon: Icons.location_on_outlined,
-                          onChanged: (v) {
-                            if (address != null) address.street = v;
-                          },
-                        ),
-
-                        Row(
-                          children: [
-                            Expanded(
-                              flex: 3,
-                              child: editableField(
-                                label: "Bairro",
-                                value: address?.neighborhood ?? "",
-                                hint: "Digite o bairro",
-                                icon: Icons.map_outlined,
-                                onChanged: (v) {
-                                  if (address != null) address.neighborhood = v;
-                                },
+                      if (!has) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 30),
+                          child: Center(
+                            child: Text(
+                              'Selecione uma solicitação para ver os detalhes',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: muted,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w800,
                               ),
                             ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              flex: 2,
-                              child: editableField(
-                                label: "Número",
-                                value: (address?.number ?? "").toString(),
-                                hint: "Nº",
-                                icon: Icons.pin_outlined,
-                                //keyboardType: TextInputType.number,
-                                onChanged: (v) {
-                                  // mantém só visual (front)
-                                  if (address != null) {
-                                    // se number for int, tente parse
-                                    address.number = v;
-                                  }
-                                },
+                          ),
+                        );
+                      }
+
+                      final customer = s.customer;
+                      final address = s.address;
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          // ===== Cliente =====
+                          sectionHeader("Cliente"),
+
+                          editableField(
+                            label: "Nome",
+                            value: customer?.name ?? "",
+                            hint: "Digite o nome",
+                            icon: Icons.person,
+                            onChanged: (v) {
+                              if (customer != null) customer.name = v;
+                            },
+                          ),
+
+                          editableField(
+                            label: "CPF/CNPJ",
+                            value: customer?.cpf ?? "",
+                            hint: "Digite o CPF/CNPJ",
+                            icon: Icons.badge_outlined,
+                            keyboardType: TextInputType.number,
+                            onChanged: (v) {
+                              if (customer != null) customer.cpf = v;
+                            },
+                          ),
+
+                          editableField(
+                            label: "E-mail",
+                            value: customer?.email ?? "",
+                            hint: "Digite o e-mail",
+                            icon: Icons.email,
+                            keyboardType: TextInputType.emailAddress,
+                            onChanged: (v) {
+                              if (customer != null) customer.email = v;
+                            },
+                          ),
+
+                          editableField(
+                            label: "Telefone",
+                            value: customer?.phone ?? "",
+                            hint: "Digite o telefone",
+                            icon: Icons.phone,
+                            keyboardType: TextInputType.phone,
+                            onChanged: (v) {
+                              if (customer != null) customer.phone = v;
+                            },
+                          ),
+
+                          const SizedBox(height: 6),
+
+                          // ===== Endereço =====
+                          sectionHeader("Endereço"),
+
+                          editableField(
+                            label: "Rua",
+                            value: address?.street ?? "",
+                            hint: "Digite a rua",
+                            icon: Icons.location_on_outlined,
+                            onChanged: (v) {
+                              if (address != null) address.street = v;
+                            },
+                          ),
+
+                          Row(
+                            children: [
+                              Expanded(
+                                flex: 3,
+                                child: editableField(
+                                  label: "Bairro",
+                                  value: address?.neighborhood ?? "",
+                                  hint: "Digite o bairro",
+                                  icon: Icons.map_outlined,
+                                  onChanged: (v) {
+                                    if (address != null)
+                                      address.neighborhood = v;
+                                  },
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                flex: 2,
+                                child: editableField(
+                                  label: "Número",
+                                  value: (address?.number ?? "").toString(),
+                                  hint: "Nº",
+                                  icon: Icons.pin_outlined,
+                                  //keyboardType: TextInputType.number,
+                                  onChanged: (v) {
+                                    // mantém só visual (front)
+                                    if (address != null) {
+                                      // se number for int, tente parse
+                                      address.number = v;
+                                    }
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          editableField(
+                            label: "Cidade",
+                            value: address?.city ?? "",
+                            hint: "Digite a cidade",
+                            icon: Icons.location_city_outlined,
+                            onChanged: (v) {
+                              if (address != null) address.city = v;
+                            },
+                          ),
+
+                          editableField(
+                            label: "CEP",
+                            value: (address?.zipCode ?? ""),
+                            hint: "Digite o CEP",
+                            icon: Icons.markunread_mailbox_outlined,
+                            keyboardType: TextInputType.number,
+                            onChanged: (v) {
+                              if (address != null) {
+                                // soporta ambos nombres
+                                address.zipCode = v;
+                              }
+                            },
+                          ),
+
+                          const SizedBox(height: 6),
+
+                          // ===== Serviços =====
+                          sectionHeader("Serviços"),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 12,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(.06),
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: Colors.white.withOpacity(.12),
                               ),
                             ),
-                          ],
-                        ),
-
-                        editableField(
-                          label: "Cidade",
-                          value: address?.city ?? "",
-                          hint: "Digite a cidade",
-                          icon: Icons.location_city_outlined,
-                          onChanged: (v) {
-                            if (address != null) address.city = v;
-                          },
-                        ),
-
-                        editableField(
-                          label: "CEP",
-                          value: (address?.zipCode ?? ""),
-                          hint: "Digite o CEP",
-                          icon: Icons.markunread_mailbox_outlined,
-                          keyboardType: TextInputType.number,
-                          onChanged: (v) {
-                            if (address != null) {
-                              // soporta ambos nombres
-                               address.zipCode = v;
-                            }
-                          },
-                        ),
-
-                        const SizedBox(height: 6),
-
-                        // ===== Serviços =====
-                        sectionHeader("Serviços"),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 14,
-                            vertical: 12,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(.06),
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
-                              color: Colors.white.withOpacity(.12),
+                            child: Text(
+                              (s.service?.trim().isNotEmpty ?? false)
+                                  ? s.service!.trim()
+                                  : "-",
+                              style: TextStyle(
+                                color: Colors.white.withOpacity(.85),
+                                fontWeight: FontWeight.w800,
+                              ),
                             ),
                           ),
-                          child: Text(
-                            (s.service?.trim().isNotEmpty ?? false)
-                                ? s.service!.trim()
-                                : "-",
-                            style: TextStyle(
-                              color: Colors.white.withOpacity(.85),
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-                        ),
 
-                        const SizedBox(height: 10),
+                          const SizedBox(height: 10),
 
-                        if (s.services != null)
-                          ...s.services!.map(
-                            (sv) => Padding(
-                              padding: const EdgeInsets.only(bottom: 6),
-                              child: Text(
-                                "• ${sv.name ?? "-"}",
-                                style: TextStyle(
-                                  color: Colors.white.withOpacity(.80),
-                                  fontWeight: FontWeight.w700,
+                          if (s.items != null)
+                            ...s.items!.map(
+                              (sv) => Padding(
+                                padding: const EdgeInsets.only(bottom: 6),
+                                child: Text(
+                                  "• ${sv.name ?? "-"} ${sv.companyName ?? "-"}",
+                                  style: TextStyle(
+                                    color: Colors.white.withOpacity(.80),
+                                    fontWeight: FontWeight.w700,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
 
-                        const SizedBox(height: 10),
-
-                        // ===== Documentos =====
-                        if (s.service == 'transfer' || s.service == 'tranfer') ...[
-                          sectionHeader("Documentos"),
-                          doc_widget.Document(),
                           const SizedBox(height: 10),
+
+                          // ===== Documentos =====
+                          if (s.service == 'transfer' ||
+                              s.service == 'tranfer') ...[
+                            sectionHeader("Documentos"),
+                            doc_widget.Document(),
+                            const SizedBox(height: 10),
+                          ],
+
+                          // ===== Botones =====
+                          if (s.status == SolicitationStatus.pending)
+                            _ActionButton(
+                              label: 'Iniciar atendimento',
+                              icon: Icons.play_arrow_rounded,
+                              baseColor: primario,
+                              onPressed: () => controller.startSolicitation(),
+                            )
+                          else if (s.status == SolicitationStatus.processing)
+                            _ActionButton(
+                              label: 'Concluir atendimento',
+                              icon: Icons.check_circle_outline_rounded,
+                              baseColor: Colors.green,
+                              onPressed: () => controller.endSolicitation(),
+                            ),
+
+                          const SizedBox(height: 12),
+
+                          // Status
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 10,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(.06),
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(
+                                color: Colors.white.withOpacity(.10),
+                              ),
+                            ),
+                            child: Text(
+                              s.status == SolicitationStatus.done
+                                  ? 'Concluído'
+                                  : s.status == SolicitationStatus.processing
+                                  ? 'Em andamento'
+                                  : 'Não iniciado',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: muted,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                          ),
                         ],
-
-                        // ===== Botones =====
-                        if (s.status == SolicitationStatus.pending)
-                          _ActionButton(
-                            label: 'Iniciar atendimento',
-                            icon: Icons.play_arrow_rounded,
-                            baseColor: primario,
-                            onPressed: () => controller.startSolicitation(),
-                          )
-                        else if (s.status == SolicitationStatus.processing)
-                          _ActionButton(
-                            label: 'Concluir atendimento',
-                            icon: Icons.check_circle_outline_rounded,
-                            baseColor: Colors.green,
-                            onPressed: () => controller.endSolicitation(),
-                          ),
-
-                        const SizedBox(height: 12),
-
-                        // Status
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 10,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(.06),
-                            borderRadius: BorderRadius.circular(14),
-                            border: Border.all(
-                              color: Colors.white.withOpacity(.10),
-                            ),
-                          ),
-                          child: Text(
-                            s.status == SolicitationStatus.done
-                                ? 'Concluído'
-                                : s.status == SolicitationStatus.processing
-                                    ? 'Em andamento'
-                                    : 'Não iniciado',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: muted,
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-                        ),
-                      ],
-                    );
-                  }),
+                      );
+                    }),
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       );
     }
@@ -546,9 +564,7 @@ class DashboardPage extends GetView<DashboardController> {
             SizedBox(
               width: 260,
               height: 44,
-              child: TextFormField(
-                decoration: _searchDec(),
-              ),
+              child: TextFormField(decoration: _searchDec()),
             ),
           ],
         ),
@@ -567,9 +583,7 @@ class DashboardPage extends GetView<DashboardController> {
         padding: const EdgeInsets.all(16),
         child: Center(
           child: ConstrainedBox(
-            constraints: BoxConstraints(
-              maxWidth: isNarrow ? 560 : 1200,
-            ),
+            constraints: BoxConstraints(maxWidth: isNarrow ? 560 : 1200),
             child: isNarrow
                 ? Column(
                     children: [
@@ -632,8 +646,8 @@ class _ActionButtonState extends State<_ActionButton> {
     final bg = _down
         ? widget.baseColor.withOpacity(.75)
         : _hover
-            ? widget.baseColor.withOpacity(.92)
-            : widget.baseColor;
+        ? widget.baseColor.withOpacity(.92)
+        : widget.baseColor;
 
     final border = _hover || _down
         ? Colors.white.withOpacity(.22)

@@ -19,7 +19,7 @@ class Solicitation {
   SolicitationStatus? status;
   DateTime? createdAt;
   DateTime? updatedAt;
-  List<Service>? services = [];
+  List<Service>? items = [];
   PIX? pix;
   String paymentType;
   String paymentStatus;
@@ -28,6 +28,8 @@ class Solicitation {
   String? agencyLogo;
   ASAASCreditCardHolderInfo? creditCardHolderInfo;
   ASAASCreditCard? creditCard;
+  int? protocol;
+  String? agency;
 
   Solicitation({
     this.id,
@@ -38,7 +40,7 @@ class Solicitation {
     this.status,
     this.createdAt,
     this.updatedAt,
-    this.services,
+    this.items,
     this.pix,
     this.paymentType = "pix",
     this.paymentStatus = "pending",
@@ -47,6 +49,8 @@ class Solicitation {
     this.agencyLogo,
     this.creditCardHolderInfo,
     this.creditCard,
+    this.protocol,
+    this.agency,
   });
 
   Map<String, dynamic> toJson() {
@@ -58,7 +62,7 @@ class Solicitation {
       'address': address!.toMap(),
       'description': description,
       'status': SolicitationStatus.pending.index,
-      'services': services?.map((e) => e.toJson()).toList(),
+      'items': items?.map((e) => e.toJson()).toList(),
       'createdAt': createdAt,
       'updatedAt': updatedAt,
       'pix': pix?.toJson(),
@@ -69,6 +73,8 @@ class Solicitation {
       'agency_logo': agencyLogo,
       'credit_card_holder_info': creditCardHolderInfo,
       'credit_card': creditCard,
+      'protocol': protocol,
+      'agency': agency,
     };
   }
 
@@ -80,8 +86,8 @@ class Solicitation {
       title: map['title'],
       description: map['description'],
       status: SolicitationStatus.values[map['status']],
-      services: map['services'] != null
-          ? (map['services'] as List)
+      items: map['items'] != null
+          ? (map['items'] as List)
                 .map((e) => Service.fromJson(e as Map<String, dynamic>))
                 .toList()
           : [],
@@ -93,6 +99,8 @@ class Solicitation {
       agencyLogo: map['agency_logo'],
       creditCardHolderInfo: map['credit_card_holder_info'],
       creditCard: map['credit_card'],
+      protocol: map['protocol'],
+      agency: map['agency'],
     );
   }
 }

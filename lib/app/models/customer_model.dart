@@ -7,6 +7,7 @@ class Customer {
   String? birthDate;
   String? email;
   String? phone;
+  String? confirmPhone;
 
   Customer({
     this.id,
@@ -14,6 +15,7 @@ class Customer {
     this.cpf,
     this.email,
     this.phone,
+    this.confirmPhone,
     this.birthDate,
   });
 
@@ -25,6 +27,7 @@ class Customer {
       'cpf': cpf,
       'email': email,
       'phone': phone,
+      'confirm_phone': confirmPhone,
       'birth_date': bd,
     };
   }
@@ -36,6 +39,7 @@ class Customer {
       cpf: map['cpf'],
       email: map['email'],
       phone: map['phone'],
+      confirmPhone: map['confirm_phone'],
       birthDate: map['birth_date'],
     );
   }

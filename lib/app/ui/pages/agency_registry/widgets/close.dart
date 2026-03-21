@@ -4,14 +4,13 @@
 // 2) Confirmar Telefone (valida que coincida) + bloquea envío si no coincide
 // ====================================================================
 
-import 'package:encerrar_contrato/app/controllers/register_controller.dart';
+import 'package:encerrar_contrato/app/controllers/agency_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
-import '../../../../widgets/agency_logo.dart';
 
-class CloseForm extends GetView<RegisterController> {
+class CloseForm extends GetView<AgencyController> {
   CloseForm({super.key});
 
   // ✅ helpers de estilo (legible en dark)
@@ -34,7 +33,7 @@ class CloseForm extends GetView<RegisterController> {
   // ✅ DatePicker con tema CLARO (texto negro)
   Future<void> _pickBirthDate(
     BuildContext context,
-    RegisterController controller,
+    AgencyController controller,
   ) async {
     DateTime initial = DateTime.now().subtract(const Duration(days: 365 * 25));
     final current = controller.solicitation.value.customer?.birthDate ?? '';
@@ -79,24 +78,17 @@ class CloseForm extends GetView<RegisterController> {
 
     if (picked != null) {
       final formatted = _formatBR(picked);
-      controller.birthDateController.text = formatted;
       controller.solicitation.update((s) => s!.customer!.birthDate = formatted);
     }
   }
 
-  InputDecoration _dec({
-    required String label,
-    String? hint,
-    IconData? icon,
-    Widget? suffixIcon,
-  }) {
+  InputDecoration _dec({required String label, String? hint, IconData? icon}) {
     return InputDecoration(
       labelText: label,
       hintText: hint,
       filled: true,
       fillColor: _bgField,
       prefixIcon: icon != null ? Icon(icon, color: _claro) : null,
-      suffixIcon: suffixIcon,
       labelStyle: TextStyle(
         color: _ink.withOpacity(.92),
         fontWeight: FontWeight.w700,
@@ -141,7 +133,7 @@ class CloseForm extends GetView<RegisterController> {
 
     return Obx(
       () => SizedBox(
-        height: 520,
+        height: 400,
         child: Container(
           margin: const EdgeInsets.all(10),
           child: Form(
@@ -149,26 +141,6 @@ class CloseForm extends GetView<RegisterController> {
             autovalidateMode: AutovalidateMode.onUserInteraction,
             child: ListView(
               children: [
-              Obx(
-                () => controller.loadingAgency.value
-                    ? const Center(child: CircularProgressIndicator())
-                    : Row(
-                        children: [
-                            AgencyLogo(
-                              imagePath:
-                                  controller.agency.value.image ??
-                                  'assets/default_agency.png',
-                            ),
-                            const SizedBox(width: 20),
-                            Text(
-                              '${controller.agency.value.name}',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ],
-                        ),
-                ),
-                const SizedBox(height: 20),
-
                 Text(
                   'Preencha os campos solicitados:',
                   style: TextStyle(
@@ -230,24 +202,17 @@ class CloseForm extends GetView<RegisterController> {
                     // ✅ DATA con calendario
                     Expanded(
                       child: TextFormField(
-                        controller: controller.birthDateController,
+                        initialValue:
+                            controller.solicitation.value.customer?.birthDate ??
+                            '',
                         style: _fieldText,
                         cursorColor: _ink,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          MaskTextInputFormatter(
-                            mask: '##/##/####',
-                            filter: {"#": RegExp(r'[0-9]')},
-                          ),
-                        ],
+                        readOnly: true,
+                        onTap: () => _pickBirthDate(context, controller),
                         decoration: _dec(
                           label: 'Data de nascimento',
                           hint: 'Selecione no calendário',
                           icon: Icons.cake_outlined,
-                          suffixIcon: IconButton(
-                            icon: const Icon(Icons.calendar_month_outlined),
-                            onPressed: () => _pickBirthDate(context, controller),
-                          ),
                         ),
                         onChanged: (text) =>
                             controller.solicitation.value.customer!.birthDate =
@@ -369,7 +334,6 @@ class CloseForm extends GetView<RegisterController> {
                 TextFormField(
                   style: _fieldText,
                   cursorColor: _ink,
-                  controller: controller.cepController,
                   inputFormatters: [
                     MaskTextInputFormatter(
                       mask: '##.###-###',
@@ -441,7 +405,8 @@ class CloseForm extends GetView<RegisterController> {
                           text: controller.solicitation.value.address!.city,
                         ),
                         onChanged: (text) => controller.solicitation.update(
-                          (s) => s!.address!.city = text,
+                          (s) => controller.solicitation.value!.address!.city =
+                              text,
                         ),
                         decoration: _dec(
                           label: 'Cidade',
@@ -469,7 +434,6 @@ class CloseForm extends GetView<RegisterController> {
                     ),
                   ],
                 ),
-
                 const SizedBox(height: 20),
 
                 Text(

@@ -1,11 +1,10 @@
-import 'package:encerrar_contrato/app/controllers/register_controller.dart';
+import 'package:encerrar_contrato/app/controllers/agency_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
-import '../../../../widgets/agency_logo.dart';
 
-class TransferForm extends GetView<RegisterController> {
+class TransferForm extends GetView<AgencyController> {
   TransferForm({super.key});
 
   // ===== Visual (dark premium legible) =====
@@ -33,19 +32,13 @@ class TransferForm extends GetView<RegisterController> {
     return '$dd/$mm/$yyyy';
   }
 
-  InputDecoration _dec({
-    required String label,
-    String? hint,
-    IconData? icon,
-    Widget? suffixIcon,
-  }) {
+  InputDecoration _dec({required String label, String? hint, IconData? icon}) {
     return InputDecoration(
       labelText: label,
       hintText: hint,
       filled: true,
       fillColor: _bgField,
       prefixIcon: icon != null ? Icon(icon, color: _claro) : null,
-      suffixIcon: suffixIcon,
       labelStyle: TextStyle(
         color: _ink.withOpacity(.92),
         fontWeight: FontWeight.w700,
@@ -78,15 +71,15 @@ class TransferForm extends GetView<RegisterController> {
       const TextStyle(color: _ink, fontWeight: FontWeight.w600);
 
   TextStyle _titleStyle() => TextStyle(
-        color: _ink.withOpacity(.95),
-        fontWeight: FontWeight.w900,
-        fontSize: 16,
-      );
+    color: _ink.withOpacity(.95),
+    fontWeight: FontWeight.w900,
+    fontSize: 16,
+  );
 
   // ✅ DatePicker con tema CLARO (texto negro)
   Future<void> _pickBirthDate(
     BuildContext context,
-    RegisterController controller,
+    AgencyController controller,
   ) async {
     DateTime initial = DateTime.now().subtract(const Duration(days: 365 * 25));
     final current = controller.solicitation.value.customer?.birthDate ?? '';
@@ -131,7 +124,6 @@ class TransferForm extends GetView<RegisterController> {
 
     if (picked != null) {
       final formatted = _formatBR(picked);
-      controller.birthDateController.text = formatted;
       controller.solicitation.update((s) => s!.customer!.birthDate = formatted);
     }
   }
@@ -177,8 +169,8 @@ class TransferForm extends GetView<RegisterController> {
     }
 
     Widget line() => Expanded(
-          child: Container(height: 2, color: Colors.white.withOpacity(.12)),
-        );
+      child: Container(height: 2, color: Colors.white.withOpacity(.12)),
+    );
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -255,110 +247,91 @@ class TransferForm extends GetView<RegisterController> {
 
     return Obx(
       () => SizedBox(
-        height: 520,
+        height: 400,
         child: Container(
           margin: const EdgeInsets.all(10),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Obx(
-              () => controller.loadingAgency.value
-                  ? const Center(child: CircularProgressIndicator())
-                  : Row(
-                      children: [
-                        AgencyLogo(
-                          imagePath:
-                              controller.agency.value.image ??
-                              'assets/default_agency.png',
-                        ),
-                        const SizedBox(width: 20),
-                        Text(
-                          '${controller.agency.value.name}',
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                      ],
-                    ),
-            ),
-            const SizedBox(height: 10),
+          child: Column(
+            children: [
+              const SizedBox(height: 10),
 
-            // ✅ Header pasos
-            _stepsHeader(_step.value),
-            const SizedBox(height: 12),
+              // ✅ Header pasos
+              _stepsHeader(_step.value),
+              const SizedBox(height: 12),
 
-            // ✅ Contenido por pasos
-            SizedBox(
-              height: 300,
-              child: SingleChildScrollView(
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 220),
-                  child: _step.value == 1
-                      ? _step1CurrentHolder(
-                          context,
-                          birthCtrl,
-                          phoneCtrl,
-                          confirmPhoneCtrl,
-                          phoneMask,
-                        )
-                      : _step.value == 2
-                          ? _step2NewHolderDocuments(context)
-                          : _step3ServicesAndTotal(context),
+              // ✅ Contenido por pasos
+              Expanded(
+                child: SingleChildScrollView(
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 220),
+                    child: _step.value == 1
+                        ? _step1CurrentHolder(
+                            context,
+                            birthCtrl,
+                            phoneCtrl,
+                            confirmPhoneCtrl,
+                            phoneMask,
+                          )
+                        : _step.value == 2
+                        ? _step2NewHolderDocuments(context)
+                        : _step3ServicesAndTotal(context),
+                  ),
                 ),
               ),
-            ),
 
-            const SizedBox(height: 10),
+              const SizedBox(height: 10),
 
-            // ✅ barra inferior de navegación
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-              decoration: BoxDecoration(
-                color: _bgCard,
-                borderRadius: BorderRadius.circular(18),
-                border: Border.all(color: Colors.white.withOpacity(.10)),
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: _step.value == 1 ? null : _goBack,
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        side: BorderSide(
-                          color: Colors.white.withOpacity(.16),
+              // ✅ barra inferior de navegación
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                decoration: BoxDecoration(
+                  color: _bgCard,
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(color: Colors.white.withOpacity(.10)),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: _step.value == 1 ? null : _goBack,
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          side: BorderSide(
+                            color: Colors.white.withOpacity(.16),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
                         ),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
+                        child: const Text(
+                          'Voltar',
+                          style: TextStyle(fontWeight: FontWeight.w900),
                         ),
-                      ),
-                      child: const Text(
-                        'Voltar',
-                        style: TextStyle(fontWeight: FontWeight.w900),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed:
-                          _step.value < 3 ? _goNext : () {}, // paso 3 no avanza
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: _primario,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: _step.value < 3
+                            ? _goNext
+                            : () {}, // paso 3 no avanza
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: _primario,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                        ),
+                        child: Text(
+                          _step.value < 3 ? 'Siguiente' : 'Último passo',
+                          style: const TextStyle(fontWeight: FontWeight.w900),
                         ),
                       ),
-                      child: Text(
-                        _step.value < 3 ? 'Siguiente' : 'Último passo',
-                        style: const TextStyle(fontWeight: FontWeight.w900),
-                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
             ],
           ),
         ),
@@ -404,7 +377,8 @@ class TransferForm extends GetView<RegisterController> {
             children: [
               Expanded(
                 child: TextFormField(
-                  initialValue: controller.solicitation.value.customer!.cpf ?? '',
+                  initialValue:
+                      controller.solicitation.value.customer!.cpf ?? '',
                   style: _fieldText,
                   cursorColor: _ink,
                   inputFormatters: [
@@ -423,27 +397,18 @@ class TransferForm extends GetView<RegisterController> {
               const SizedBox(width: 10),
               Expanded(
                 child: TextFormField(
-                  controller: controller.birthDateController,
+                  initialValue:
+                      controller.solicitation.value.customer!.birthDate ?? '',
                   style: _fieldText,
                   cursorColor: _ink,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [
-                    MaskTextInputFormatter(
-                      mask: '##/##/####',
-                      filter: {"#": RegExp(r'[0-9]')},
-                    ),
-                  ],
+                  // controller: birthCtrl,
+                  readOnly: true,
+                  onTap: () => _pickBirthDate(context, controller),
                   decoration: _dec(
                     label: 'Data de nascimento',
                     hint: 'Selecione no calendário',
                     icon: Icons.cake_outlined,
-                    suffixIcon: IconButton(
-                      icon: const Icon(Icons.calendar_month_outlined),
-                      onPressed: () => _pickBirthDate(context, controller),
-                    ),
                   ),
-                  onChanged: (text) =>
-                      controller.solicitation.value.customer!.birthDate = text,
                   validator: (v) =>
                       (v ?? '').trim().isEmpty ? 'Selecione a data' : null,
                 ),
@@ -540,7 +505,6 @@ class TransferForm extends GetView<RegisterController> {
           TextFormField(
             style: _fieldText,
             cursorColor: _ink,
-            controller: controller.cepController,
             inputFormatters: [
               MaskTextInputFormatter(
                 mask: '##.###-###',
@@ -663,7 +627,8 @@ class TransferForm extends GetView<RegisterController> {
               icon: Icons.file_present_outlined,
             ),
             validator: (v) {
-              if ((controller.documents.value.documentPhotoName ?? '').isEmpty) {
+              if ((controller.documents.value.documentPhotoName ?? '')
+                  .isEmpty) {
                 return 'Selecione a foto do documento';
               }
               return null;
@@ -729,8 +694,10 @@ class TransferForm extends GetView<RegisterController> {
           TextFormField(
             style: _fieldText,
             cursorColor: _ink,
-            decoration:
-                _dec(label: 'Telefone (novo titular)', icon: Icons.phone_outlined),
+            decoration: _dec(
+              label: 'Telefone (novo titular)',
+              icon: Icons.phone_outlined,
+            ),
           ),
         ],
       ),
@@ -797,8 +764,8 @@ class TransferForm extends GetView<RegisterController> {
                     child: TextFormField(
                       style: _fieldText,
                       cursorColor: _ink,
-                      onChanged: (text) => controller.services[index] =
-                          service.copyWith(companyName: text),
+                      onChanged: (text) => controller.services[index] = service
+                          .copyWith(companyName: text),
                       decoration: _dec(
                         label: 'Empresa prestadora do serviço',
                         hint: 'Ex: Copel, Sanepar, Vivo...',
@@ -823,12 +790,12 @@ class TransferForm extends GetView<RegisterController> {
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [
-                  _primario.withOpacity(.22),
-                  _claro.withOpacity(.12),
-                ],
+                colors: [_primario.withOpacity(.22), _claro.withOpacity(.12)],
               ),
-              border: Border.all(color: Colors.white.withOpacity(.14), width: 1),
+              border: Border.all(
+                color: Colors.white.withOpacity(.14),
+                width: 1,
+              ),
               boxShadow: [
                 BoxShadow(
                   color: _primario.withOpacity(.22),
@@ -886,8 +853,10 @@ class TransferForm extends GetView<RegisterController> {
                 ),
                 const SizedBox(width: 10),
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(.06),
                     borderRadius: BorderRadius.circular(14),
@@ -960,9 +929,7 @@ class TransferForm extends GetView<RegisterController> {
                       const SizedBox(height: 10),
                       ElevatedButton(
                         onPressed: agree.value
-                            ? () {
-                                controller.transfer();
-                              }
+                            ? () => controller.transfer()
                             : null,
                         style: ButtonStyle(
                           backgroundColor: WidgetStatePropertyAll<Color>(
@@ -979,11 +946,11 @@ class TransferForm extends GetView<RegisterController> {
                           ),
                           padding:
                               const WidgetStatePropertyAll<EdgeInsetsGeometry>(
-                            EdgeInsets.symmetric(
-                              vertical: 14,
-                              horizontal: 18,
-                            ),
-                          ),
+                                EdgeInsets.symmetric(
+                                  vertical: 14,
+                                  horizontal: 18,
+                                ),
+                              ),
                         ),
                         child: const Text(
                           'ENVIAR',

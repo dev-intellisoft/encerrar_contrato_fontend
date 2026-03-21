@@ -1,3 +1,4 @@
+import 'package:encerrar_contrato/app/models/agency_model.dart';
 import 'package:encerrar_contrato/app/routes/app_pages.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -35,7 +36,10 @@ class AgencyPage extends GetView<AgencyController> {
         prefixIcon: const Icon(Icons.search_rounded, color: claro),
         filled: true,
         fillColor: Colors.white.withOpacity(.06),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 14,
+          vertical: 10,
+        ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide(color: Colors.white.withOpacity(.12)),
@@ -73,14 +77,19 @@ class AgencyPage extends GetView<AgencyController> {
         actions: [
           IconButton(
             onPressed: () => _scaffoldKey.currentState?.openEndDrawer(),
-            icon: Icon(Icons.person_3_rounded,
-                color: Colors.white.withOpacity(.9)),
+            icon: Icon(
+              Icons.person_3_rounded,
+              color: Colors.white.withOpacity(.9),
+            ),
           ),
         ],
       ),
 
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Get.toNamed(Routes.AGENCY_FORM),
+        onPressed: () {
+          controller.agency.value = Agency();
+          Get.toNamed(Routes.AGENCY_FORM);
+        },
         backgroundColor: primario,
         foregroundColor: Colors.white,
         elevation: 0,
@@ -93,11 +102,7 @@ class AgencyPage extends GetView<AgencyController> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              bg,
-              Color.lerp(bg, secundario, .06)!,
-              bg,
-            ],
+            colors: [bg, Color.lerp(bg, secundario, .06)!, bg],
           ),
         ),
         child: SafeArea(
@@ -157,7 +162,10 @@ class AgencyPage extends GetView<AgencyController> {
                             ),
                             content: Text(
                               'Tem certeza que deseja remover a imobiliária?',
-                              style: TextStyle(color: muted, fontWeight: FontWeight.w700),
+                              style: TextStyle(
+                                color: muted,
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
                             actions: [
                               TextButton(
@@ -179,7 +187,8 @@ class AgencyPage extends GetView<AgencyController> {
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                 ),
-                                onPressed: () => controller.deleteAgency(agency.id!),
+                                onPressed: () =>
+                                    controller.deleteAgency(agency.id!),
                                 child: const Text(
                                   'Sim',
                                   style: TextStyle(fontWeight: FontWeight.w900),
@@ -240,8 +249,8 @@ class _AgencyCardState extends State<_AgencyCard> {
     final bg = _down
         ? Colors.white.withOpacity(.035)
         : _hover
-            ? Colors.white.withOpacity(.045)
-            : Colors.white.withOpacity(.03);
+        ? Colors.white.withOpacity(.045)
+        : Colors.white.withOpacity(.03);
 
     final border = _hover
         ? widget.primario.withOpacity(.40)
@@ -325,10 +334,15 @@ class _AgencyCardState extends State<_AgencyCard> {
                   decoration: BoxDecoration(
                     color: Colors.redAccent.withOpacity(.12),
                     borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: Colors.redAccent.withOpacity(.35)),
+                    border: Border.all(
+                      color: Colors.redAccent.withOpacity(.35),
+                    ),
                   ),
-                  child: const Icon(Icons.delete_outline_rounded,
-                      color: Colors.redAccent, size: 20),
+                  child: const Icon(
+                    Icons.delete_outline_rounded,
+                    color: Colors.redAccent,
+                    size: 20,
+                  ),
                 ),
               ),
             ],

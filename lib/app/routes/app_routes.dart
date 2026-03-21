@@ -12,4 +12,5 @@ abstract class Routes {
   static const SERVICES = '/services';
   static const SERVICE_FORM = '/services/form';
   static const AGENCY_FORM = '/angecies/form';
+  static const AGENCY_REGISTRY = '/agency/registry';
 }
