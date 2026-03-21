@@ -66,6 +66,7 @@ class AgencyController extends GetxController {
       Get.snackbar("Sucesso", "Agência removida com sucesso.");
     } catch (e) {
       print(e);
+      Get.snackbar('Error', "Erro ao remove agência");
     } finally {
       isLoading.value = false;
     }

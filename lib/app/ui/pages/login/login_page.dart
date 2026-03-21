@@ -161,6 +161,7 @@ class LoginPage extends GetView<LoginController> {
 
                                 // Email
                                 TextFormField(
+                                  key: const Key('login_email'),
                                   onChanged: (text) =>
                                       controller.user.value.email = text,
                                   style: const TextStyle(
@@ -181,6 +182,7 @@ class LoginPage extends GetView<LoginController> {
                                 // Password (GetX mantido)
                                 ObxValue(
                                   (show) => TextFormField(
+                                    key: const Key('login_password'),
                                     onChanged: (text) =>
                                         controller.user.value.password = text,
                                     obscureText: !show.value,
@@ -216,6 +218,7 @@ class LoginPage extends GetView<LoginController> {
                                   width: double.infinity,
                                   height: 48,
                                   child: ElevatedButton(
+                                    key: const Key('login_submit'),
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: primario,
                                       foregroundColor: Colors.white,
