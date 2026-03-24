@@ -20,7 +20,10 @@ class Customer {
   });
 
   Map<String, dynamic> toJson() {
-    String bd = birthDate!.split('/').reversed.join('-');
+    final rawBirthDate = (birthDate ?? '').trim();
+    final bd = rawBirthDate.isEmpty
+        ? ''
+        : rawBirthDate.split('/').reversed.join('-');
     return {
       'id': id,
       'name': name,

@@ -56,15 +56,15 @@ class Solicitation {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'customer_id': customer != null ? customer!.id : "",
+      'customer_id': customer?.id,
       'title': title,
-      'customer': customer!.toJson(),
-      'address': address!.toMap(),
+      'customer': (customer ?? Customer()).toJson(),
+      'address': (address ?? Address()).toMap(),
       'description': description,
       'status': SolicitationStatus.pending.index,
       'items': items?.map((e) => e.toJson()).toList(),
-      'createdAt': createdAt,
-      'updatedAt': updatedAt,
+      'createdAt': createdAt?.toIso8601String(),
+      'updatedAt': updatedAt?.toIso8601String(),
       'pix': pix?.toJson(),
       'payment_type': paymentType,
       'payment_status': paymentStatus,
@@ -79,29 +79,51 @@ class Solicitation {
   }
 
   factory Solicitation.fromJson(Map<String, dynamic> map) {
+    final rawStatus = map['status'];
+    final statusIndex = rawStatus is int &&
+            rawStatus >= 0 &&
+            rawStatus < SolicitationStatus.values.length
+        ? rawStatus
+        : SolicitationStatus.pending.index;
+
     return Solicitation(
-      id: map['id'],
-      customer: Customer.fromJson(map['customer']),
-      address: Address.fromMap(map['address']),
+      id: map['id']?.toString(),
+      customer: map['customer'] is Map<String, dynamic>
+          ? Customer.fromJson(map['customer'])
+          : Customer(),
+      address: map['address'] is Map<String, dynamic>
+          ? Address.fromMap(map['address'])
+          : Address(),
       title: map['title'],
       description: map['description'],
-      status: SolicitationStatus.values[map['status']],
+      status: SolicitationStatus.values[statusIndex],
+      createdAt: _parseDateTime(map['createdAt'] ?? map['created_at']),
+      updatedAt: _parseDateTime(map['updatedAt'] ?? map['updated_at']),
       items: map['items'] != null
           ? (map['items'] as List)
                 .map((e) => Service.fromJson(e as Map<String, dynamic>))
                 .toList()
           : [],
       pix: map['pix'] != null ? PIX.fromJson(map['pix']) : null,
-      paymentType: map['payment_type'],
-      paymentStatus: map['payment_status'],
-      service: map['service'],
-      agencyId: map['agency_id'],
-      agencyLogo: map['agency_logo'],
+      paymentType: map['payment_type']?.toString() ?? 'pix',
+      paymentStatus: map['payment_status']?.toString() ?? 'pending',
+      service: map['service']?.toString() ?? 'transfer',
+      agencyId: map['agency_id']?.toString(),
+      agencyLogo: map['agency_logo']?.toString(),
       creditCardHolderInfo: map['credit_card_holder_info'],
       creditCard: map['credit_card'],
       protocol: map['protocol'],
-      agency: map['agency'],
+      agency: map['agency']?.toString(),
     );
+  }
+
+  static DateTime? _parseDateTime(dynamic value) {
+    if (value == null) return null;
+    if (value is DateTime) return value;
+    if (value is String && value.trim().isNotEmpty) {
+      return DateTime.tryParse(value);
+    }
+    return null;
   }
 }
 

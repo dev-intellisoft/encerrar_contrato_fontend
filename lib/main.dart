@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
@@ -22,9 +24,43 @@ class EC extends StatelessWidget {
     return GetMaterialApp(
       title: 'Encerrar Contrato',
       theme: AppTheme.light,
+      scrollBehavior: const AppScrollBehavior(),
       initialRoute: AppPages.INITIAL,
       getPages: AppPages.routes,
       debugShowCheckedModeBanner: false,
+    );
+  }
+}
+
+class AppScrollBehavior extends MaterialScrollBehavior {
+  const AppScrollBehavior();
+
+  @override
+  Set<PointerDeviceKind> get dragDevices => {
+    PointerDeviceKind.touch,
+    PointerDeviceKind.mouse,
+    PointerDeviceKind.stylus,
+    PointerDeviceKind.trackpad,
+    PointerDeviceKind.unknown,
+  };
+
+  @override
+  Widget buildScrollbar(
+    BuildContext context,
+    Widget child,
+    ScrollableDetails details,
+  ) {
+    final width = MediaQuery.sizeOf(context).width;
+    final isCompact = width < 700;
+
+    return Scrollbar(
+      controller: details.controller,
+      thumbVisibility: true,
+      trackVisibility: !isCompact,
+      interactive: true,
+      thickness: isCompact ? 8 : 12,
+      radius: const Radius.circular(999),
+      child: child,
     );
   }
 }

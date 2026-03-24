@@ -3,6 +3,7 @@
 import 'package:encerrar_contrato/app/models/customer_model.dart';
 import 'package:encerrar_contrato/app/models/solicitation_model.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../models/agency_model.dart';
 import '../services/agency_service.dart';
@@ -10,6 +11,9 @@ import '../models/address_model.dart';
 import '../models/service_model.dart';
 
 class AgencyController extends GetxController {
+  static const int _maxUploadSizeInKb = 1300;
+  static const int _maxUploadSizeInBytes = _maxUploadSizeInKb * 1024;
+
   final AgencyService s = Get.find<AgencyService>();
   Rx<Documents> documents = Documents().obs;
   Rx<Solicitation> solicitation = Solicitation(
@@ -23,8 +27,42 @@ class AgencyController extends GetxController {
   Rx<Agency> agency = Agency().obs;
 
   RxString cep = ''.obs;
+  final TextEditingController cepController = TextEditingController();
+  final TextEditingController birthDateController = TextEditingController();
 
   RxList<Service> services = <Service>[].obs;
+
+  void _showUploadFeedback(String title, String fileName) {
+    Get.snackbar(
+      'Arquivo carregado',
+      '$title: $fileName',
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: const Color(0xFF0B0B12),
+      colorText: Colors.white,
+      margin: const EdgeInsets.all(16),
+      duration: const Duration(seconds: 2),
+    );
+  }
+
+  void _showUploadTooLarge(String title, String fileName) {
+    Get.snackbar(
+      'Arquivo muito pesado',
+      '$title: $fileName excede 1300 KB. Envie um arquivo menor.',
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: const Color(0xFF2A0F14),
+      colorText: Colors.white,
+      margin: const EdgeInsets.all(16),
+      duration: const Duration(seconds: 3),
+    );
+  }
+
+  bool _isAllowedFileSize(PlatformFile file, String title) {
+    if (file.size > _maxUploadSizeInBytes) {
+      _showUploadTooLarge(title, file.name);
+      return false;
+    }
+    return true;
+  }
 
   Future<void> fetchAgencies() async {
     try {
@@ -87,26 +125,36 @@ class AgencyController extends GetxController {
     agency.update(
       (a) => a!.fileBytes = file.bytes,
     ); // Uint8List, works everywhere
+    _showUploadFeedback('Logo da imobiliaria', file.name);
   }
 
   Future<void> getServices(String type) async {
     services.value = await s.getServices(type: type);
   }
 
+  List<Service> _selectedServices() {
+    return services
+        .where((service) => service.selected)
+        .map(
+          (service) => service.copyWith(
+            companyName: service.companyName?.trim(),
+          ),
+        )
+        .toList();
+  }
+
   Future<void> register() async {
     print("===================>");
     print(solicitation.value.toJson());
     print("<===================");
-    for (var s in services) {
-      if (s.selected) {
-        solicitation.update((e) => e!.items?.add(s));
-      }
-    }
-    Get.back();
+    solicitation.update((e) => e!.items = _selectedServices());
     try {
       isLoading.value = true;
       solicitation.value = await s.register(solicitation.value);
       print(solicitation.value.toJson());
+      if (Get.isDialogOpen ?? false) {
+        Get.back();
+      }
       Get.snackbar('Success', 'Solicitação criada com sucesso');
     } catch (e) {
       print(e);
@@ -145,11 +193,13 @@ class AgencyController extends GetxController {
     if (result == null) return;
 
     final file = result.files.first;
+    if (!_isAllowedFileSize(file, 'Foto do documento')) return;
 
     documents.update((a) => a!.documentPhotoName = file.name);
     documents.update(
       (a) => a!.documentPhotoByte = file.bytes,
     ); // Uint8List, works everywhere
+    _showUploadFeedback('Foto do documento', file.name);
   }
 
   Future<void> pickPhotoWithDocument() async {
@@ -162,11 +212,13 @@ class AgencyController extends GetxController {
     if (result == null) return;
 
     final file = result.files.first;
+    if (!_isAllowedFileSize(file, 'Foto com documento')) return;
 
     documents.update((a) => a!.photoWithDocumentName = file.name);
     documents.update(
       (a) => a!.photoWithDocumentByte = file.bytes,
     ); // Uint8List, works everywhere
+    _showUploadFeedback('Foto com documento', file.name);
   }
 
   Future<void> pickLastInvoice() async {
@@ -179,11 +231,13 @@ class AgencyController extends GetxController {
     if (result == null) return;
 
     final file = result.files.first;
+    if (!_isAllowedFileSize(file, 'Ultima fatura')) return;
 
     documents.update((a) => a!.lastInvoiceName = file.name);
     documents.update(
       (a) => a!.lastInvoiceByte = file.bytes,
     ); // Uint8List, works everywhere
+    _showUploadFeedback('Ultima fatura', file.name);
   }
 
   Future<void> pickContract() async {
@@ -196,21 +250,26 @@ class AgencyController extends GetxController {
     if (result == null) return;
 
     final file = result.files.first;
+    if (!_isAllowedFileSize(file, 'Contrato')) return;
 
     documents.update((a) => a!.contractName = file.name);
     documents.update(
       (a) => a!.contractByte = file.bytes,
     ); // Uint8List, works everywhere
+    _showUploadFeedback('Contrato', file.name);
   }
 
   Future<void> transfer() async {
-    Get.back();
+    solicitation.update((s) => s!.items = _selectedServices());
     try {
       isLoading.value = true;
       solicitation.value = await s.transfer(
         documents: documents.value,
         soliciation: solicitation.value,
       );
+      if (Get.isDialogOpen ?? false) {
+        Get.back();
+      }
       Get.snackbar('Success', 'Transferência realizada com sucesso');
     } catch (e) {
       print(e);
@@ -226,5 +285,24 @@ class AgencyController extends GetxController {
       address: Address(),
       items: [],
     );
+    documents.value = Documents();
+    cep.value = '';
+    cepController.clear();
+    birthDateController.clear();
+    services.value = services
+        .map(
+          (service) => service.copyWith(
+            selected: false,
+            companyName: '',
+          ),
+        )
+        .toList();
+  }
+
+  @override
+  void onClose() {
+    cepController.dispose();
+    birthDateController.dispose();
+    super.onClose();
   }
 }

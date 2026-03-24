@@ -13,6 +13,25 @@ class AppTheme {
 
   static const Color ink = Color(0xFFFFFFFF);
 
+  static ScrollbarThemeData get _scrollbarTheme => ScrollbarThemeData(
+    thumbColor: WidgetStateProperty.resolveWith((states) {
+      if (states.contains(WidgetState.dragged)) {
+        return secundario.withOpacity(.96);
+      }
+      if (states.contains(WidgetState.hovered)) {
+        return claro.withOpacity(.94);
+      }
+      return primario.withOpacity(.82);
+    }),
+    trackColor: WidgetStatePropertyAll(Colors.white.withOpacity(.08)),
+    trackBorderColor: WidgetStatePropertyAll(Colors.white.withOpacity(.10)),
+    radius: const Radius.circular(999),
+    thickness: const WidgetStatePropertyAll(10),
+    crossAxisMargin: 4,
+    mainAxisMargin: 4,
+    minThumbLength: 56,
+  );
+
   // =========================
   // DARK THEME (PRINCIPAL)
   // =========================
@@ -187,6 +206,8 @@ class AppTheme {
         thickness: 1,
       ),
 
+      scrollbarTheme: _scrollbarTheme,
+
       // ListTiles
       listTileTheme: ListTileThemeData(
         iconColor: Colors.white.withOpacity(.88),
@@ -209,6 +230,7 @@ class AppTheme {
         secondary: secundario,
       ),
       scaffoldBackgroundColor: Colors.white,
+      scrollbarTheme: _scrollbarTheme,
       appBarTheme: const AppBarTheme(
         backgroundColor: Colors.white,
         surfaceTintColor: Colors.transparent,

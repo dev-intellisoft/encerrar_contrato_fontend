@@ -6,12 +6,29 @@ class AgencyLogo extends StatelessWidget {
   const AgencyLogo({super.key, required this.imagePath});
   @override
   Widget build(BuildContext context) {
-    print('${dotenv.env['API_URL']}$imagePath');
+    final normalizedPath = imagePath.trim();
+    if (normalizedPath.isEmpty) {
+      return const SizedBox(
+        width: 40,
+        height: 40,
+        child: Icon(
+          Icons.image_not_supported,
+          size: 40,
+          color: Colors.grey,
+        ),
+      );
+    }
+
     return Container(
       width: 40,
       height: 40,
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: Image.network(
-        '${dotenv.env['API_URL']}$imagePath',
+        '${dotenv.env['API_URL']}$normalizedPath',
+        key: ValueKey(normalizedPath),
         fit: BoxFit.cover,
 
         loadingBuilder: (context, child, loadingProgress) {

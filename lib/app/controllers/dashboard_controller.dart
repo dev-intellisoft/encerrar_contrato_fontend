@@ -1,8 +1,11 @@
-import 'package:encerrar_contrato/app/models/solicitation_model.dart';
-import 'package:get/get.dart';
-import '../services/solicitation_services.dart';
+import 'dart:io';
 import 'dart:typed_data';
-import 'package:pdfx/pdfx.dart';
+
+import 'package:encerrar_contrato/app/models/solicitation_model.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:get/get.dart';
+
+import '../services/solicitation_services.dart';
 
 class DashboardController extends GetxController {
   final SolicitationServices service = Get.find<SolicitationServices>();
@@ -11,10 +14,9 @@ class DashboardController extends GetxController {
   RxList<Solicitation> solicitations = <Solicitation>[].obs;
   RxBool loading = false.obs;
   RxList<String> documents = <String>[].obs;
-  RxList<Uint8List> documentBytes = <Uint8List>[].obs;
-  // Rx<PdfController?> pdfController = Rx<PdfController?>(null);
-  RxBool isLoading = false.obs;
-  Rx<Uint8List?> documentByte = Rx<Uint8List?>(null);
+  RxMap<String, Uint8List> documentCache = <String, Uint8List>{}.obs;
+  RxSet<String> loadingDocuments = <String>{}.obs;
+  RxString loadedDocumentsFor = ''.obs;
 
   @override
   void onInit() {
@@ -22,27 +24,86 @@ class DashboardController extends GetxController {
     getSolicitations();
   }
 
-  Future<void> loadPdf(String document) async {
+  String documentNameFromPath(String path) {
+    final uri = Uri.tryParse(path);
+    final hasSegments = uri?.pathSegments.isNotEmpty ?? false;
+    final candidate = hasSegments ? uri!.pathSegments.last : path.split('/').last;
+    return candidate.isEmpty ? path : candidate;
+  }
+
+  String documentLabel(String path) {
+    final name = documentNameFromPath(path).replaceAll('_', ' ');
+    return name.isEmpty ? 'Documento' : name;
+  }
+
+  bool isPdfDocument(String path) {
+    return documentNameFromPath(path).toLowerCase().endsWith('.pdf');
+  }
+
+  bool isImageDocument(String path) {
+    final lower = documentNameFromPath(path).toLowerCase();
+    return lower.endsWith('.png') ||
+        lower.endsWith('.jpg') ||
+        lower.endsWith('.jpeg') ||
+        lower.endsWith('.webp') ||
+        lower.endsWith('.gif') ||
+        lower.endsWith('.bmp');
+  }
+
+  Future<Uint8List?> loadDocumentBytes(String document) async {
+    if (documentCache.containsKey(document)) {
+      return documentCache[document];
+    }
+    if (loadingDocuments.contains(document)) {
+      return null;
+    }
+
     try {
-      // pdfController.value = null;
-      documentByte.value = null;
-      isLoading.value = true;
+      loadingDocuments.add(document);
       final res = await service.getDocument(document);
-      documentByte.value = res;
-      // pdfController.value = PdfController(document: PdfDocument.openData(res));
-      isLoading.value = false;
+      documentCache[document] = res;
+      return res;
     } catch (e) {
-      Get.snackbar('Error', 'Failed to load PDF');
+      Get.snackbar('Error', 'Falha ao carregar documento');
+      return null;
     } finally {
-      isLoading.value = false;
+      loadingDocuments.remove(document);
     }
   }
 
   Future<void> listDocuments() async {
     try {
-      documents.value = await service.listDocument(solicitation.value!.id!);
+      final solicitationId = solicitation.value?.id;
+      if (solicitationId == null || solicitationId.isEmpty) {
+        documents.clear();
+        loadedDocumentsFor.value = '';
+        return;
+      }
+      if (loadedDocumentsFor.value == solicitationId) return;
+
+      documents.value = await service.listDocument(solicitationId);
+      loadedDocumentsFor.value = solicitationId;
     } catch (e) {
       Get.snackbar('Error', e.toString());
+    }
+  }
+
+  Future<void> downloadDocument(String document) async {
+    try {
+      final bytes = await loadDocumentBytes(document);
+      if (bytes == null) return;
+
+      final outputPath = await FilePicker.platform.saveFile(
+        dialogTitle: 'Salvar documento',
+        fileName: documentNameFromPath(document),
+      );
+
+      if (outputPath == null || outputPath.isEmpty) return;
+
+      await File(outputPath).writeAsBytes(bytes, flush: true);
+      Get.snackbar('Sucesso', 'Documento salvo com sucesso');
+    } catch (e) {
+      Get.snackbar('Error', 'Falha ao salvar documento');
     }
   }
 
@@ -58,11 +119,18 @@ class DashboardController extends GetxController {
 
   Future<void> startSolicitation() async {
     try {
+      final solicitationId = solicitation.value?.id;
+      if (solicitationId == null || solicitationId.isEmpty) {
+        Get.snackbar('Error', 'Selecione uma solicitação válida');
+        return;
+      }
+
       solicitation.value = await service.startSolicitation(
-        solicitation.value!.id!,
+        solicitationId,
       );
+      loadedDocumentsFor.value = '';
       solicitations.value = solicitations
-          .map((s) => s.id == solicitation.value!.id ? solicitation.value! : s)
+          .map((s) => s.id == solicitationId ? solicitation.value! : s)
           .toList();
       Get.snackbar('Success', 'Solicitação iniciada com sucesso');
     } catch (e) {
@@ -72,13 +140,20 @@ class DashboardController extends GetxController {
 
   Future<void> endSolicitation() async {
     try {
+      final solicitationId = solicitation.value?.id;
+      if (solicitationId == null || solicitationId.isEmpty) {
+        Get.snackbar('Error', 'Selecione uma solicitação válida');
+        return;
+      }
+
       solicitation.value = await service.endSolicitation(
-        solicitation.value!.id!,
+        solicitationId,
       );
+      loadedDocumentsFor.value = '';
       solicitations.value = solicitations
-          .map((s) => s.id == solicitation.value!.id ? solicitation.value! : s)
+          .map((s) => s.id == solicitationId ? solicitation.value! : s)
           .toList();
-      Get.snackbar('Success', 'Solicitação concluida com sucesso');
+      Get.snackbar('Success', 'Solicitação concluída com sucesso');
     } catch (e) {
       Get.snackbar('Error', e.toString());
     }
