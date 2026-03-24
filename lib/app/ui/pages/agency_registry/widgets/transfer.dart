@@ -21,6 +21,10 @@ class TransferForm extends GetView<AgencyController> {
   final GlobalKey<FormState> _formStep1 = GlobalKey<FormState>();
   final GlobalKey<FormState> _formStep2 = GlobalKey<FormState>();
   final GlobalKey<FormState> _formStep3 = GlobalKey<FormState>();
+  final MaskTextInputFormatter _newHolderPhoneMask = MaskTextInputFormatter(
+    mask: '(##) #####-####',
+    filter: {"#": RegExp(r'[0-9]')},
+  );
 
   // Helpers
   String _digitsOnly(String s) => s.replaceAll(RegExp(r'\D'), '');
@@ -32,13 +36,19 @@ class TransferForm extends GetView<AgencyController> {
     return '$dd/$mm/$yyyy';
   }
 
-  InputDecoration _dec({required String label, String? hint, IconData? icon}) {
+  InputDecoration _dec({
+    required String label,
+    String? hint,
+    IconData? icon,
+    Widget? suffixIcon,
+  }) {
     return InputDecoration(
       labelText: label,
       hintText: hint,
       filled: true,
       fillColor: _bgField,
       prefixIcon: icon != null ? Icon(icon, color: _claro) : null,
+      suffixIcon: suffixIcon,
       labelStyle: TextStyle(
         color: _ink.withOpacity(.92),
         fontWeight: FontWeight.w700,
@@ -75,6 +85,307 @@ class TransferForm extends GetView<AgencyController> {
     fontWeight: FontWeight.w900,
     fontSize: 16,
   );
+
+  bool _isImageFile(String? name) {
+    if (name == null) return false;
+    final lower = name.toLowerCase();
+    return lower.endsWith('.png') ||
+        lower.endsWith('.jpg') ||
+        lower.endsWith('.jpeg') ||
+        lower.endsWith('.webp') ||
+        lower.endsWith('.gif') ||
+        lower.endsWith('.bmp');
+  }
+
+  String _formatFileSize(Uint8List? bytes) {
+    if (bytes == null) return '';
+    final length = bytes.length;
+    if (length >= 1024 * 1024) {
+      return '${(length / (1024 * 1024)).toStringAsFixed(1)} MB';
+    }
+    if (length >= 1024) {
+      return '${(length / 1024).toStringAsFixed(0)} KB';
+    }
+    return '$length B';
+  }
+
+  bool _hasRequiredTransferDocuments() {
+    final docs = controller.documents.value;
+    return (docs.documentPhotoName ?? '').isNotEmpty &&
+        docs.documentPhotoByte != null &&
+        (docs.photoWithDocumentName ?? '').isNotEmpty &&
+        docs.photoWithDocumentByte != null;
+  }
+
+  Widget _uploadStatusChip({
+    required bool selected,
+    required bool requiredField,
+  }) {
+    final color = selected
+        ? const Color(0xFF2DD4BF)
+        : requiredField
+            ? const Color(0xFFF59E0B)
+            : Colors.white.withOpacity(.55);
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 220),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: color.withOpacity(.14),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: color.withOpacity(.45)),
+      ),
+      child: Text(
+        selected ? 'Arquivo carregado' : requiredField ? 'Obrigatório' : 'Opcional',
+        style: TextStyle(
+          color: selected ? Colors.white : _ink.withOpacity(.88),
+          fontSize: 11,
+          fontWeight: FontWeight.w800,
+        ),
+      ),
+    );
+  }
+
+  Widget _uploadCard({
+    required String title,
+    required String subtitle,
+    required String? fileName,
+    required Uint8List? fileBytes,
+    required bool requiredField,
+    required VoidCallback onTap,
+    required IconData icon,
+  }) {
+    final hasFile = fileName != null && fileName.isNotEmpty && fileBytes != null;
+    final imageFile = hasFile && _isImageFile(fileName);
+
+    return InkWell(
+      borderRadius: BorderRadius.circular(24),
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 240),
+        curve: Curves.easeOutCubic,
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(24),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: hasFile
+                ? [
+                    _primario.withOpacity(.24),
+                    _claro.withOpacity(.14),
+                  ]
+                : [
+                    Colors.white.withOpacity(.06),
+                    Colors.white.withOpacity(.03),
+                  ],
+          ),
+          border: Border.all(
+            color: hasFile
+                ? _claro.withOpacity(.40)
+                : Colors.white.withOpacity(.12),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: hasFile
+                  ? _primario.withOpacity(.18)
+                  : Colors.black.withOpacity(.18),
+              blurRadius: hasFile ? 22 : 14,
+              offset: const Offset(0, 12),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 42,
+                  height: 42,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(.08),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: Colors.white.withOpacity(.12)),
+                  ),
+                  child: Icon(icon, color: _claro, size: 22),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: _ink.withOpacity(.96),
+                          fontWeight: FontWeight.w900,
+                          fontSize: 13,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        subtitle,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: _ink.withOpacity(.68),
+                          fontSize: 11.5,
+                          height: 1.25,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 14),
+            _uploadStatusChip(
+              selected: hasFile,
+              requiredField: requiredField,
+            ),
+            const SizedBox(height: 12),
+            Expanded(
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 320),
+                switchInCurve: Curves.easeOutBack,
+                switchOutCurve: Curves.easeIn,
+                child: hasFile
+                    ? TweenAnimationBuilder<double>(
+                        key: ValueKey(fileName),
+                        tween: Tween(begin: .92, end: 1),
+                        duration: const Duration(milliseconds: 320),
+                        curve: Curves.easeOutBack,
+                        builder: (context, value, child) {
+                          return Transform.scale(scale: value, child: child);
+                        },
+                        child: Container(
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            color: Colors.black.withOpacity(.16),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(.12),
+                            ),
+                          ),
+                          child: imageFile
+                              ? ClipRRect(
+                                  borderRadius: BorderRadius.circular(20),
+                                  child: Stack(
+                                    fit: StackFit.expand,
+                                    children: [
+                                      Image.memory(fileBytes, fit: BoxFit.cover),
+                                      DecoratedBox(
+                                        decoration: BoxDecoration(
+                                          gradient: LinearGradient(
+                                            begin: Alignment.topCenter,
+                                            end: Alignment.bottomCenter,
+                                            colors: [
+                                              Colors.black.withOpacity(.05),
+                                              Colors.black.withOpacity(.55),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                      Positioned(
+                                        left: 12,
+                                        right: 12,
+                                        bottom: 12,
+                                        child: Text(
+                                          fileName,
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w800,
+                                            fontSize: 11.5,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              : Padding(
+                                  padding: const EdgeInsets.all(14),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      Icon(
+                                        Icons.description_rounded,
+                                        color: _claro.withOpacity(.95),
+                                        size: 34,
+                                      ),
+                                      const Spacer(),
+                                      Text(
+                                        fileName,
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          color: _ink.withOpacity(.95),
+                                          fontWeight: FontWeight.w800,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 6),
+                                      Text(
+                                        _formatFileSize(fileBytes),
+                                        style: TextStyle(
+                                          color: _ink.withOpacity(.65),
+                                          fontSize: 11.5,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                        ),
+                      )
+                    : Container(
+                        key: ValueKey(title),
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: Colors.white.withOpacity(.04),
+                          border: Border.all(
+                            color: Colors.white.withOpacity(.10),
+                          ),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.add_photo_alternate_outlined,
+                              color: _ink.withOpacity(.68),
+                              size: 34,
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              'Toque para selecionar',
+                              style: TextStyle(
+                                color: _ink.withOpacity(.86),
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Imagem ou documento',
+                              style: TextStyle(
+                                color: _ink.withOpacity(.58),
+                                fontSize: 11.5,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   // ✅ DatePicker con tema CLARO (texto negro)
   Future<void> _pickBirthDate(
@@ -124,6 +435,7 @@ class TransferForm extends GetView<AgencyController> {
 
     if (picked != null) {
       final formatted = _formatBR(picked);
+      controller.birthDateController.text = formatted;
       controller.solicitation.update((s) => s!.customer!.birthDate = formatted);
     }
   }
@@ -200,13 +512,20 @@ class TransferForm extends GetView<AgencyController> {
     bool ok = false;
 
     if (s == 1) ok = _formStep1.currentState?.validate() ?? false;
-    if (s == 2) ok = _formStep2.currentState?.validate() ?? false;
+    if (s == 2) {
+      ok = _formStep2.currentState?.validate() ?? false;
+      if (ok && !_hasRequiredTransferDocuments()) {
+        ok = false;
+      }
+    }
     if (s == 3) ok = _formStep3.currentState?.validate() ?? false;
 
     if (!ok) {
       Get.snackbar(
         'Atenção',
-        'Revise os campos deste passo.',
+        s == 2 && !_hasRequiredTransferDocuments()
+            ? 'Selecione a foto do documento e a foto com documento.'
+            : 'Revise os campos deste passo.',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: _bgCard,
         colorText: Colors.white,
@@ -397,17 +716,24 @@ class TransferForm extends GetView<AgencyController> {
               const SizedBox(width: 10),
               Expanded(
                 child: TextFormField(
-                  initialValue:
-                      controller.solicitation.value.customer!.birthDate ?? '',
+                  controller: controller.birthDateController,
                   style: _fieldText,
                   cursorColor: _ink,
-                  // controller: birthCtrl,
-                  readOnly: true,
-                  onTap: () => _pickBirthDate(context, controller),
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [
+                    MaskTextInputFormatter(
+                      mask: '##/##/####',
+                      filter: {"#": RegExp(r'[0-9]')},
+                    ),
+                  ],
                   decoration: _dec(
                     label: 'Data de nascimento',
                     hint: 'Selecione no calendário',
                     icon: Icons.cake_outlined,
+                    suffixIcon: IconButton(
+                      icon: const Icon(Icons.calendar_month_outlined),
+                      onPressed: () => _pickBirthDate(context, controller),
+                    ),
                   ),
                   validator: (v) =>
                       (v ?? '').trim().isEmpty ? 'Selecione a data' : null,
@@ -490,7 +816,9 @@ class TransferForm extends GetView<AgencyController> {
               icon: Icons.verified_outlined,
             ),
             validator: (v) {
-              final a = _digitsOnly(phoneCtrl.text);
+              final a = _digitsOnly(
+                controller.solicitation.value.customer?.phone ?? '',
+              );
               final b = _digitsOnly(v ?? '');
               if (b.isEmpty) return 'Confirme o telefone';
               if (a != b) return 'Os telefones não coincidem';
@@ -505,6 +833,7 @@ class TransferForm extends GetView<AgencyController> {
           TextFormField(
             style: _fieldText,
             cursorColor: _ink,
+            controller: controller.cepController,
             inputFormatters: [
               MaskTextInputFormatter(
                 mask: '##.###-###',
@@ -613,25 +942,99 @@ class TransferForm extends GetView<AgencyController> {
           Text('Passo 2 • Dados do novo titular', style: _titleStyle()),
           const SizedBox(height: 12),
 
-          TextFormField(
-            style: _fieldText,
-            cursorColor: _ink,
-            readOnly: true,
-            controller: TextEditingController(
-              text: controller.documents.value.documentPhotoName ?? '',
+          Text(
+            'Os uploads agora ficam em cards mais visíveis, com preview automático para imagens e estado claro para cada arquivo.',
+            style: TextStyle(
+              color: _ink.withOpacity(.72),
+              fontSize: 12,
+              height: 1.4,
             ),
-            onTap: controller.pickDocumentPhoto,
-            decoration: _dec(
-              label: 'Foto do documento',
-              hint: 'Toque para selecionar',
-              icon: Icons.file_present_outlined,
+          ),
+          const SizedBox(height: 10),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            decoration: BoxDecoration(
+              color: Colors.amber.withOpacity(.08),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: Colors.amber.withOpacity(.24)),
             ),
-            validator: (v) {
-              if ((controller.documents.value.documentPhotoName ?? '')
-                  .isEmpty) {
-                return 'Selecione a foto do documento';
-              }
-              return null;
+            child: Text(
+              'Limite por arquivo: 1300 KB. Arquivos maiores serão recusados para evitar falha no envio.',
+              style: TextStyle(
+                color: Colors.white.withOpacity(.84),
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                height: 1.35,
+              ),
+            ),
+          ),
+          const SizedBox(height: 14),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final isWide = constraints.maxWidth > 560;
+              final itemWidth = isWide
+                  ? (constraints.maxWidth - 12) / 2
+                  : constraints.maxWidth;
+
+              return Wrap(
+                spacing: 12,
+                runSpacing: 12,
+                children: [
+                  SizedBox(
+                    width: itemWidth,
+                    height: 240,
+                    child: _uploadCard(
+                      title: 'Foto do documento',
+                      subtitle: 'Documento frontal ou página principal',
+                      fileName: controller.documents.value.documentPhotoName,
+                      fileBytes: controller.documents.value.documentPhotoByte,
+                      requiredField: true,
+                      onTap: controller.pickDocumentPhoto,
+                      icon: Icons.file_present_outlined,
+                    ),
+                  ),
+                  SizedBox(
+                    width: itemWidth,
+                    height: 240,
+                    child: _uploadCard(
+                      title: 'Foto com documento',
+                      subtitle: 'Selfie segurando o documento visível',
+                      fileName: controller.documents.value.photoWithDocumentName,
+                      fileBytes:
+                          controller.documents.value.photoWithDocumentByte,
+                      requiredField: true,
+                      onTap: controller.pickPhotoWithDocument,
+                      icon: Icons.badge_outlined,
+                    ),
+                  ),
+                  SizedBox(
+                    width: itemWidth,
+                    height: 240,
+                    child: _uploadCard(
+                      title: 'Última fatura',
+                      subtitle: 'Comprovante recente do serviço',
+                      fileName: controller.documents.value.lastInvoiceName,
+                      fileBytes: controller.documents.value.lastInvoiceByte,
+                      requiredField: false,
+                      onTap: controller.pickLastInvoice,
+                      icon: Icons.receipt_long_outlined,
+                    ),
+                  ),
+                  SizedBox(
+                    width: itemWidth,
+                    height: 240,
+                    child: _uploadCard(
+                      title: 'Contrato',
+                      subtitle: 'Locação, compra e venda ou equivalente',
+                      fileName: controller.documents.value.contractName,
+                      fileBytes: controller.documents.value.contractByte,
+                      requiredField: false,
+                      onTap: controller.pickContract,
+                      icon: Icons.description_outlined,
+                    ),
+                  ),
+                ],
+              );
             },
           ),
 
@@ -639,65 +1042,18 @@ class TransferForm extends GetView<AgencyController> {
           TextFormField(
             style: _fieldText,
             cursorColor: _ink,
-            readOnly: true,
-            controller: TextEditingController(
-              text: controller.documents.value.photoWithDocumentName ?? '',
-            ),
-            onTap: controller.pickPhotoWithDocument,
-            decoration: _dec(
-              label: 'Foto com documento',
-              hint: 'Toque para selecionar',
-              icon: Icons.badge_outlined,
-            ),
-            validator: (v) {
-              if ((controller.documents.value.photoWithDocumentName ?? '')
-                  .isEmpty) {
-                return 'Selecione a foto com documento';
-              }
-              return null;
-            },
-          ),
-
-          const SizedBox(height: 10),
-          TextFormField(
-            style: _fieldText,
-            cursorColor: _ink,
-            readOnly: true,
-            controller: TextEditingController(
-              text: controller.documents.value.lastInvoiceName ?? '',
-            ),
-            onTap: controller.pickLastInvoice,
-            decoration: _dec(
-              label: 'Última fatura do serviço',
-              hint: 'Toque para selecionar',
-              icon: Icons.receipt_long_outlined,
-            ),
-          ),
-
-          const SizedBox(height: 10),
-          TextFormField(
-            style: _fieldText,
-            cursorColor: _ink,
-            readOnly: true,
-            controller: TextEditingController(
-              text: controller.documents.value.contractName ?? '',
-            ),
-            onTap: controller.pickContract,
-            decoration: _dec(
-              label: 'Inserir contrato (locação / compra e venda)',
-              hint: 'Toque para selecionar',
-              icon: Icons.description_outlined,
-            ),
-          ),
-
-          const SizedBox(height: 10),
-          TextFormField(
-            style: _fieldText,
-            cursorColor: _ink,
+            keyboardType: TextInputType.phone,
+            inputFormatters: [_newHolderPhoneMask],
             decoration: _dec(
               label: 'Telefone (novo titular)',
               icon: Icons.phone_outlined,
             ),
+            validator: (v) {
+              final digits = _digitsOnly(v ?? '');
+              if (digits.isEmpty) return 'Informe o telefone do novo titular';
+              if (digits.length < 10) return 'Telefone inválido';
+              return null;
+            },
           ),
         ],
       ),
@@ -818,7 +1174,7 @@ class TransferForm extends GetView<AgencyController> {
                     ),
                   ),
                   child: Icon(
-                    Icons.currency_exchange_rounded,
+                    Icons.cloud_done_outlined,
                     color: _claro.withOpacity(.95),
                     size: 22,
                   ),
@@ -829,7 +1185,7 @@ class TransferForm extends GetView<AgencyController> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Total',
+                        'Envio direto',
                         style: TextStyle(
                           color: _ink.withOpacity(.78),
                           fontWeight: FontWeight.w800,
@@ -838,13 +1194,13 @@ class TransferForm extends GetView<AgencyController> {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        "R\$ ${_priceTotal().toString()}",
+                        'Solicitação enviada ao master',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           color: _ink.withOpacity(.98),
                           fontWeight: FontWeight.w900,
-                          fontSize: 22,
+                          fontSize: 18,
                           letterSpacing: .2,
                         ),
                       ),
@@ -866,7 +1222,7 @@ class TransferForm extends GetView<AgencyController> {
                     ),
                   ),
                   child: Text(
-                    'BRL',
+                    'SEM PAG.',
                     style: TextStyle(
                       color: _ink.withOpacity(.78),
                       fontWeight: FontWeight.w900,
@@ -989,7 +1345,7 @@ class TransferForm extends GetView<AgencyController> {
   double _priceTotal() {
     double total = 0.0;
     for (var service in controller.services) {
-      if (service.selected) total += service.price!;
+      if (service.selected) total += (service.price ?? 0);
     }
     return total;
   }

@@ -14,13 +14,13 @@ class AgencyForm extends StatefulWidget {
 
 class _AgencyFormState extends State<AgencyForm> {
   final AgencyController controller = Get.find<AgencyController>();
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   // ✅ Controllers persistentes (no se recrean)
   late final TextEditingController _nameCtrl;
   late final TextEditingController _loginCtrl;
   late final TextEditingController _passCtrl;
   late final TextEditingController _imageCtrl;
+  bool _showPassword = false;
 
   // Para evitar loops cuando sincronizamos texto
   bool _syncing = false;
@@ -35,7 +35,7 @@ class _AgencyFormState extends State<AgencyForm> {
     _passCtrl =
         TextEditingController(text: controller.agency.value.password ?? "");
     _imageCtrl =
-        TextEditingController(text: controller.agency.value.image ?? "");
+        TextEditingController(text: controller.agency.value.fileName ?? controller.agency.value.image ?? "");
 
     // ✅ Listeners: actualizan el model sin forzar rebuild de TextField
     _nameCtrl.addListener(() {
@@ -77,7 +77,7 @@ class _AgencyFormState extends State<AgencyForm> {
     setText(_nameCtrl, a.name ?? "");
     setText(_loginCtrl, a.login ?? "");
     setText(_passCtrl, a.password ?? "");
-    setText(_imageCtrl, a.image ?? "");
+    setText(_imageCtrl, a.fileName ?? a.image ?? "");
 
     _syncing = false;
   }
@@ -179,8 +179,142 @@ class _AgencyFormState extends State<AgencyForm> {
       );
     }
 
+    Widget imagePreview() {
+      return Obx(() {
+        final currentAgency = controller.agency.value;
+        final fileBytes = currentAgency.fileBytes;
+        final fileName = currentAgency.fileName;
+        final imagePath = (currentAgency.image ?? "").trim();
+        final hasLocalImage = fileBytes != null && fileBytes.isNotEmpty;
+        final hasRemoteImage = imagePath.isNotEmpty;
+
+        return Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(.04),
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: Colors.white.withOpacity(.12)),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 90,
+                height: 90,
+                clipBehavior: Clip.antiAlias,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  color: Colors.white.withOpacity(.05),
+                  border: Border.all(color: Colors.white.withOpacity(.08)),
+                ),
+                child: hasLocalImage
+                    ? Image.memory(fileBytes, fit: BoxFit.cover)
+                    : hasRemoteImage
+                        ? Image.network(
+                            imagePath,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => Icon(
+                              Icons.image_not_supported_outlined,
+                              color: Colors.white.withOpacity(.55),
+                              size: 28,
+                            ),
+                          )
+                        : Icon(
+                            Icons.image_outlined,
+                            color: Colors.white.withOpacity(.55),
+                            size: 30,
+                          ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      hasLocalImage || hasRemoteImage
+                          ? "Logo pronto"
+                          : "Sem logo selecionado",
+                      style: const TextStyle(
+                        color: ink,
+                        fontWeight: FontWeight.w900,
+                        fontSize: 13,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      fileName ??
+                          (hasRemoteImage
+                              ? "Imagem atual cadastrada"
+                              : "Selecione uma imagem para o perfil da imobiliaria"),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(.70),
+                        fontWeight: FontWeight.w700,
+                        height: 1.35,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        ElevatedButton.icon(
+                          onPressed: () async {
+                            await controller.pickAgencyImage();
+                            _syncFromModel(controller.agency.value);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: primario,
+                            foregroundColor: Colors.white,
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          icon: const Icon(Icons.upload_rounded, size: 18),
+                          label: const Text(
+                            "Selecionar",
+                            style: TextStyle(fontWeight: FontWeight.w800),
+                          ),
+                        ),
+                        if (hasLocalImage || hasRemoteImage)
+                          OutlinedButton.icon(
+                            onPressed: () {
+                              controller.agency.update((a) {
+                                a?.fileBytes = null;
+                                a?.fileName = null;
+                                a?.image = null;
+                              });
+                              _syncFromModel(controller.agency.value);
+                            },
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: Colors.white,
+                              side: BorderSide(
+                                color: Colors.white.withOpacity(.18),
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            icon: const Icon(Icons.delete_outline, size: 18),
+                            label: const Text(
+                              "Remover",
+                              style: TextStyle(fontWeight: FontWeight.w800),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      });
+    }
+
     return Scaffold(
-      key: _scaffoldKey,
       backgroundColor: bg,
       endDrawer: DrawerWidget(),
       appBar: AppBar(
@@ -224,10 +358,12 @@ class _AgencyFormState extends State<AgencyForm> {
           ],
         ),
         actions: [
-          IconButton(
-            onPressed: () => _scaffoldKey.currentState?.openEndDrawer(),
-            icon: Icon(Icons.person_3_rounded,
-                color: Colors.white.withOpacity(.9)),
+          Builder(
+            builder: (context) => IconButton(
+              onPressed: () => Scaffold.of(context).openEndDrawer(),
+              icon: Icon(Icons.person_3_rounded,
+                  color: Colors.white.withOpacity(.9)),
+            ),
           ),
         ],
       ),
@@ -311,36 +447,42 @@ class _AgencyFormState extends State<AgencyForm> {
                         fontSize: 13,
                       ),
                       cursorColor: primario,
-                      obscureText: true,
+                      obscureText: !_showPassword,
                       decoration: inputDec(
                         hint: "Senha de acesso",
                         icon: Icons.lock_outline,
+                        suffix: IconButton(
+                          onPressed: () {
+                            setState(() => _showPassword = !_showPassword);
+                          },
+                          icon: Icon(
+                            _showPassword
+                                ? Icons.visibility_off_outlined
+                                : Icons.visibility_outlined,
+                            color: Colors.white.withOpacity(.72),
+                          ),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 12),
 
                     // ===== Logo (picker) =====
                     fieldLabel("Logo"),
-                    GestureDetector(
-                      onTap: () async {
-                        await controller.pickAgencyImage();
-                        // ✅ sincroniza visualmente (por si el controller cambia el model)
-                        _syncFromModel(controller.agency.value);
-                      },
-                      child: AbsorbPointer(
-                        child: TextField(
-                          controller: _imageCtrl,
-                          style: const TextStyle(
-                            color: ink,
-                            fontWeight: FontWeight.w800,
-                            fontSize: 13,
-                          ),
-                          decoration: inputDec(
-                            hint: "Toque para selecionar o logo",
-                            icon: Icons.image_outlined,
-                            suffix: Icon(Icons.upload_rounded,
-                                color: Colors.white.withOpacity(.75)),
-                          ),
+                    imagePreview(),
+                    const SizedBox(height: 10),
+                    AbsorbPointer(
+                      child: TextField(
+                        controller: _imageCtrl,
+                        style: const TextStyle(
+                          color: ink,
+                          fontWeight: FontWeight.w800,
+                          fontSize: 13,
+                        ),
+                        decoration: inputDec(
+                          hint: "Nome do arquivo selecionado",
+                          icon: Icons.image_outlined,
+                          suffix: Icon(Icons.check_circle_outline,
+                              color: Colors.white.withOpacity(.75)),
                         ),
                       ),
                     ),

@@ -9,8 +9,6 @@ import '../../../widgets/drawer.dart';
 import '../../../widgets/logo.dart';
 import 'widgets/solicitation_tile.dart';
 
-final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
 class DashboardPage extends GetView<DashboardController> {
   const DashboardPage({super.key});
 
@@ -164,6 +162,89 @@ class DashboardPage extends GetView<DashboardController> {
       );
     }
 
+    Future<void> confirmActionWithKeyword({
+      required String keyword,
+      required String actionLabel,
+      required VoidCallback onConfirm,
+    }) async {
+      final textController = TextEditingController();
+      final canConfirm = false.obs;
+
+      await Get.dialog(
+        AlertDialog(
+          backgroundColor: bg2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(18),
+            side: BorderSide(color: Colors.white.withOpacity(.10)),
+          ),
+          title: Text(
+            actionLabel,
+            style: const TextStyle(
+              color: ink,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Escreva a palavra "$keyword" para ${actionLabel.toLowerCase()}.',
+                style: TextStyle(
+                  color: Colors.white.withOpacity(.78),
+                  fontWeight: FontWeight.w700,
+                  height: 1.4,
+                ),
+              ),
+              const SizedBox(height: 14),
+              TextField(
+                controller: textController,
+                autofocus: true,
+                onChanged: (value) => canConfirm.value = value.trim() == keyword,
+                style: const TextStyle(color: ink, fontWeight: FontWeight.w800),
+                cursorColor: primario,
+                decoration: cleanInputDec(
+                  hint: 'Digite "$keyword"',
+                  icon: Icons.lock_outline_rounded,
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Get.back(),
+              child: Text(
+                'Cancelar',
+                style: TextStyle(
+                  color: Colors.white.withOpacity(.72),
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ),
+            Obx(
+              () => ElevatedButton(
+                onPressed: canConfirm.value
+                    ? () {
+                        Get.back();
+                        onConfirm();
+                      }
+                    : null,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: primario,
+                  disabledBackgroundColor: Colors.white.withOpacity(.10),
+                  foregroundColor: Colors.white,
+                ),
+                child: const Text(
+                  'Confirmar',
+                  style: TextStyle(fontWeight: FontWeight.w900),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
     // =========================
     // LEFT LIST
     // =========================
@@ -215,21 +296,18 @@ class DashboardPage extends GetView<DashboardController> {
                           ),
                         ),
                       )
-                    : Scrollbar(
-                        thumbVisibility: true,
-                        child: ListView(
-                          children: controller.solicitations
-                              .map(
-                                (s) => SolicitationTile(
-                                  isSelected:
-                                      s.id == controller.solicitation.value!.id,
-                                  solicitation: s,
-                                  onTap: (v) =>
-                                      controller.solicitation.value = v,
-                                ),
-                              )
-                              .toList(),
-                        ),
+                    : ListView(
+                        children: controller.solicitations
+                            .map(
+                              (s) => SolicitationTile(
+                                isSelected:
+                                    s.id == controller.solicitation.value!.id,
+                                solicitation: s,
+                                onTap: (v) =>
+                                    controller.solicitation.value = v,
+                              ),
+                            )
+                            .toList(),
                       ),
               ),
             ),
@@ -288,10 +366,9 @@ class DashboardPage extends GetView<DashboardController> {
               const SizedBox(height: 10),
 
               Expanded(
-                child: Scrollbar(
-                  thumbVisibility: true,
-                  child: SingleChildScrollView(
-                    child: Obx(() {
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.only(right: 4),
+                  child: Obx(() {
                       final s = controller.solicitation.value;
                       final has = s?.id != null && s!.id!.isNotEmpty;
 
@@ -498,14 +575,22 @@ class DashboardPage extends GetView<DashboardController> {
                               label: 'Iniciar atendimento',
                               icon: Icons.play_arrow_rounded,
                               baseColor: primario,
-                              onPressed: () => controller.startSolicitation(),
+                              onPressed: () => confirmActionWithKeyword(
+                                keyword: 'começar',
+                                actionLabel: 'Iniciar atendimento',
+                                onConfirm: () => controller.startSolicitation(),
+                              ),
                             )
                           else if (s.status == SolicitationStatus.processing)
                             _ActionButton(
                               label: 'Concluir atendimento',
                               icon: Icons.check_circle_outline_rounded,
                               baseColor: Colors.green,
-                              onPressed: () => controller.endSolicitation(),
+                              onPressed: () => confirmActionWithKeyword(
+                                keyword: 'finalizar',
+                                actionLabel: 'Concluir atendimento',
+                                onConfirm: () => controller.endSolicitation(),
+                              ),
                             ),
 
                           const SizedBox(height: 12),
@@ -536,10 +621,10 @@ class DashboardPage extends GetView<DashboardController> {
                               ),
                             ),
                           ),
+                          const SizedBox(height: 8),
                         ],
                       );
-                    }),
-                  ),
+                  }),
                 ),
               ),
             ],
@@ -549,7 +634,6 @@ class DashboardPage extends GetView<DashboardController> {
     }
 
     return Scaffold(
-      key: _scaffoldKey,
       backgroundColor: bg,
       endDrawer: DrawerWidget(),
       appBar: AppBar(
@@ -569,11 +653,13 @@ class DashboardPage extends GetView<DashboardController> {
           ],
         ),
         actions: [
-          IconButton(
-            onPressed: () => _scaffoldKey.currentState?.openEndDrawer(),
-            icon: Icon(
-              Icons.person_3_rounded,
-              color: Colors.white.withOpacity(.9),
+          Builder(
+            builder: (context) => IconButton(
+              onPressed: () => Scaffold.of(context).openEndDrawer(),
+              icon: Icon(
+                Icons.person_3_rounded,
+                color: Colors.white.withOpacity(.9),
+              ),
             ),
           ),
         ],
@@ -588,17 +674,17 @@ class DashboardPage extends GetView<DashboardController> {
                 ? Column(
                     children: [
                       Expanded(
-                        child: Scrollbar(
-                          thumbVisibility: true,
-                          child: SingleChildScrollView(
-                            child: Column(
-                              children: [
-                                SizedBox(height: 380, child: leftList()),
-                                const SizedBox(height: 14),
-                                SizedBox(height: 520, child: rightDetails()),
-                              ],
+                        child: ListView(
+                          padding: EdgeInsets.zero,
+                          children: [
+                            SizedBox(height: 380, child: leftList()),
+                            const SizedBox(height: 14),
+                            SizedBox(
+                              height: 640,
+                              child: rightDetails(),
                             ),
-                          ),
+                            const SizedBox(height: 12),
+                          ],
                         ),
                       ),
                     ],

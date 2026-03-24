@@ -15,6 +15,9 @@ import '../services/registration_services.dart';
 import '../models/service_model.dart';
 
 class RegisterController extends GetxController {
+  static const int _maxUploadSizeInKb = 1300;
+  static const int _maxUploadSizeInBytes = _maxUploadSizeInKb * 1024;
+
   RegistrationServices registrationService = Get.find<RegistrationServices>();
   PaymentService paymentService = Get.find<PaymentService>();
 
@@ -38,6 +41,38 @@ class RegisterController extends GetxController {
   RxBool loadingAgency = false.obs;
   final TextEditingController cepController = TextEditingController();
   final TextEditingController birthDateController = TextEditingController();
+
+  void _showUploadFeedback(String title, String fileName) {
+    Get.snackbar(
+      'Arquivo carregado',
+      '$title: $fileName',
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: const Color(0xFF0B0B12),
+      colorText: Colors.white,
+      margin: const EdgeInsets.all(16),
+      duration: const Duration(seconds: 2),
+    );
+  }
+
+  void _showUploadTooLarge(String title, String fileName) {
+    Get.snackbar(
+      'Arquivo muito pesado',
+      '$title: $fileName excede 1300 KB. Envie um arquivo menor.',
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: const Color(0xFF2A0F14),
+      colorText: Colors.white,
+      margin: const EdgeInsets.all(16),
+      duration: const Duration(seconds: 3),
+    );
+  }
+
+  bool _isAllowedFileSize(PlatformFile file, String title) {
+    if (file.size > _maxUploadSizeInBytes) {
+      _showUploadTooLarge(title, file.name);
+      return false;
+    }
+    return true;
+  }
 
   bool isValidCEP(String cep) {
     cep = cep.replaceAll(RegExp(r'\D'), '');
@@ -191,11 +226,13 @@ class RegisterController extends GetxController {
     if (result == null) return;
 
     final file = result.files.first;
+    if (!_isAllowedFileSize(file, 'Foto do documento')) return;
 
     documents.update((a) => a!.documentPhotoName = file.name);
     documents.update(
       (a) => a!.documentPhotoByte = file.bytes,
     ); // Uint8List, works everywhere
+    _showUploadFeedback('Foto do documento', file.name);
   }
 
   Future<void> pickPhotoWithDocument() async {
@@ -208,11 +245,13 @@ class RegisterController extends GetxController {
     if (result == null) return;
 
     final file = result.files.first;
+    if (!_isAllowedFileSize(file, 'Foto com documento')) return;
 
     documents.update((a) => a!.photoWithDocumentName = file.name);
     documents.update(
       (a) => a!.photoWithDocumentByte = file.bytes,
     ); // Uint8List, works everywhere
+    _showUploadFeedback('Foto com documento', file.name);
   }
 
   Future<void> pickLastInvoice() async {
@@ -225,11 +264,13 @@ class RegisterController extends GetxController {
     if (result == null) return;
 
     final file = result.files.first;
+    if (!_isAllowedFileSize(file, 'Ultima fatura')) return;
 
     documents.update((a) => a!.lastInvoiceName = file.name);
     documents.update(
       (a) => a!.lastInvoiceByte = file.bytes,
     ); // Uint8List, works everywhere
+    _showUploadFeedback('Ultima fatura', file.name);
   }
 
   Future<void> pickContract() async {
@@ -242,10 +283,12 @@ class RegisterController extends GetxController {
     if (result == null) return;
 
     final file = result.files.first;
+    if (!_isAllowedFileSize(file, 'Contrato')) return;
 
     documents.update((a) => a!.contractName = file.name);
     documents.update(
       (a) => a!.contractByte = file.bytes,
     ); // Uint8List, works everywhere
+    _showUploadFeedback('Contrato', file.name);
   }
 }

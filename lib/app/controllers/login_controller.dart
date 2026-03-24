@@ -36,9 +36,17 @@ class LoginController extends GetxController {
 
   Future<void> login() async {
     try {
+      final email = (user.value.email ?? '').trim();
+      final password = user.value.password ?? '';
+
+      if (email.isEmpty || password.isEmpty) {
+        Get.snackbar('Error', 'Informe e-mail e senha');
+        return;
+      }
+
       accessToken.value = await service.login(
-        user.value.email!,
-        user.value.password!,
+        email,
+        password,
       );
       GetStorage().write('token', accessToken.value.toJson());
       user.value = await service.me();
@@ -61,7 +69,8 @@ class LoginController extends GetxController {
     _sessionCheckInProgress = true;
     try {
       user.value = await service.checkSession();
-      if (!(user.value.id! != "")) {
+      final userId = (user.value.id ?? '').trim();
+      if (userId.isEmpty) {
         throw Exception('No session');
       }
       if (user.value.agency == 'encerrar' || user.value.agency == '') {

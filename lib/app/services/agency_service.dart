@@ -9,8 +9,46 @@ class AgencyService {
   final Dio dio;
   AgencyService(this.dio);
 
+  Solicitation _safeSolicitationFromResponse(
+    dynamic data,
+    Solicitation fallback,
+  ) {
+    if (data is Map<String, dynamic>) {
+      try {
+        return Solicitation.fromJson(data);
+      } catch (_) {
+        return Solicitation(
+          id: data['id']?.toString() ?? fallback.id,
+          customer: fallback.customer,
+          address: fallback.address,
+          title: fallback.title,
+          description: fallback.description,
+          status: fallback.status,
+          createdAt: fallback.createdAt,
+          updatedAt: fallback.updatedAt,
+          items: fallback.items,
+          pix: fallback.pix,
+          paymentType: fallback.paymentType,
+          paymentStatus: fallback.paymentStatus,
+          service: fallback.service,
+          agencyId: fallback.agencyId,
+          agencyLogo: fallback.agencyLogo,
+          creditCardHolderInfo: fallback.creditCardHolderInfo,
+          creditCard: fallback.creditCard,
+          protocol: data['protocol'] is int
+              ? data['protocol'] as int
+              : fallback.protocol,
+          agency: data['agency']?.toString() ?? fallback.agency,
+        );
+      }
+    }
+
+    return fallback;
+  }
+
   Future<List<Agency>> getAll() async {
     var response = await dio.get('/agencies');
+    print(response.data);
     if (response.statusCode == 200) {
       return (response.data as List).map((a) => Agency.fromJson(a)).toList();
     }
@@ -95,10 +133,20 @@ class AgencyService {
   }
 
   Future<List<Service>> getServices({required String type}) async {
-    var response = await dio.get('/registration/services?type=$type');
-    if (response.statusCode == 200) {
-      return (response.data as List).map((e) => Service.fromJson(e)).toList();
+    try {
+      var response = await dio.get('/registration/services?type=$type');
+      if (response.statusCode == 200) {
+        return (response.data as List)
+            .map((e) => Service.fromJson(e))
+            .toList();
+      }
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 404) {
+        return <Service>[];
+      }
+      rethrow;
     }
+
     throw Exception('Failed to get services');
   }
 
@@ -119,50 +167,71 @@ class AgencyService {
       'payload': json.encode(soliciation.toJson()),
     });
 
-    data.files.addAll([
-      MapEntry(
-        'document_photo',
-        MultipartFile.fromBytes(
-          documents.documentPhotoByte!,
-          filename: documents.documentPhotoName,
+    if (documents.documentPhotoByte != null &&
+        (documents.documentPhotoName ?? '').isNotEmpty) {
+      data.files.add(
+        MapEntry(
+          'document_photo',
+          MultipartFile.fromBytes(
+            documents.documentPhotoByte!,
+            filename: documents.documentPhotoName,
+          ),
         ),
-      ),
-      MapEntry(
-        'photo_with_document',
-        MultipartFile.fromBytes(
-          documents.photoWithDocumentByte!,
-          filename: documents.photoWithDocumentName,
+      );
+    }
+
+    if (documents.photoWithDocumentByte != null &&
+        (documents.photoWithDocumentName ?? '').isNotEmpty) {
+      data.files.add(
+        MapEntry(
+          'photo_with_document',
+          MultipartFile.fromBytes(
+            documents.photoWithDocumentByte!,
+            filename: documents.photoWithDocumentName,
+          ),
         ),
-      ),
-      MapEntry(
-        'last_invoice',
-        MultipartFile.fromBytes(
-          documents.lastInvoiceByte!,
-          filename: documents.lastInvoiceName,
+      );
+    }
+
+    if (documents.lastInvoiceByte != null &&
+        (documents.lastInvoiceName ?? '').isNotEmpty) {
+      data.files.add(
+        MapEntry(
+          'last_invoice',
+          MultipartFile.fromBytes(
+            documents.lastInvoiceByte!,
+            filename: documents.lastInvoiceName,
+          ),
         ),
-      ),
-      MapEntry(
-        'contract',
-        MultipartFile.fromBytes(
-          documents.contractByte!,
-          filename: documents.contractName,
+      );
+    }
+
+    if (documents.contractByte != null &&
+        (documents.contractName ?? '').isNotEmpty) {
+      data.files.add(
+        MapEntry(
+          'contract',
+          MultipartFile.fromBytes(
+            documents.contractByte!,
+            filename: documents.contractName,
+          ),
         ),
-      ),
-    ]);
+      );
+    }
 
     var response = await dio.post("/agency/transfer", data: data);
 
     if (response.statusCode == 201) {
-      return Solicitation.fromJson(response.data);
+      return _safeSolicitationFromResponse(response.data, soliciation);
     }
     throw Exception("Failed to create solicitation");
   }
 
   Future<Solicitation> register(Solicitation solicitation) async {
     var data = json.encode(solicitation.toJson());
-    var response = await dio.post('/agency/registration', data: data);
+    var response = await dio.post('/solicitations', data: data);
     if (response.statusCode == 201) {
-      return Solicitation.fromJson(response.data);
+      return _safeSolicitationFromResponse(response.data, solicitation);
     }
     throw Exception('Failed to create solicitation');
   }

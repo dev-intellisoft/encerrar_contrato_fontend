@@ -78,17 +78,24 @@ class CloseForm extends GetView<AgencyController> {
 
     if (picked != null) {
       final formatted = _formatBR(picked);
+      controller.birthDateController.text = formatted;
       controller.solicitation.update((s) => s!.customer!.birthDate = formatted);
     }
   }
 
-  InputDecoration _dec({required String label, String? hint, IconData? icon}) {
+  InputDecoration _dec({
+    required String label,
+    String? hint,
+    IconData? icon,
+    Widget? suffixIcon,
+  }) {
     return InputDecoration(
       labelText: label,
       hintText: hint,
       filled: true,
       fillColor: _bgField,
       prefixIcon: icon != null ? Icon(icon, color: _claro) : null,
+      suffixIcon: suffixIcon,
       labelStyle: TextStyle(
         color: _ink.withOpacity(.92),
         fontWeight: FontWeight.w700,
@@ -202,17 +209,24 @@ class CloseForm extends GetView<AgencyController> {
                     // ✅ DATA con calendario
                     Expanded(
                       child: TextFormField(
-                        initialValue:
-                            controller.solicitation.value.customer?.birthDate ??
-                            '',
+                        controller: controller.birthDateController,
                         style: _fieldText,
                         cursorColor: _ink,
-                        readOnly: true,
-                        onTap: () => _pickBirthDate(context, controller),
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          MaskTextInputFormatter(
+                            mask: '##/##/####',
+                            filter: {"#": RegExp(r'[0-9]')},
+                          ),
+                        ],
                         decoration: _dec(
                           label: 'Data de nascimento',
                           hint: 'Selecione no calendário',
                           icon: Icons.cake_outlined,
+                          suffixIcon: IconButton(
+                            icon: const Icon(Icons.calendar_month_outlined),
+                            onPressed: () => _pickBirthDate(context, controller),
+                          ),
                         ),
                         onChanged: (text) =>
                             controller.solicitation.value.customer!.birthDate =
@@ -318,6 +332,15 @@ class CloseForm extends GetView<AgencyController> {
                   onChanged: (text) =>
                       controller.solicitation.value.customer!.confirmPhone =
                           text,
+                  validator: (v) {
+                    final phone = _digitsOnly(
+                      controller.solicitation.value.customer?.phone ?? '',
+                    );
+                    final confirm = _digitsOnly(v ?? '');
+                    if (confirm.isEmpty) return 'Confirme o telefone';
+                    if (phone != confirm) return 'Os telefones não coincidem';
+                    return null;
+                  },
                 ),
 
                 const SizedBox(height: 20),
@@ -334,6 +357,7 @@ class CloseForm extends GetView<AgencyController> {
                 TextFormField(
                   style: _fieldText,
                   cursorColor: _ink,
+                  controller: controller.cepController,
                   inputFormatters: [
                     MaskTextInputFormatter(
                       mask: '##.###-###',
@@ -546,7 +570,7 @@ class CloseForm extends GetView<AgencyController> {
                           ),
                         ),
                         child: Icon(
-                          Icons.receipt_long_outlined,
+                          Icons.cloud_done_outlined,
                           color: _claro.withOpacity(.95),
                           size: 22,
                         ),
@@ -557,7 +581,7 @@ class CloseForm extends GetView<AgencyController> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Total',
+                              'Envio direto',
                               style: TextStyle(
                                 color: _ink.withOpacity(.78),
                                 fontWeight: FontWeight.w800,
@@ -566,8 +590,8 @@ class CloseForm extends GetView<AgencyController> {
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              "R\$ ${_priceTotal().toString()}",
-                              maxLines: 1,
+                              'Solicitação enviada ao master',
+                              maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
                                 color: _ink.withOpacity(.98),
@@ -594,7 +618,7 @@ class CloseForm extends GetView<AgencyController> {
                           ),
                         ),
                         child: Text(
-                          'BRL',
+                          'SEM PAG.',
                           style: TextStyle(
                             color: _ink.withOpacity(.78),
                             fontWeight: FontWeight.w900,
@@ -761,7 +785,7 @@ class CloseForm extends GetView<AgencyController> {
   double _priceTotal() {
     double total = 0.0;
     for (var service in controller.services) {
-      if (service.selected) total += service.price!;
+      if (service.selected) total += (service.price ?? 0);
     }
     return total;
   }

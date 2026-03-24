@@ -12,10 +12,13 @@ import '../../../widgets/processing.dart';
 import '../dashboard/widgets/solicitation_tile.dart';
 import '../../../widgets/agency_logo.dart';
 
-final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
 class HomePage extends GetView<HomeController> {
   const HomePage({super.key});
+
+  String _safeText(String? value, {String fallback = '-'}) {
+    final text = value?.trim() ?? '';
+    return text.isEmpty ? fallback : text;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -90,7 +93,6 @@ class HomePage extends GetView<HomeController> {
     }
 
     return Scaffold(
-      key: _scaffoldKey,
       backgroundColor: bg,
       appBar: AppBar(
         title: Logo(),
@@ -98,11 +100,13 @@ class HomePage extends GetView<HomeController> {
         elevation: 0,
         iconTheme: IconThemeData(color: Colors.white.withOpacity(.9)),
         actions: [
-          IconButton(
-            onPressed: () => _scaffoldKey.currentState?.openEndDrawer(),
-            icon: Icon(
-              Icons.person_3_rounded,
-              color: Colors.white.withOpacity(.9),
+          Builder(
+            builder: (context) => IconButton(
+              onPressed: () => Scaffold.of(context).openEndDrawer(),
+              icon: Icon(
+                Icons.person_3_rounded,
+                color: Colors.white.withOpacity(.9),
+              ),
             ),
           ),
         ],
@@ -361,7 +365,7 @@ class HomePage extends GetView<HomeController> {
                                     ),
                                   ),
                                   child: const Text(
-                                    'Preencher dados do clinte',
+                                    'Preencher dados do cliente',
                                     style: TextStyle(
                                       color: primario,
                                       fontWeight: FontWeight.w900,
@@ -479,12 +483,13 @@ class HomePage extends GetView<HomeController> {
                                             ]
                                           : controller.solicitations
                                                 .where(
-                                                  (s) => s.customer!.name!
-                                                      .toLowerCase()
-                                                      .contains(
-                                                        controller.search.value
-                                                            .toLowerCase(),
-                                                      ),
+                                                  (s) => _safeText(
+                                                    s.customer?.name,
+                                                    fallback: '',
+                                                  ).toLowerCase().contains(
+                                                    controller.search.value
+                                                        .toLowerCase(),
+                                                  ),
                                                 )
                                                 .map(
                                                   (s) => Padding(
@@ -524,7 +529,11 @@ class HomePage extends GetView<HomeController> {
                                                                           .start,
                                                                   children: [
                                                                     Text(
-                                                                      '${solicitation.customer!.name}',
+                                                                      _safeText(
+                                                                        solicitation
+                                                                            .customer
+                                                                            ?.name,
+                                                                      ),
                                                                       style: const TextStyle(
                                                                         color:
                                                                             ink,
@@ -536,21 +545,33 @@ class HomePage extends GetView<HomeController> {
                                                                       height: 6,
                                                                     ),
                                                                     Text(
-                                                                      '${solicitation.customer!.email}',
+                                                                      _safeText(
+                                                                        solicitation
+                                                                            .customer
+                                                                            ?.email,
+                                                                      ),
                                                                       style: TextStyle(
                                                                         color:
                                                                             muted,
                                                                       ),
                                                                     ),
                                                                     Text(
-                                                                      '${solicitation.customer!.phone}',
+                                                                      _safeText(
+                                                                        solicitation
+                                                                            .customer
+                                                                            ?.phone,
+                                                                      ),
                                                                       style: TextStyle(
                                                                         color:
                                                                             muted,
                                                                       ),
                                                                     ),
                                                                     Text(
-                                                                      '${solicitation.customer!.cpf}',
+                                                                      _safeText(
+                                                                        solicitation
+                                                                            .customer
+                                                                            ?.cpf,
+                                                                      ),
                                                                       style: TextStyle(
                                                                         color:
                                                                             muted,
@@ -561,14 +582,18 @@ class HomePage extends GetView<HomeController> {
                                                                           10,
                                                                     ),
                                                                     Text(
-                                                                      '${solicitation.address!.street}, ${solicitation.address!.number} ${solicitation.address!.complement}',
+                                                                      '${_safeText(solicitation.address?.street)}, '
+                                                                      '${_safeText(solicitation.address?.number)}, '
+                                                                      '${_safeText(solicitation.address?.complement)}',
                                                                       style: TextStyle(
                                                                         color:
                                                                             muted,
                                                                       ),
                                                                     ),
                                                                     Text(
-                                                                      '${solicitation.address!.neighborhood}, ${solicitation.address!.city}, ${solicitation.address!.state}',
+                                                                      '${_safeText(solicitation.address?.neighborhood)}, '
+                                                                      '${_safeText(solicitation.address?.city)}, '
+                                                                      '${_safeText(solicitation.address?.state)}',
                                                                       style: TextStyle(
                                                                         color:
                                                                             muted,
