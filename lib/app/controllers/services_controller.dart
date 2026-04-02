@@ -17,6 +17,7 @@ class ServicesController extends GetxController {
       services.value = await servicesService.getServices();
     } catch (e) {
       print(e);
+      Get.snackbar('Error', 'Erro ao buscar serviços');
     }
   }
 
@@ -28,7 +29,8 @@ class ServicesController extends GetxController {
       Get.back();
       Get.snackbar('Sucesso', 'Serviço removido com sucesso!');
     } catch (e) {
-      Get.snackbar('Erro', e.toString());
+      print(e);
+      Get.snackbar('Error', 'Erro ao remover serviço');
     }
   }
 
@@ -39,16 +41,16 @@ class ServicesController extends GetxController {
         print(response);
         await getServices();
         Get.back();
-        Get.snackbar('Success', 'Serviço criado com sucesso!');
+        Get.snackbar('Success', 'Serviço atualizado com sucesso!');
       } else {
         final response = await servicesService.createService(service.value);
-        print(response);
         await getServices();
         Get.back();
         Get.snackbar('Success', 'Serviço criado com sucesso!');
       }
     } catch (e) {
-      Get.snackbar('Erro', e.toString());
+      print(e);
+      Get.snackbar('Error', 'Erro ao salvar serviço');
     }
   }
 }

@@ -86,7 +86,8 @@ class RegisterController extends GetxController {
       agency.value = await registrationService.getAgencyLogo(agencyId);
       // solicitation.update((s) => s!.agencyLogo = logo);
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      print(e);
+      Get.snackbar('Error', 'Erro ao buscar logo da agência');
     } finally {
       loadingAgency.value = false;
     }
@@ -121,7 +122,8 @@ class RegisterController extends GetxController {
       await registrationService.createSolicitation(solicitation.value);
       Get.snackbar('Success', 'Solicitação criada com sucesso');
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      print(e);
+      Get.snackbar('Error', 'Erro ao criar solicitação');
     }
   }
 
@@ -141,7 +143,7 @@ class RegisterController extends GetxController {
       Get.snackbar('Success', 'Solicitação criada com sucesso');
     } catch (e) {
       print(e);
-      Get.snackbar('Error', e.toString());
+      Get.snackbar('Error', 'Erro ao registrar');
     } finally {
       isLoading.value = false;
     }
@@ -180,6 +182,7 @@ class RegisterController extends GetxController {
       print(creditCardPaymentResponse.toJson());
     } catch (e) {
       print(e);
+      Get.snackbar('Error', 'Erro ao processar pagamento de cartão de crédito');
     } finally {
       Future.delayed(5.seconds, () => isLoading.value = false);
     }
@@ -194,6 +197,7 @@ class RegisterController extends GetxController {
       print(pixResponse.value.toJson());
     } catch (e) {
       print(e);
+      Get.snackbar('Error', 'Erro ao processar pagamento de PIX');
     } finally {
       isLoading.value = false;
     }
@@ -210,7 +214,7 @@ class RegisterController extends GetxController {
       Get.snackbar('Success', 'Transferência realizada com sucesso');
     } catch (e) {
       print(e);
-      Get.snackbar('Error', e.toString());
+      Get.snackbar('Error', 'Erro ao realizar transferência');
     } finally {
       isLoading.value = false;
     }

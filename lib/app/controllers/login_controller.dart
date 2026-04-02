@@ -44,10 +44,7 @@ class LoginController extends GetxController {
         return;
       }
 
-      accessToken.value = await service.login(
-        email,
-        password,
-      );
+      accessToken.value = await service.login(email, password);
       GetStorage().write('token', accessToken.value.toJson());
       user.value = await service.me();
       GetStorage().write('user', user.value.toJson());
@@ -56,7 +53,9 @@ class LoginController extends GetxController {
       }
       return Get.offAllNamed(Routes.HOME);
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      print(e);
+      Get.snackbar('Error', 'Erro ao fazer login');
+      return;
     }
   }
 
@@ -80,8 +79,10 @@ class LoginController extends GetxController {
       _sessionChecked = true;
       return Get.offAllNamed(Routes.HOME);
     } catch (e) {
+      print(e);
       GetStorage().remove('token');
-      Get.snackbar('Error=======>', e.toString());
+      GetStorage().remove('user');
+      Get.snackbar('Error', 'Erro ao verificar sessão');
       _sessionChecked = true;
     } finally {
       _sessionCheckInProgress = false;

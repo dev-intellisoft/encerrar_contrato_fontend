@@ -1,5 +1,3 @@
-
-
 import 'package:encerrar_contrato/app/models/solicitation_model.dart';
 import 'package:get/get.dart';
 
@@ -9,7 +7,10 @@ import '../routes/app_pages.dart';
 import '../services/solicitation_services.dart';
 
 class SolicitationController extends GetxController {
-  Rx<Solicitation> solicitation = Solicitation(customer: Customer(), address: Address()).obs;
+  Rx<Solicitation> solicitation = Solicitation(
+    customer: Customer(),
+    address: Address(),
+  ).obs;
   SolicitationServices services = Get.find<SolicitationServices>();
 
   RxBool agreement = false.obs;
@@ -18,7 +19,7 @@ class SolicitationController extends GetxController {
 
   setCep(String text) {
     cep.value = text;
-    if(isValidCEP(cep.value)) {
+    if (isValidCEP(cep.value)) {
       searchCep(text);
     }
   }
@@ -40,8 +41,9 @@ class SolicitationController extends GetxController {
       await services.createSolicitation(solicitation.value);
       Get.offAllNamed(Routes.HOME);
       Get.snackbar('Success', 'Solicitação criada com sucesso');
-    } catch(e) {
-      Get.snackbar('Error', e.toString());
+    } catch (e) {
+      print(e);
+      Get.snackbar('Error', 'Erro ao criar solicitação');
     }
   }
 }

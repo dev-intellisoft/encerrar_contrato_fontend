@@ -48,7 +48,8 @@ class HomeController extends GetxController {
       await services.sendEmail(email.value, name.value);
       Get.snackbar('Success', 'Email enviado com sucesso');
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      print(e);
+      Get.snackbar('Error', 'Erro ao enviar email');
     } finally {
       loading.value = false;
     }

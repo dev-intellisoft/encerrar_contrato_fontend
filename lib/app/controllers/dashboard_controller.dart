@@ -27,7 +27,9 @@ class DashboardController extends GetxController {
   String documentNameFromPath(String path) {
     final uri = Uri.tryParse(path);
     final hasSegments = uri?.pathSegments.isNotEmpty ?? false;
-    final candidate = hasSegments ? uri!.pathSegments.last : path.split('/').last;
+    final candidate = hasSegments
+        ? uri!.pathSegments.last
+        : path.split('/').last;
     return candidate.isEmpty ? path : candidate;
   }
 
@@ -84,7 +86,7 @@ class DashboardController extends GetxController {
       documents.value = await service.listDocument(solicitationId);
       loadedDocumentsFor.value = solicitationId;
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      Get.snackbar('Error', 'Falha ao carregar documentos');
     }
   }
 
@@ -103,6 +105,7 @@ class DashboardController extends GetxController {
       await File(outputPath).writeAsBytes(bytes, flush: true);
       Get.snackbar('Sucesso', 'Documento salvo com sucesso');
     } catch (e) {
+      print(e);
       Get.snackbar('Error', 'Falha ao salvar documento');
     }
   }
@@ -112,7 +115,8 @@ class DashboardController extends GetxController {
     try {
       solicitations.value = await service.getSolicitations();
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      print(e);
+      Get.snackbar('Error', 'Falha ao carregar solicitações');
     }
     loading.value = false;
   }
@@ -125,16 +129,15 @@ class DashboardController extends GetxController {
         return;
       }
 
-      solicitation.value = await service.startSolicitation(
-        solicitationId,
-      );
+      solicitation.value = await service.startSolicitation(solicitationId);
       loadedDocumentsFor.value = '';
       solicitations.value = solicitations
           .map((s) => s.id == solicitationId ? solicitation.value! : s)
           .toList();
       Get.snackbar('Success', 'Solicitação iniciada com sucesso');
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      print(e);
+      Get.snackbar('Error', 'Erro ao iniciar solicitação');
     }
   }
 
@@ -146,16 +149,15 @@ class DashboardController extends GetxController {
         return;
       }
 
-      solicitation.value = await service.endSolicitation(
-        solicitationId,
-      );
+      solicitation.value = await service.endSolicitation(solicitationId);
       loadedDocumentsFor.value = '';
       solicitations.value = solicitations
           .map((s) => s.id == solicitationId ? solicitation.value! : s)
           .toList();
       Get.snackbar('Success', 'Solicitação concluída com sucesso');
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      print(e);
+      Get.snackbar('Error', 'Erro ao concluir solicitação');
     }
   }
 }

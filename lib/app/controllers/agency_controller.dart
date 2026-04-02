@@ -141,17 +141,13 @@ class AgencyController extends GetxController {
     return services
         .where((service) => service.selected)
         .map(
-          (service) => service.copyWith(
-            companyName: service.companyName?.trim(),
-          ),
+          (service) =>
+              service.copyWith(companyName: service.companyName?.trim()),
         )
         .toList();
   }
 
   Future<void> register() async {
-    print("===================>");
-    print(solicitation.value.toJson());
-    print("<===================");
     solicitation.update((e) => e!.items = _selectedServices());
     try {
       isLoading.value = true;
@@ -163,7 +159,7 @@ class AgencyController extends GetxController {
       Get.snackbar('Success', 'Solicitação criada com sucesso');
     } catch (e) {
       print(e);
-      Get.snackbar('Error', e.toString());
+      Get.snackbar('Error', 'Erro ao criar solicitação');
     } finally {
       isLoading.value = false;
     }
@@ -278,7 +274,7 @@ class AgencyController extends GetxController {
       Get.snackbar('Success', 'Transferência realizada com sucesso');
     } catch (e) {
       print(e);
-      Get.snackbar('Error', e.toString());
+      Get.snackbar('Error', 'Erro ao realizar transferência');
     } finally {
       isLoading.value = false;
     }
@@ -295,12 +291,7 @@ class AgencyController extends GetxController {
     cepController.clear();
     birthDateController.clear();
     services.value = services
-        .map(
-          (service) => service.copyWith(
-            selected: false,
-            companyName: '',
-          ),
-        )
+        .map((service) => service.copyWith(selected: false, companyName: ''))
         .toList();
   }
 
