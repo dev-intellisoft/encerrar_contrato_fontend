@@ -19,6 +19,10 @@ class AgencyLogo extends StatelessWidget {
       );
     }
 
+    final path = normalizedPath.startsWith('/')
+        ? normalizedPath
+        : '/$normalizedPath';
+
     return Container(
       width: 40,
       height: 40,
@@ -27,8 +31,8 @@ class AgencyLogo extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
       ),
       child: Image.network(
-        '${dotenv.env['API_URL']}$normalizedPath',
-        key: ValueKey(normalizedPath),
+        '${dotenv.env['API_URL']}$path',
+        key: ValueKey(path),
         fit: BoxFit.cover,
 
         loadingBuilder: (context, child, loadingProgress) {

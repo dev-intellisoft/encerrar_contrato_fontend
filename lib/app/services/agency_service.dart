@@ -62,6 +62,7 @@ class AgencyService {
         "name": agency.name,
         "login": agency.login,
         "password": agency.password,
+        "image": agency.image,
       });
     } else {
       data = FormData.fromMap({
@@ -93,6 +94,7 @@ class AgencyService {
         "name": agency.name,
         "login": agency.login,
         "password": agency.password,
+        "image": agency.image,
       });
     } else {
       data = FormData.fromMap({

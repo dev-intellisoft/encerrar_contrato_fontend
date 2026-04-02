@@ -4,6 +4,8 @@ import 'package:get/get.dart';
 import '../../../../controllers/agency_controller.dart';
 import '../../../../widgets/drawer.dart';
 import '../../../../widgets/logo.dart';
+import '../../../../widgets/agency_logo.dart';
+import '../../../../routes/app_pages.dart';
 
 class AgencyForm extends StatefulWidget {
   const AgencyForm({super.key});
@@ -24,6 +26,7 @@ class _AgencyFormState extends State<AgencyForm> {
 
   // Para evitar loops cuando sincronizamos texto
   bool _syncing = false;
+  late final Worker _agencyWorker;
 
   @override
   void initState() {
@@ -53,9 +56,9 @@ class _AgencyFormState extends State<AgencyForm> {
       controller.agency.update((a) => a!.password = _passCtrl.text);
     });
 
-    // ✅ Si el agency cambia (por ejemplo al editar otra inmobiliaria),
+    // ✅ Si el agency cambia (por ejemplo al editar otra imobiliária),
     // sincronizamos los controllers sin romper el cursor
-    ever(controller.agency, (Agency? a) {
+    _agencyWorker = ever(controller.agency, (Agency? a) {
       if (a == null) return;
       _syncFromModel(a);
     });
@@ -84,6 +87,7 @@ class _AgencyFormState extends State<AgencyForm> {
 
   @override
   void dispose() {
+    _agencyWorker.dispose();
     _nameCtrl.dispose();
     _loginCtrl.dispose();
     _passCtrl.dispose();
@@ -209,15 +213,7 @@ class _AgencyFormState extends State<AgencyForm> {
                 child: hasLocalImage
                     ? Image.memory(fileBytes, fit: BoxFit.cover)
                     : hasRemoteImage
-                        ? Image.network(
-                            imagePath,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => Icon(
-                              Icons.image_not_supported_outlined,
-                              color: Colors.white.withOpacity(.55),
-                              size: 28,
-                            ),
-                          )
+                        ? AgencyLogo(imagePath: imagePath)
                         : Icon(
                             Icons.image_outlined,
                             color: Colors.white.withOpacity(.55),
@@ -470,22 +466,6 @@ class _AgencyFormState extends State<AgencyForm> {
                     fieldLabel("Logo"),
                     imagePreview(),
                     const SizedBox(height: 10),
-                    AbsorbPointer(
-                      child: TextField(
-                        controller: _imageCtrl,
-                        style: const TextStyle(
-                          color: ink,
-                          fontWeight: FontWeight.w800,
-                          fontSize: 13,
-                        ),
-                        decoration: inputDec(
-                          hint: "Nome do arquivo selecionado",
-                          icon: Icons.image_outlined,
-                          suffix: Icon(Icons.check_circle_outline,
-                              color: Colors.white.withOpacity(.75)),
-                        ),
-                      ),
-                    ),
 
                     const SizedBox(height: 18),
 
@@ -522,7 +502,7 @@ class _AgencyFormState extends State<AgencyForm> {
                             child: OutlinedButton(
                               onPressed: () {
                                 controller.agency.value = Agency();
-                                Get.back();
+                                Get.offAllNamed(Routes.AGENCIES);
                               },
                               style: OutlinedButton.styleFrom(
                                 foregroundColor: Colors.white,

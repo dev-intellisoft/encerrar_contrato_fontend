@@ -5,6 +5,7 @@ import 'package:encerrar_contrato/app/models/solicitation_model.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:encerrar_contrato/app/routes/app_pages.dart';
 import '../models/agency_model.dart';
 import '../services/agency_service.dart';
 import '../models/address_model.dart';
@@ -78,14 +79,18 @@ class AgencyController extends GetxController {
   Future<void> save() async {
     try {
       isLoading.value = true;
+      final previousImage = agency.value.image;
       if (agency.value.id == null) {
         agency.value = await s.create(agency.value);
       } else {
         agency.value = await s.update(agency.value.id!, agency.value);
+        if ((agency.value.image ?? '').isEmpty && previousImage != null) {
+          agency.update((a) => a!.image = previousImage);
+        }
       }
       await fetchAgencies();
       agency.value = Agency();
-      Get.back();
+      Get.offAllNamed(Routes.AGENCIES);
       Get.snackbar("Sucesso", "Agência salva com sucesso.");
     } catch (e) {
       print(e);
