@@ -2,6 +2,8 @@ import 'package:encerrar_contrato/app/models/agency_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../controllers/agency_controller.dart';
+import '../../../../routes/app_pages.dart';
+import '../../../../utils/api_url.dart';
 import '../../../../widgets/drawer.dart';
 import '../../../../widgets/logo.dart';
 
@@ -24,18 +26,25 @@ class _AgencyFormState extends State<AgencyForm> {
 
   // Para evitar loops cuando sincronizamos texto
   bool _syncing = false;
+  late final Worker _agencyWorker;
 
   @override
   void initState() {
     super.initState();
 
     _nameCtrl = TextEditingController(text: controller.agency.value.name ?? "");
-    _loginCtrl =
-        TextEditingController(text: controller.agency.value.login ?? "");
-    _passCtrl =
-        TextEditingController(text: controller.agency.value.password ?? "");
-    _imageCtrl =
-        TextEditingController(text: controller.agency.value.fileName ?? controller.agency.value.image ?? "");
+    _loginCtrl = TextEditingController(
+      text: controller.agency.value.login ?? "",
+    );
+    _passCtrl = TextEditingController(
+      text: controller.agency.value.password ?? "",
+    );
+    _imageCtrl = TextEditingController(
+      text:
+          controller.agency.value.fileName ??
+          controller.agency.value.image ??
+          "",
+    );
 
     // ✅ Listeners: actualizan el model sin forzar rebuild de TextField
     _nameCtrl.addListener(() {
@@ -55,10 +64,30 @@ class _AgencyFormState extends State<AgencyForm> {
 
     // ✅ Si el agency cambia (por ejemplo al editar otra inmobiliaria),
     // sincronizamos los controllers sin romper el cursor
-    ever(controller.agency, (Agency? a) {
+    _agencyWorker = ever(controller.agency, (Agency? a) {
       if (a == null) return;
       _syncFromModel(a);
     });
+
+    // Ensure we load the latest agency data (especially image) when editing
+    final agencyId = controller.agency.value.id;
+    if (agencyId != null && agencyId.isNotEmpty) {
+      controller.s
+          .getById(agencyId)
+          .then((fresh) {
+            final existingBytes = controller.agency.value.fileBytes;
+            final existingFileName = controller.agency.value.fileName;
+
+            controller.agency.value = fresh;
+            if (existingBytes != null && existingBytes.isNotEmpty) {
+              controller.agency.update((a) => a!.fileBytes = existingBytes);
+            }
+            if (existingFileName != null && existingFileName.isNotEmpty) {
+              controller.agency.update((a) => a!.fileName = existingFileName);
+            }
+          })
+          .catchError((_) {});
+    }
   }
 
   void _syncFromModel(Agency a) {
@@ -84,6 +113,7 @@ class _AgencyFormState extends State<AgencyForm> {
 
   @override
   void dispose() {
+    _agencyWorker.dispose();
     _nameCtrl.dispose();
     _loginCtrl.dispose();
     _passCtrl.dispose();
@@ -129,10 +159,7 @@ class _AgencyFormState extends State<AgencyForm> {
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: Container(
-                height: 1,
-                color: Colors.white.withOpacity(.12),
-              ),
+              child: Container(height: 1, color: Colors.white.withOpacity(.12)),
             ),
           ],
         ),
@@ -166,8 +193,10 @@ class _AgencyFormState extends State<AgencyForm> {
         suffixIcon: suffix,
         filled: true,
         fillColor: Colors.white.withOpacity(.06),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 14,
+          vertical: 14,
+        ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide(color: Colors.white.withOpacity(.12)),
@@ -187,6 +216,7 @@ class _AgencyFormState extends State<AgencyForm> {
         final imagePath = (currentAgency.image ?? "").trim();
         final hasLocalImage = fileBytes != null && fileBytes.isNotEmpty;
         final hasRemoteImage = imagePath.isNotEmpty;
+        final remoteUrl = resolveAssetUrl(imagePath);
 
         return Container(
           padding: const EdgeInsets.all(12),
@@ -209,20 +239,22 @@ class _AgencyFormState extends State<AgencyForm> {
                 child: hasLocalImage
                     ? Image.memory(fileBytes, fit: BoxFit.cover)
                     : hasRemoteImage
-                        ? Image.network(
-                            imagePath,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => Icon(
-                              Icons.image_not_supported_outlined,
-                              color: Colors.white.withOpacity(.55),
-                              size: 28,
-                            ),
-                          )
-                        : Icon(
-                            Icons.image_outlined,
-                            color: Colors.white.withOpacity(.55),
-                            size: 30,
-                          ),
+                    ? Image.network(
+                        remoteUrl,
+                        key: ValueKey(remoteUrl),
+                        fit: BoxFit.cover,
+                        gaplessPlayback: true,
+                        errorBuilder: (_, __, ___) => Icon(
+                          Icons.image_not_supported_outlined,
+                          color: Colors.white.withOpacity(.55),
+                          size: 28,
+                        ),
+                      )
+                    : Icon(
+                        Icons.image_outlined,
+                        color: Colors.white.withOpacity(.55),
+                        size: 30,
+                      ),
               ),
               const SizedBox(width: 14),
               Expanded(
@@ -334,23 +366,30 @@ class _AgencyFormState extends State<AgencyForm> {
                 decoration: InputDecoration(
                   labelText: 'Buscar',
                   hintText: 'Digite para buscar',
-                  labelStyle:
-                      TextStyle(color: muted, fontWeight: FontWeight.w700),
+                  labelStyle: TextStyle(
+                    color: muted,
+                    fontWeight: FontWeight.w700,
+                  ),
                   hintStyle: TextStyle(color: muted.withOpacity(.9)),
                   prefixIcon: const Icon(Icons.search, color: claro),
                   filled: true,
                   fillColor: Colors.white.withOpacity(.06),
                   contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 14, vertical: 10),
+                    horizontal: 14,
+                    vertical: 10,
+                  ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(16),
-                    borderSide:
-                        BorderSide(color: Colors.white.withOpacity(.12)),
+                    borderSide: BorderSide(
+                      color: Colors.white.withOpacity(.12),
+                    ),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(16),
                     borderSide: BorderSide(
-                        color: primario.withOpacity(.75), width: 1.4),
+                      color: primario.withOpacity(.75),
+                      width: 1.4,
+                    ),
                   ),
                 ),
               ),
@@ -361,8 +400,10 @@ class _AgencyFormState extends State<AgencyForm> {
           Builder(
             builder: (context) => IconButton(
               onPressed: () => Scaffold.of(context).openEndDrawer(),
-              icon: Icon(Icons.person_3_rounded,
-                  color: Colors.white.withOpacity(.9)),
+              icon: Icon(
+                Icons.person_3_rounded,
+                color: Colors.white.withOpacity(.9),
+              ),
             ),
           ),
         ],
@@ -398,9 +439,11 @@ class _AgencyFormState extends State<AgencyForm> {
                     // ✅ Solo el título depende de Obx (no rebuilda tus inputs)
                     Obx(() {
                       final isNew = controller.agency.value.id == null;
-                      return sectionHeader(isNew
-                          ? "Adicionar imobiliária"
-                          : "Atualizar imobiliária");
+                      return sectionHeader(
+                        isNew
+                            ? "Adicionar imobiliária"
+                            : "Atualizar imobiliária",
+                      );
                     }),
 
                     // ===== Name =====
@@ -481,8 +524,10 @@ class _AgencyFormState extends State<AgencyForm> {
                         decoration: inputDec(
                           hint: "Nome do arquivo selecionado",
                           icon: Icons.image_outlined,
-                          suffix: Icon(Icons.check_circle_outline,
-                              color: Colors.white.withOpacity(.75)),
+                          suffix: Icon(
+                            Icons.check_circle_outline,
+                            color: Colors.white.withOpacity(.75),
+                          ),
                         ),
                       ),
                     ),
@@ -522,7 +567,7 @@ class _AgencyFormState extends State<AgencyForm> {
                             child: OutlinedButton(
                               onPressed: () {
                                 controller.agency.value = Agency();
-                                Get.back();
+                                Get.offAllNamed(Routes.AGENCIES);
                               },
                               style: OutlinedButton.styleFrom(
                                 foregroundColor: Colors.white,
