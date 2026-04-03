@@ -1,14 +1,14 @@
-// import 'dart:io';
-
+import 'package:dio/dio.dart';
 import 'package:encerrar_contrato/app/models/customer_model.dart';
 import 'package:encerrar_contrato/app/models/solicitation_model.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../models/agency_model.dart';
-import '../services/agency_service.dart';
+
 import '../models/address_model.dart';
+import '../models/agency_model.dart';
 import '../models/service_model.dart';
+import '../services/agency_service.dart';
 
 class AgencyController extends GetxController {
   static const int _maxUploadSizeInKb = 1300;
@@ -16,11 +16,12 @@ class AgencyController extends GetxController {
 
   final AgencyService s = Get.find<AgencyService>();
   Rx<Documents> documents = Documents().obs;
-  Rx<Solicitation> solicitation = Solicitation(
-    address: Address(),
-    customer: Customer(),
-    items: [],
-  ).obs;
+  Rx<Solicitation> solicitation =
+      Solicitation(
+        address: Address(),
+        customer: Customer(),
+        items: [],
+      ).obs;
 
   List<Agency> agencies = <Agency>[].obs;
   RxBool isLoading = false.obs;
@@ -29,8 +30,59 @@ class AgencyController extends GetxController {
   RxString cep = ''.obs;
   final TextEditingController cepController = TextEditingController();
   final TextEditingController birthDateController = TextEditingController();
+  final TextEditingController newHolderPhoneController =
+      TextEditingController();
 
   RxList<Service> services = <Service>[].obs;
+
+  List<Service> _buildCoreServices(String type, List<Service> incoming) {
+    Service? matchService(List<String> aliases) {
+      for (final service in incoming) {
+        final name = (service.name ?? '').trim().toLowerCase();
+        if (aliases.any((alias) => name.contains(alias))) {
+          return service;
+        }
+      }
+      return null;
+    }
+
+    Service buildService({
+      required String fallbackName,
+      required List<String> aliases,
+    }) {
+      final matched = matchService(aliases);
+      return Service(
+        id: matched?.id,
+        name: matched?.name?.trim().isNotEmpty == true
+            ? matched!.name
+            : fallbackName,
+        description: matched?.description,
+        price: matched?.price ?? 0,
+        type: matched?.type ?? type,
+        companyName: matched?.companyName ?? '',
+        selected: matched?.selected ?? false,
+      );
+    }
+
+    final defaults = <Service>[
+      buildService(
+        fallbackName: 'Água',
+        aliases: ['agua', 'água', 'saneamento', 'water'],
+      ),
+      buildService(
+        fallbackName: 'Luz',
+        aliases: ['luz', 'energia', 'eletrica', 'elétrica', 'power'],
+      ),
+      buildService(
+        fallbackName: 'Gás',
+        aliases: ['gas', 'gás'],
+      ),
+    ];
+
+    final usedIds = defaults.map((service) => service.id).whereType<String>().toSet();
+    final extras = incoming.where((service) => !usedIds.contains(service.id)).toList();
+    return [...defaults, ...extras];
+  }
 
   void _showUploadFeedback(String title, String fileName) {
     Get.snackbar(
@@ -68,8 +120,11 @@ class AgencyController extends GetxController {
     try {
       isLoading.value = true;
       agencies = await s.getAll();
-    } catch (e) {
-      print(e);
+    } catch (_) {
+      Get.snackbar(
+        'Não foi possível carregar as imobiliárias',
+        'Tente novamente em instantes.',
+      );
     } finally {
       isLoading.value = false;
     }
@@ -86,10 +141,17 @@ class AgencyController extends GetxController {
       await fetchAgencies();
       agency.value = Agency();
       Get.back();
-      Get.snackbar("Sucesso", "Agência salva com sucesso.");
+      Get.snackbar(
+        'Imobiliária salva',
+        'Os dados da imobiliária foram atualizados com sucesso.',
+      );
     } catch (e) {
-      print(e);
-      Get.snackbar("Erro", "Erro ao salvar a agência.");
+      if (e is! DioException) {
+        Get.snackbar(
+          'Não foi possível salvar a imobiliária',
+          'Confira os dados e tente novamente.',
+        );
+      }
     } finally {
       isLoading.value = false;
     }
@@ -101,10 +163,17 @@ class AgencyController extends GetxController {
       agency.value = await s.delete(id);
       await fetchAgencies();
       Get.back();
-      Get.snackbar("Sucesso", "Agência removida com sucesso.");
+      Get.snackbar(
+        'Imobiliária removida',
+        'A imobiliária foi removida com sucesso.',
+      );
     } catch (e) {
-      print(e);
-      Get.snackbar('Error', "Erro ao remove agência");
+      if (e is! DioException) {
+        Get.snackbar(
+          'Não foi possível remover a imobiliária',
+          'Tente novamente em instantes.',
+        );
+      }
     } finally {
       isLoading.value = false;
     }
@@ -114,7 +183,7 @@ class AgencyController extends GetxController {
     final result = await FilePicker.platform.pickFiles(
       type: FileType.image,
       allowMultiple: false,
-      withData: true, // important for Web → gives bytes
+      withData: true,
     );
 
     if (result == null) return;
@@ -122,14 +191,13 @@ class AgencyController extends GetxController {
     final file = result.files.first;
 
     agency.update((a) => a!.fileName = file.name);
-    agency.update(
-      (a) => a!.fileBytes = file.bytes,
-    ); // Uint8List, works everywhere
-    _showUploadFeedback('Logo da imobiliaria', file.name);
+    agency.update((a) => a!.fileBytes = file.bytes);
+    _showUploadFeedback('Logo da imobiliária', file.name);
   }
 
   Future<void> getServices(String type) async {
-    services.value = await s.getServices(type: type);
+    final fetched = await s.getServices(type: type);
+    services.value = _buildCoreServices(type, fetched);
   }
 
   List<Service> _selectedServices() {
@@ -143,40 +211,79 @@ class AgencyController extends GetxController {
         .toList();
   }
 
+  void _applyCoreServicesToSolicitation() {
+    final selected = _selectedServices();
+
+    String carrierFor(List<String> aliases) {
+      final service = selected.cast<Service?>().firstWhere(
+            (item) {
+              final name = (item?.name ?? '').trim().toLowerCase();
+              return aliases.any((alias) => name.contains(alias));
+            },
+            orElse: () => null,
+          );
+      return (service?.companyName ?? '').trim();
+    }
+
+    final waterCarrier = carrierFor(['agua', 'água', 'saneamento', 'water']);
+    final powerCarrier = carrierFor([
+      'luz',
+      'energia',
+      'eletrica',
+      'elétrica',
+      'power',
+    ]);
+    final gasCarrier = carrierFor(['gas', 'gás']);
+
+    solicitation.update((s) {
+      if (s == null) return;
+      s.items = selected;
+      s.water = waterCarrier.isNotEmpty;
+      s.waterCarrier = waterCarrier;
+      s.power = powerCarrier.isNotEmpty;
+      s.powerCarrier = powerCarrier;
+      s.gas = gasCarrier.isNotEmpty;
+      s.gasCarrier = gasCarrier;
+    });
+  }
+
   Future<void> register() async {
-    print("===================>");
-    print(solicitation.value.toJson());
-    print("<===================");
-    solicitation.update((e) => e!.items = _selectedServices());
+    _applyCoreServicesToSolicitation();
     try {
       isLoading.value = true;
       solicitation.value = await s.register(solicitation.value);
-      print(solicitation.value.toJson());
       if (Get.isDialogOpen ?? false) {
         Get.back();
       }
-      Get.snackbar('Success', 'Solicitação criada com sucesso');
+      Get.snackbar(
+        'Solicitação enviada',
+        'Recebemos os dados e encaminhamos o caso com sucesso.',
+      );
     } catch (e) {
-      print(e);
-      Get.snackbar('Error', e.toString());
+      if (e is! DioException) {
+        Get.snackbar(
+          'Não foi possível enviar a solicitação',
+          'Confira os dados e tente novamente.',
+        );
+      }
     } finally {
       isLoading.value = false;
     }
   }
 
   Future<bool> searchCep(String cep) async {
-    Address address = await s.getCep(cep);
+    final address = await s.getCep(cep);
     solicitation.update((s) => s!.address = address);
     return false;
   }
 
   bool isValidCEP(String cep) {
-    cep = cep.replaceAll(RegExp(r'\D'), '');
+    final sanitizedCep = cep.replaceAll(RegExp(r'\D'), '');
     final regex = RegExp(r'^\d{5}-?\d{3}$');
-    return regex.hasMatch(cep);
+    return regex.hasMatch(sanitizedCep);
   }
 
-  setCep(String text) {
+  void setCep(String text) {
     cep.value = text;
     if (isValidCEP(cep.value)) {
       searchCep(text);
@@ -187,7 +294,7 @@ class AgencyController extends GetxController {
     final result = await FilePicker.platform.pickFiles(
       type: FileType.any,
       allowMultiple: false,
-      withData: true, // important for Web → gives bytes
+      withData: true,
     );
 
     if (result == null) return;
@@ -196,17 +303,15 @@ class AgencyController extends GetxController {
     if (!_isAllowedFileSize(file, 'Foto do documento')) return;
 
     documents.update((a) => a!.documentPhotoName = file.name);
-    documents.update(
-      (a) => a!.documentPhotoByte = file.bytes,
-    ); // Uint8List, works everywhere
+    documents.update((a) => a!.documentPhotoByte = file.bytes);
     _showUploadFeedback('Foto do documento', file.name);
   }
 
   Future<void> pickPhotoWithDocument() async {
     final result = await FilePicker.platform.pickFiles(
-      type: FileType.any, //allow also pdf
+      type: FileType.any,
       allowMultiple: false,
-      withData: true, // important for Web → gives bytes
+      withData: true,
     );
 
     if (result == null) return;
@@ -215,36 +320,32 @@ class AgencyController extends GetxController {
     if (!_isAllowedFileSize(file, 'Foto com documento')) return;
 
     documents.update((a) => a!.photoWithDocumentName = file.name);
-    documents.update(
-      (a) => a!.photoWithDocumentByte = file.bytes,
-    ); // Uint8List, works everywhere
+    documents.update((a) => a!.photoWithDocumentByte = file.bytes);
     _showUploadFeedback('Foto com documento', file.name);
   }
 
   Future<void> pickLastInvoice() async {
     final result = await FilePicker.platform.pickFiles(
-      type: FileType.any, //allow also pdf
+      type: FileType.any,
       allowMultiple: false,
-      withData: true, // important for Web → gives bytes
+      withData: true,
     );
 
     if (result == null) return;
 
     final file = result.files.first;
-    if (!_isAllowedFileSize(file, 'Ultima fatura')) return;
+    if (!_isAllowedFileSize(file, 'Última fatura')) return;
 
     documents.update((a) => a!.lastInvoiceName = file.name);
-    documents.update(
-      (a) => a!.lastInvoiceByte = file.bytes,
-    ); // Uint8List, works everywhere
-    _showUploadFeedback('Ultima fatura', file.name);
+    documents.update((a) => a!.lastInvoiceByte = file.bytes);
+    _showUploadFeedback('Última fatura', file.name);
   }
 
   Future<void> pickContract() async {
     final result = await FilePicker.platform.pickFiles(
-      type: FileType.any, //allow also pdf
+      type: FileType.any,
       allowMultiple: false,
-      withData: true, // important for Web → gives bytes
+      withData: true,
     );
 
     if (result == null) return;
@@ -253,14 +354,12 @@ class AgencyController extends GetxController {
     if (!_isAllowedFileSize(file, 'Contrato')) return;
 
     documents.update((a) => a!.contractName = file.name);
-    documents.update(
-      (a) => a!.contractByte = file.bytes,
-    ); // Uint8List, works everywhere
+    documents.update((a) => a!.contractByte = file.bytes);
     _showUploadFeedback('Contrato', file.name);
   }
 
   Future<void> transfer() async {
-    solicitation.update((s) => s!.items = _selectedServices());
+    _applyCoreServicesToSolicitation();
     try {
       isLoading.value = true;
       solicitation.value = await s.transfer(
@@ -270,39 +369,50 @@ class AgencyController extends GetxController {
       if (Get.isDialogOpen ?? false) {
         Get.back();
       }
-      Get.snackbar('Success', 'Transferência realizada com sucesso');
+      Get.snackbar(
+        'Transferência enviada',
+        'Seus dados foram recebidos com sucesso.',
+      );
     } catch (e) {
-      print(e);
-      Get.snackbar('Error', e.toString());
+      if (e is! DioException) {
+        Get.snackbar(
+          'Não foi possível enviar a transferência',
+          'Confira os dados e tente novamente.',
+        );
+      }
     } finally {
       isLoading.value = false;
     }
   }
 
-  New() {
-    solicitation.value = Solicitation(
-      customer: Customer(),
-      address: Address(),
-      items: [],
-    );
+  void New() {
+    solicitation.value =
+        Solicitation(
+          customer: Customer(),
+          address: Address(),
+          items: [],
+        );
     documents.value = Documents();
     cep.value = '';
     cepController.clear();
     birthDateController.clear();
-    services.value = services
-        .map(
-          (service) => service.copyWith(
-            selected: false,
-            companyName: '',
-          ),
-        )
-        .toList();
+    newHolderPhoneController.clear();
+    services.value =
+        services
+            .map(
+              (service) => service.copyWith(
+                selected: false,
+                companyName: '',
+              ),
+            )
+            .toList();
   }
 
   @override
   void onClose() {
     cepController.dispose();
     birthDateController.dispose();
+    newHolderPhoneController.dispose();
     super.onClose();
   }
 }

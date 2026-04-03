@@ -127,6 +127,130 @@ class CloseForm extends GetView<AgencyController> {
   TextStyle get _fieldText =>
       const TextStyle(color: _ink, fontWeight: FontWeight.w600);
 
+  List<dynamic> _selectedServicesSummary() {
+    return controller.services.where((service) => service.selected).toList();
+  }
+
+  Widget _serviceSpotlight() {
+    final selectedServices = _selectedServicesSummary();
+
+    return Container(
+      margin: const EdgeInsets.fromLTRB(10, 0, 10, 12),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        color: Colors.white.withOpacity(.05),
+        border: Border.all(color: Colors.white.withOpacity(.12)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: _claro.withOpacity(.14),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Icon(
+                  Icons.apartment_outlined,
+                  color: _claro.withOpacity(.96),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Servicos informados neste envio',
+                      style: TextStyle(
+                        color: _ink.withOpacity(.96),
+                        fontWeight: FontWeight.w900,
+                        fontSize: 13,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      selectedServices.isEmpty
+                          ? 'Selecione o tipo de servico e informe a empresa responsavel antes de enviar.'
+                          : 'Esse resumo deixa evidente o servico escolhido e a empresa responsavel.',
+                      style: TextStyle(
+                        color: _ink.withOpacity(.68),
+                        fontSize: 11.5,
+                        height: 1.3,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          if (selectedServices.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            ...selectedServices.map((service) {
+              final serviceName = (service.name ?? '').toString().trim();
+              final companyName = (service.companyName ?? '').toString().trim();
+              return Container(
+                margin: const EdgeInsets.only(bottom: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 10,
+                ),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  color: Colors.black.withOpacity(.18),
+                  border: Border.all(color: Colors.white.withOpacity(.08)),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.bolt_rounded,
+                      color: _claro.withOpacity(.92),
+                      size: 18,
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            serviceName.isEmpty ? 'Servico sem nome' : serviceName,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: _ink.withOpacity(.95),
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          const SizedBox(height: 3),
+                          Text(
+                            companyName.isEmpty
+                                ? 'Empresa responsavel nao informada'
+                                : companyName,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: _ink.withOpacity(.66),
+                              fontSize: 11.5,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }),
+          ],
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback(
@@ -526,6 +650,8 @@ class CloseForm extends GetView<AgencyController> {
                     },
                   ),
                 ),
+
+                _serviceSpotlight(),
 
                 // ✅✅✅ TOTAL (APENAS ESTÉTICA - mais chamativo)
                 Container(

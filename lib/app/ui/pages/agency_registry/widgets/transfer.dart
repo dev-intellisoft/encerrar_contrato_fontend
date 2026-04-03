@@ -16,6 +16,7 @@ class TransferForm extends GetView<AgencyController> {
 
   // ===== wizard state =====
   final RxInt _step = 1.obs;
+  final ScrollController _stepScrollController = ScrollController();
 
   // Validaciones por paso
   final GlobalKey<FormState> _formStep1 = GlobalKey<FormState>();
@@ -115,6 +116,446 @@ class TransferForm extends GetView<AgencyController> {
         docs.documentPhotoByte != null &&
         (docs.photoWithDocumentName ?? '').isNotEmpty &&
         docs.photoWithDocumentByte != null;
+  }
+
+  int _selectedDocumentsCount() {
+    final docs = controller.documents.value;
+    var total = 0;
+    if ((docs.documentPhotoName ?? '').isNotEmpty &&
+        docs.documentPhotoByte != null) {
+      total++;
+    }
+    if ((docs.photoWithDocumentName ?? '').isNotEmpty &&
+        docs.photoWithDocumentByte != null) {
+      total++;
+    }
+    if ((docs.lastInvoiceName ?? '').isNotEmpty && docs.lastInvoiceByte != null) {
+      total++;
+    }
+    if ((docs.contractName ?? '').isNotEmpty && docs.contractByte != null) {
+      total++;
+    }
+    return total;
+  }
+
+  Widget _uploadFeedbackBanner() {
+    final selectedCount = _selectedDocumentsCount();
+    final requiredDone = _hasRequiredTransferDocuments();
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 260),
+      curve: Curves.easeOutCubic,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: requiredDone
+              ? [
+                  const Color(0xFF0E7490).withOpacity(.34),
+                  const Color(0xFF2DD4BF).withOpacity(.18),
+                ]
+              : [
+                  _primario.withOpacity(.20),
+                  _claro.withOpacity(.10),
+                ],
+        ),
+        border: Border.all(
+          color: requiredDone
+              ? const Color(0xFF2DD4BF).withOpacity(.45)
+              : Colors.white.withOpacity(.12),
+        ),
+      ),
+      child: Row(
+        children: [
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 260),
+            width: 42,
+            height: 42,
+            decoration: BoxDecoration(
+              color: requiredDone
+                  ? const Color(0xFF2DD4BF).withOpacity(.22)
+                  : Colors.white.withOpacity(.10),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Icon(
+              requiredDone
+                  ? Icons.check_circle_rounded
+                  : Icons.cloud_upload_rounded,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  requiredDone
+                      ? 'Arquivos obrigatorios carregados'
+                      : 'Uploads selecionados: $selectedCount/4',
+                  style: TextStyle(
+                    color: _ink.withOpacity(.96),
+                    fontWeight: FontWeight.w900,
+                    fontSize: 13,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  requiredDone
+                      ? 'Voce ja pode seguir para o proximo passo.'
+                      : 'Assim que escolher um arquivo, o card muda e mostra o nome ou preview.',
+                  style: TextStyle(
+                    color: _ink.withOpacity(.72),
+                    fontSize: 11.5,
+                    height: 1.3,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<Map<String, dynamic>> _selectedUploadEntries() {
+    final docs = controller.documents.value;
+    final entries = <Map<String, dynamic>>[];
+
+    void addEntry({
+      required String label,
+      required String? fileName,
+      required Uint8List? fileBytes,
+      required IconData icon,
+      required bool requiredField,
+    }) {
+      if (fileName == null || fileName.isEmpty || fileBytes == null) return;
+      entries.add({
+        'label': label,
+        'fileName': fileName,
+        'fileBytes': fileBytes,
+        'icon': icon,
+        'requiredField': requiredField,
+      });
+    }
+
+    addEntry(
+      label: 'Documento',
+      fileName: docs.documentPhotoName,
+      fileBytes: docs.documentPhotoByte,
+      icon: Icons.file_present_outlined,
+      requiredField: true,
+    );
+    addEntry(
+      label: 'Selfie com documento',
+      fileName: docs.photoWithDocumentName,
+      fileBytes: docs.photoWithDocumentByte,
+      icon: Icons.badge_outlined,
+      requiredField: true,
+    );
+    addEntry(
+      label: 'Ultima fatura',
+      fileName: docs.lastInvoiceName,
+      fileBytes: docs.lastInvoiceByte,
+      icon: Icons.receipt_long_outlined,
+      requiredField: false,
+    );
+    addEntry(
+      label: 'Contrato',
+      fileName: docs.contractName,
+      fileBytes: docs.contractByte,
+      icon: Icons.description_outlined,
+      requiredField: false,
+    );
+
+    return entries;
+  }
+
+  Widget _selectedUploadsOverview() {
+    final entries = _selectedUploadEntries();
+
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 260),
+      switchInCurve: Curves.easeOutCubic,
+      switchOutCurve: Curves.easeInCubic,
+      child: Container(
+        key: ValueKey(
+          'selected-uploads-${entries.map((item) => item['fileName']).join('|')}',
+        ),
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(.05),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.white.withOpacity(.12)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 42,
+                  height: 42,
+                  decoration: BoxDecoration(
+                    color: entries.isEmpty
+                        ? Colors.white.withOpacity(.08)
+                        : const Color(0xFF2DD4BF).withOpacity(.16),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: Colors.white.withOpacity(.10)),
+                  ),
+                  child: Icon(
+                    entries.isEmpty
+                        ? Icons.visibility_outlined
+                        : Icons.verified_rounded,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        entries.isEmpty
+                            ? 'Os arquivos carregados vao aparecer aqui'
+                            : 'Confira os arquivos antes de continuar',
+                        style: TextStyle(
+                          color: _ink.withOpacity(.96),
+                          fontWeight: FontWeight.w900,
+                          fontSize: 13,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        entries.isEmpty
+                            ? 'Assim que voce selecionar uma imagem, o preview fica visivel neste bloco.'
+                            : 'Se a imagem apareceu aqui, o upload foi reconhecido com sucesso.',
+                        style: TextStyle(
+                          color: _ink.withOpacity(.70),
+                          fontSize: 11.5,
+                          height: 1.3,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            if (entries.isNotEmpty) ...[
+              const SizedBox(height: 14),
+              SizedBox(
+                height: 124,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: entries.length,
+                  separatorBuilder: (_, __) => const SizedBox(width: 10),
+                  itemBuilder: (_, index) {
+                    final item = entries[index];
+                    final fileName = item['fileName'] as String;
+                    final fileBytes = item['fileBytes'] as Uint8List;
+                    final imageFile = _isImageFile(fileName);
+
+                    return Container(
+                      width: 154,
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(18),
+                        color: Colors.black.withOpacity(.18),
+                        border: Border.all(
+                          color: (item['requiredField'] as bool)
+                              ? const Color(0xFF2DD4BF).withOpacity(.34)
+                              : Colors.white.withOpacity(.10),
+                        ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            item['label'] as String,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: _ink.withOpacity(.94),
+                              fontWeight: FontWeight.w800,
+                              fontSize: 11.5,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Expanded(
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(14),
+                              child: Container(
+                                width: double.infinity,
+                                color: Colors.white.withOpacity(.05),
+                                child: imageFile
+                                    ? Image.memory(fileBytes, fit: BoxFit.cover)
+                                    : Icon(
+                                        item['icon'] as IconData,
+                                        color: _claro.withOpacity(.92),
+                                        size: 34,
+                                      ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            fileName,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: _ink.withOpacity(.72),
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _scrollStepToTop() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!_stepScrollController.hasClients) return;
+      _stepScrollController.animateTo(
+        0,
+        duration: const Duration(milliseconds: 260),
+        curve: Curves.easeOutCubic,
+      );
+    });
+  }
+
+  List<dynamic> _selectedServicesSummary() {
+    return controller.services.where((service) => service.selected).toList();
+  }
+
+  Widget _serviceSpotlight() {
+    final selectedServices = _selectedServicesSummary();
+
+    return Container(
+      margin: const EdgeInsets.only(top: 8, bottom: 12),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        color: Colors.white.withOpacity(.05),
+        border: Border.all(color: Colors.white.withOpacity(.12)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: _claro.withOpacity(.14),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Icon(
+                  Icons.apartment_outlined,
+                  color: _claro.withOpacity(.96),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Servicos informados neste envio',
+                      style: TextStyle(
+                        color: _ink.withOpacity(.96),
+                        fontWeight: FontWeight.w900,
+                        fontSize: 13,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      selectedServices.isEmpty
+                          ? 'Selecione o tipo de servico e informe a empresa responsavel antes de enviar.'
+                          : 'Esse resumo ajuda a conferir rapido o tipo de servico e a empresa de cada caso.',
+                      style: TextStyle(
+                        color: _ink.withOpacity(.68),
+                        fontSize: 11.5,
+                        height: 1.3,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          if (selectedServices.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            ...selectedServices.map((service) {
+              final serviceName = (service.name ?? '').toString().trim();
+              final companyName = (service.companyName ?? '').toString().trim();
+              return Container(
+                margin: const EdgeInsets.only(bottom: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 10,
+                ),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  color: Colors.black.withOpacity(.18),
+                  border: Border.all(color: Colors.white.withOpacity(.08)),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.bolt_rounded,
+                      color: _claro.withOpacity(.92),
+                      size: 18,
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            serviceName.isEmpty ? 'Servico sem nome' : serviceName,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: _ink.withOpacity(.95),
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          const SizedBox(height: 3),
+                          Text(
+                            companyName.isEmpty
+                                ? 'Empresa responsavel nao informada'
+                                : companyName,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: _ink.withOpacity(.66),
+                              fontSize: 11.5,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }),
+          ],
+        ],
+      ),
+    );
   }
 
   Widget _uploadStatusChip({
@@ -533,11 +974,99 @@ class TransferForm extends GetView<AgencyController> {
       return;
     }
 
-    if (s < 3) _step.value = s + 1;
+    if (s < 3) {
+      _step.value = s + 1;
+      _scrollStepToTop();
+    }
   }
 
   void _goBack() {
-    if (_step.value > 1) _step.value--;
+    if (_step.value > 1) {
+      _step.value--;
+      _scrollStepToTop();
+    }
+  }
+
+  void _openConsentDialog(BuildContext context) {
+    Get.dialog(
+      AlertDialog(
+        backgroundColor: _bgCard,
+        title: Text(
+          'Termo de Consentimento.',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: _ink.withOpacity(.95),
+            fontWeight: FontWeight.w900,
+          ),
+        ),
+        content: ObxValue(
+          (agree) => Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Autorizo o envio dos meus dados pessoais, conforme informado neste formulário, para que a empresa ENCERRAR CONTRATO possa utilizá-los exclusivamente no processo.',
+                textAlign: TextAlign.justify,
+                style: TextStyle(color: _ink.withOpacity(.88)),
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Theme(
+                    data: Theme.of(context).copyWith(
+                      unselectedWidgetColor: _ink.withOpacity(.70),
+                    ),
+                    child: Checkbox(
+                      value: agree.value,
+                      activeColor: _primario,
+                      checkColor: Colors.white,
+                      onChanged: (value) => agree.value = !agree.value,
+                    ),
+                  ),
+                  Expanded(
+                    child: Text(
+                      'Li e aceito.',
+                      style: TextStyle(
+                        color: _ink.withOpacity(.92),
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: agree.value ? controller.transfer : null,
+                style: ButtonStyle(
+                  backgroundColor: WidgetStatePropertyAll<Color>(
+                    agree.value ? const Color(0xFF0099FF) : Colors.grey,
+                  ),
+                  shape: WidgetStatePropertyAll<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                      side: BorderSide(
+                        color: Colors.white.withOpacity(.14),
+                        width: 1,
+                      ),
+                    ),
+                  ),
+                  padding: const WidgetStatePropertyAll<EdgeInsetsGeometry>(
+                    EdgeInsets.symmetric(vertical: 14, horizontal: 18),
+                  ),
+                ),
+                child: const Text(
+                  'ENVIAR',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          false.obs,
+        ),
+      ),
+    );
   }
 
   @override
@@ -580,6 +1109,7 @@ class TransferForm extends GetView<AgencyController> {
               // ✅ Contenido por pasos
               Expanded(
                 child: SingleChildScrollView(
+                  controller: _stepScrollController,
                   child: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 220),
                     child: _step.value == 1
@@ -633,7 +1163,7 @@ class TransferForm extends GetView<AgencyController> {
                       child: ElevatedButton(
                         onPressed: _step.value < 3
                             ? _goNext
-                            : () {}, // paso 3 no avanza
+                            : () => _openConsentDialog(context),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: _primario,
                           foregroundColor: Colors.white,
@@ -643,7 +1173,9 @@ class TransferForm extends GetView<AgencyController> {
                           ),
                         ),
                         child: Text(
-                          _step.value < 3 ? 'Siguiente' : 'Último passo',
+                          _step.value < 3
+                              ? 'Siguiente'
+                              : 'Enviar informacoes',
                           style: const TextStyle(fontWeight: FontWeight.w900),
                         ),
                       ),
@@ -969,6 +1501,38 @@ class TransferForm extends GetView<AgencyController> {
             ),
           ),
           const SizedBox(height: 14),
+          TextFormField(
+            style: _fieldText,
+            cursorColor: _ink,
+            controller: controller.newHolderPhoneController,
+            keyboardType: TextInputType.phone,
+            inputFormatters: [_newHolderPhoneMask],
+            decoration: _dec(
+              label: 'Telefone (novo titular)',
+              hint: 'Numero principal para contato do novo titular',
+              icon: Icons.phone_outlined,
+            ),
+            validator: (v) {
+              final digits = _digitsOnly(v ?? '');
+              if (digits.isEmpty) return 'Informe o telefone do novo titular';
+              if (digits.length < 10) return 'Telefone invalido';
+              return null;
+            },
+          ),
+          const SizedBox(height: 10),
+          Text(
+            'Deixamos esse telefone no topo porque ele costuma ser a referencia mais consultada na conferencia.',
+            style: TextStyle(
+              color: _ink.withOpacity(.62),
+              fontSize: 11.5,
+              height: 1.3,
+            ),
+          ),
+          const SizedBox(height: 14),
+          _selectedUploadsOverview(),
+          const SizedBox(height: 14),
+          _uploadFeedbackBanner(),
+          const SizedBox(height: 14),
           LayoutBuilder(
             builder: (context, constraints) {
               final isWide = constraints.maxWidth > 560;
@@ -982,7 +1546,7 @@ class TransferForm extends GetView<AgencyController> {
                 children: [
                   SizedBox(
                     width: itemWidth,
-                    height: 240,
+                    height: 268,
                     child: _uploadCard(
                       title: 'Foto do documento',
                       subtitle: 'Documento frontal ou página principal',
@@ -995,7 +1559,7 @@ class TransferForm extends GetView<AgencyController> {
                   ),
                   SizedBox(
                     width: itemWidth,
-                    height: 240,
+                    height: 268,
                     child: _uploadCard(
                       title: 'Foto com documento',
                       subtitle: 'Selfie segurando o documento visível',
@@ -1009,7 +1573,7 @@ class TransferForm extends GetView<AgencyController> {
                   ),
                   SizedBox(
                     width: itemWidth,
-                    height: 240,
+                    height: 268,
                     child: _uploadCard(
                       title: 'Última fatura',
                       subtitle: 'Comprovante recente do serviço',
@@ -1022,7 +1586,7 @@ class TransferForm extends GetView<AgencyController> {
                   ),
                   SizedBox(
                     width: itemWidth,
-                    height: 240,
+                    height: 268,
                     child: _uploadCard(
                       title: 'Contrato',
                       subtitle: 'Locação, compra e venda ou equivalente',
@@ -1035,24 +1599,6 @@ class TransferForm extends GetView<AgencyController> {
                   ),
                 ],
               );
-            },
-          ),
-
-          const SizedBox(height: 10),
-          TextFormField(
-            style: _fieldText,
-            cursorColor: _ink,
-            keyboardType: TextInputType.phone,
-            inputFormatters: [_newHolderPhoneMask],
-            decoration: _dec(
-              label: 'Telefone (novo titular)',
-              icon: Icons.phone_outlined,
-            ),
-            validator: (v) {
-              final digits = _digitsOnly(v ?? '');
-              if (digits.isEmpty) return 'Informe o telefone do novo titular';
-              if (digits.length < 10) return 'Telefone inválido';
-              return null;
             },
           ),
         ],
@@ -1136,6 +1682,7 @@ class TransferForm extends GetView<AgencyController> {
           ),
 
           const SizedBox(height: 6),
+          _serviceSpotlight(),
 
           // ✅✅✅ TOTAL (APENAS ESTÉTICA - mais chamativo)
           Container(
@@ -1231,108 +1778,6 @@ class TransferForm extends GetView<AgencyController> {
                   ),
                 ),
               ],
-            ),
-          ),
-
-          const SizedBox(height: 12),
-
-          ElevatedButton(
-            onPressed: () => Get.dialog(
-              AlertDialog(
-                backgroundColor: _bgCard,
-                title: Text(
-                  'Termo de Consentimento.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: _ink.withOpacity(.95),
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-                content: ObxValue(
-                  (agree) => Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        'Autorizo o envio dos meus dados pessoais, conforme informado neste formulário, para que a empresa ENCERRAR CONTRATO possa utilizá-los exclusivamente no processo.',
-                        textAlign: TextAlign.justify,
-                        style: TextStyle(color: _ink.withOpacity(.88)),
-                      ),
-                      const SizedBox(height: 10),
-                      Row(
-                        children: [
-                          Theme(
-                            data: Theme.of(context).copyWith(
-                              unselectedWidgetColor: _ink.withOpacity(.70),
-                            ),
-                            child: Checkbox(
-                              value: agree.value,
-                              activeColor: _primario,
-                              checkColor: Colors.white,
-                              onChanged: (value) => agree.value = !agree.value,
-                            ),
-                          ),
-                          Expanded(
-                            child: Text(
-                              'Li e aceito.',
-                              style: TextStyle(
-                                color: _ink.withOpacity(.92),
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      ElevatedButton(
-                        onPressed: agree.value
-                            ? () => controller.transfer()
-                            : null,
-                        style: ButtonStyle(
-                          backgroundColor: WidgetStatePropertyAll<Color>(
-                            agree.value ? const Color(0xFF0099FF) : Colors.grey,
-                          ),
-                          shape: WidgetStatePropertyAll<RoundedRectangleBorder>(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14),
-                              side: BorderSide(
-                                color: Colors.white.withOpacity(.14),
-                                width: 1,
-                              ),
-                            ),
-                          ),
-                          padding:
-                              const WidgetStatePropertyAll<EdgeInsetsGeometry>(
-                                EdgeInsets.symmetric(
-                                  vertical: 14,
-                                  horizontal: 18,
-                                ),
-                              ),
-                        ),
-                        child: const Text(
-                          'ENVIAR',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w900,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  false.obs,
-                ),
-              ),
-            ),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF0099FF),
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
-              ),
-            ),
-            child: const Text(
-              'ENVIAR INFORMAÇÕES',
-              style: TextStyle(fontWeight: FontWeight.w900),
             ),
           ),
 

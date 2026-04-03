@@ -1,5 +1,5 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/material.dart';
+import '../utils/api_url.dart';
 
 class AgencyLogo extends StatelessWidget {
   final String imagePath;
@@ -7,6 +7,7 @@ class AgencyLogo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final normalizedPath = imagePath.trim();
+    final logoUrl = resolveAssetUrl(normalizedPath);
     if (normalizedPath.isEmpty) {
       return const SizedBox(
         width: 40,
@@ -27,9 +28,10 @@ class AgencyLogo extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
       ),
       child: Image.network(
-        '${dotenv.env['API_URL']}$normalizedPath',
-        key: ValueKey(normalizedPath),
+        logoUrl,
+        key: ValueKey(logoUrl),
         fit: BoxFit.cover,
+        gaplessPlayback: true,
 
         loadingBuilder: (context, child, loadingProgress) {
           if (loadingProgress == null) return child;

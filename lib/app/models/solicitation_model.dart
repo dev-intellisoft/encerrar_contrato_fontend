@@ -30,6 +30,12 @@ class Solicitation {
   ASAASCreditCard? creditCard;
   int? protocol;
   String? agency;
+  bool water;
+  bool gas;
+  bool power;
+  String? waterCarrier;
+  String? gasCarrier;
+  String? powerCarrier;
 
   Solicitation({
     this.id,
@@ -51,6 +57,12 @@ class Solicitation {
     this.creditCard,
     this.protocol,
     this.agency,
+    this.water = false,
+    this.gas = false,
+    this.power = false,
+    this.waterCarrier,
+    this.gasCarrier,
+    this.powerCarrier,
   });
 
   Map<String, dynamic> toJson() {
@@ -75,6 +87,12 @@ class Solicitation {
       'credit_card': creditCard,
       'protocol': protocol,
       'agency': agency,
+      'water': water,
+      'gas': gas,
+      'power': power,
+      'water_carrier': waterCarrier,
+      'gas_carrier': gasCarrier,
+      'power_carrier': powerCarrier,
     };
   }
 
@@ -114,7 +132,46 @@ class Solicitation {
       creditCard: map['credit_card'],
       protocol: map['protocol'],
       agency: map['agency']?.toString(),
+      water: map['water'] == true,
+      gas: map['gas'] == true,
+      power: map['power'] == true,
+      waterCarrier: map['water_carrier']?.toString(),
+      gasCarrier: map['gas_carrier']?.toString(),
+      powerCarrier: map['power_carrier']?.toString(),
     );
+  }
+
+  List<Service> displayServices() {
+    final normalizedItems = (items ?? <Service>[])
+        .where(
+          (item) =>
+              item.selected ||
+              (item.name ?? '').trim().isNotEmpty ||
+              (item.companyName ?? '').trim().isNotEmpty,
+        )
+        .toList();
+
+    if (normalizedItems.isNotEmpty) {
+      return normalizedItems;
+    }
+
+    final derived = <Service>[];
+    if (water) {
+      derived.add(
+        Service(name: 'Água', companyName: (waterCarrier ?? '').trim()),
+      );
+    }
+    if (power) {
+      derived.add(
+        Service(name: 'Luz', companyName: (powerCarrier ?? '').trim()),
+      );
+    }
+    if (gas) {
+      derived.add(
+        Service(name: 'Gás', companyName: (gasCarrier ?? '').trim()),
+      );
+    }
+    return derived;
   }
 
   static DateTime? _parseDateTime(dynamic value) {

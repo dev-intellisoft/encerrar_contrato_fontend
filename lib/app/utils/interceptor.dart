@@ -1,11 +1,34 @@
 import 'package:dio/dio.dart';
 import 'package:encerrar_contrato/app/models/access_token_model.dart';
 import 'package:encerrar_contrato/app/routes/app_pages.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'api_url.dart';
 
 class ApiInterceptor extends Interceptor {
+  String _defaultMessageForStatus(int? statusCode) {
+    switch (statusCode) {
+      case 400:
+        return 'Não foi possível concluir a ação. Revise os dados e tente novamente.';
+      case 401:
+        return 'Sua sessão expirou. Faça login novamente para continuar.';
+      case 403:
+        return 'Você não tem permissão para realizar esta ação.';
+      case 404:
+        return 'Não encontramos a informação solicitada.';
+      case 409:
+        return 'Já existe um cadastro com esses dados.';
+      case 422:
+        return 'Alguns dados precisam ser corrigidos antes de continuar.';
+      case 500:
+      case 502:
+      case 503:
+        return 'O servidor está indisponível no momento. Tente novamente em instantes.';
+      default:
+        return 'Ocorreu um erro inesperado. Tente novamente.';
+    }
+  }
+
   String _errorMessage(dynamic data) {
     if (data is Map<String, dynamic>) {
       final error = data['error'];
@@ -27,16 +50,21 @@ class ApiInterceptor extends Interceptor {
       return data;
     }
 
-    return 'Erro inesperado';
+    return '';
   }
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     final token = GetStorage().read('token');
+    final baseUrl = resolveApiBaseUrl();
     if (token != null) {
       final accessToken = AccessToken.fromJson(token);
       options.headers['Authorization'] = 'Bearer ${accessToken.accessToken}';
-      options.baseUrl = '${dotenv.env['API_URL']}';
+      if (baseUrl.isNotEmpty) {
+        options.baseUrl = baseUrl;
+      }
+    } else if (baseUrl.isNotEmpty) {
+      options.baseUrl = baseUrl;
     }
 
     return super.onRequest(options, handler);
@@ -45,23 +73,37 @@ class ApiInterceptor extends Interceptor {
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
     final data = err.response?.data;
-    final message = _errorMessage(data);
+    final statusCode = err.response?.statusCode;
+    final path = err.requestOptions.path;
+    final isSessionCheck = path.contains('/users/me');
+    final hasToken = GetStorage().read('token') != null;
+    final serverMessage = _errorMessage(data).trim();
+    final message =
+        serverMessage.isNotEmpty
+            ? serverMessage
+            : _defaultMessageForStatus(statusCode);
 
-    if (data is Map<String, dynamic> && data['error'] == 'Unauthorized') {
+    if (statusCode == 401 ||
+        (data is Map<String, dynamic> && data['error'] == 'Unauthorized')) {
       GetStorage().remove('token');
-      Get.snackbar('Erro', 'Sessao expirada');
+      if (!isSessionCheck && hasToken) {
+        Get.snackbar('Sessão expirada', _defaultMessageForStatus(401));
+      }
       Get.offAllNamed(Routes.LOGIN);
+      return super.onError(err, handler);
     }
 
-    Get.snackbar('Erro', message);
+    if (!(isSessionCheck && !hasToken)) {
+      Get.snackbar('Atenção', message);
+    }
     super.onError(err, handler);
   }
 }
 
 class DioProvider {
   static Dio createDio() {
-    print(dotenv.env['API_URL']);
-    final dio = Dio(BaseOptions(baseUrl: '${dotenv.env['API_URL']}'));
+    final baseUrl = resolveApiBaseUrl();
+    final dio = Dio(BaseOptions(baseUrl: baseUrl));
     dio.interceptors.add(ApiInterceptor());
     return dio;
   }

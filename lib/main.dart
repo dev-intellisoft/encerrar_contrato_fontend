@@ -56,9 +56,9 @@ class AppScrollBehavior extends MaterialScrollBehavior {
     return Scrollbar(
       controller: details.controller,
       thumbVisibility: true,
-      trackVisibility: !isCompact,
+      trackVisibility: false,
       interactive: true,
-      thickness: isCompact ? 8 : 12,
+      thickness: isCompact ? 2 : 3,
       radius: const Radius.circular(999),
       child: child,
     );

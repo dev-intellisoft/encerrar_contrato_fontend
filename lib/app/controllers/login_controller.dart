@@ -1,5 +1,6 @@
 import 'package:encerrar_contrato/app/models/access_token_model.dart';
 import 'package:encerrar_contrato/app/models/user_model.dart';
+import 'package:dio/dio.dart';
 import 'package:get/get.dart';
 import 'package:encerrar_contrato/app/routes/app_pages.dart';
 import 'package:get_storage/get_storage.dart';
@@ -40,7 +41,10 @@ class LoginController extends GetxController {
       final password = user.value.password ?? '';
 
       if (email.isEmpty || password.isEmpty) {
-        Get.snackbar('Error', 'Informe e-mail e senha');
+        Get.snackbar(
+          'Dados obrigatórios',
+          'Informe seu e-mail e sua senha para continuar.',
+        );
         return;
       }
 
@@ -56,7 +60,12 @@ class LoginController extends GetxController {
       }
       return Get.offAllNamed(Routes.HOME);
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      if (e is! DioException) {
+        Get.snackbar(
+          'Não foi possível entrar',
+          'Confira seus dados e tente novamente.',
+        );
+      }
     }
   }
 
@@ -81,7 +90,6 @@ class LoginController extends GetxController {
       return Get.offAllNamed(Routes.HOME);
     } catch (e) {
       GetStorage().remove('token');
-      Get.snackbar('Error=======>', e.toString());
       _sessionChecked = true;
     } finally {
       _sessionCheckInProgress = false;

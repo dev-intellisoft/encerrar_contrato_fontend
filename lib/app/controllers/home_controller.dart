@@ -45,7 +45,11 @@ class HomeController extends GetxController {
   Future<void> sendEmail() async {
     try {
       loading.value = true;
-      await services.sendEmail(email.value, name.value);
+      await services.sendEmail(
+        email.value,
+        name.value,
+        agency: agency.value.isEmpty ? 'Encerrar Contrato' : agency.value,
+      );
       Get.snackbar('Success', 'Email enviado com sucesso');
     } catch (e) {
       Get.snackbar('Error', e.toString());

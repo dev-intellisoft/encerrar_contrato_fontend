@@ -16,20 +16,20 @@ class AppTheme {
   static ScrollbarThemeData get _scrollbarTheme => ScrollbarThemeData(
     thumbColor: WidgetStateProperty.resolveWith((states) {
       if (states.contains(WidgetState.dragged)) {
-        return secundario.withOpacity(.96);
+        return secundario.withOpacity(.78);
       }
       if (states.contains(WidgetState.hovered)) {
-        return claro.withOpacity(.94);
+        return claro.withOpacity(.72);
       }
-      return primario.withOpacity(.82);
+      return primario.withOpacity(.56);
     }),
-    trackColor: WidgetStatePropertyAll(Colors.white.withOpacity(.08)),
-    trackBorderColor: WidgetStatePropertyAll(Colors.white.withOpacity(.10)),
+    trackColor: const WidgetStatePropertyAll(Colors.transparent),
+    trackBorderColor: const WidgetStatePropertyAll(Colors.transparent),
     radius: const Radius.circular(999),
-    thickness: const WidgetStatePropertyAll(10),
-    crossAxisMargin: 4,
-    mainAxisMargin: 4,
-    minThumbLength: 56,
+    thickness: const WidgetStatePropertyAll(3),
+    crossAxisMargin: 6,
+    mainAxisMargin: 6,
+    minThumbLength: 40,
   );
 
   // =========================

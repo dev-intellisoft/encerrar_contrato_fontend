@@ -54,10 +54,20 @@ class SolicitationServices {
     throw Exception('Failed to end solicitation');
   }
 
-  Future<void> sendEmail(String email, String name) async {
+  Future<void> sendEmail(
+    String email,
+    String name, {
+    String? agency,
+    String? serviceType,
+  }) async {
     var response = await dio.post(
       '/solicitations/send-email',
-      data: {'email': email, 'name': name},
+      data: {
+        'email': email,
+        'name': name,
+        'agency': agency,
+        'service_type': serviceType,
+      },
     );
     if (response.statusCode == 200) {
       return;

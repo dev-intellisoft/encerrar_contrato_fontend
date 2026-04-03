@@ -162,6 +162,67 @@ class DashboardPage extends GetView<DashboardController> {
       );
     }
 
+    Widget serviceDetailCard({
+      required String serviceName,
+      required String companyName,
+    }) {
+      return Container(
+        margin: const EdgeInsets.only(bottom: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(.06),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.white.withOpacity(.12)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 38,
+              height: 38,
+              decoration: BoxDecoration(
+                color: claro.withOpacity(.14),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(
+                Icons.apartment_outlined,
+                color: claro,
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    serviceName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: ink,
+                      fontWeight: FontWeight.w900,
+                      fontSize: 13,
+                    ),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    companyName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(.72),
+                      fontWeight: FontWeight.w700,
+                      fontSize: 11.5,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
     Future<void> confirmActionWithKeyword({
       required String keyword,
       required String actionLabel,
@@ -286,7 +347,7 @@ class DashboardPage extends GetView<DashboardController> {
                     ? const Center(
                         child: CircularProgressIndicator(color: primario),
                       )
-                    : controller.solicitations.isEmpty
+                    : controller.visibleSolicitations.isEmpty
                     ? Center(
                         child: Text(
                           'Nenhuma solicitação encontrada',
@@ -297,7 +358,8 @@ class DashboardPage extends GetView<DashboardController> {
                         ),
                       )
                     : ListView(
-                        children: controller.solicitations
+                        padding: const EdgeInsets.only(right: 10),
+                        children: controller.visibleSolicitations
                             .map(
                               (s) => SolicitationTile(
                                 isSelected:
@@ -545,17 +607,16 @@ class DashboardPage extends GetView<DashboardController> {
 
                           const SizedBox(height: 10),
 
-                          if (s.items != null)
-                            ...s.items!.map(
-                              (sv) => Padding(
-                                padding: const EdgeInsets.only(bottom: 6),
-                                child: Text(
-                                  "• ${sv.name ?? "-"} ${sv.companyName ?? "-"}",
-                                  style: TextStyle(
-                                    color: Colors.white.withOpacity(.80),
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
+                          if (s.displayServices().isNotEmpty)
+                            ...s.displayServices().map(
+                              (sv) => serviceDetailCard(
+                                serviceName: (sv.name ?? '').trim().isEmpty
+                                    ? 'Serviço não informado'
+                                    : sv.name!.trim(),
+                                companyName:
+                                    (sv.companyName ?? '').trim().isEmpty
+                                    ? 'Empresa responsável não informada'
+                                    : sv.companyName!.trim(),
                               ),
                             ),
 
@@ -590,6 +651,18 @@ class DashboardPage extends GetView<DashboardController> {
                                 keyword: 'finalizar',
                                 actionLabel: 'Concluir atendimento',
                                 onConfirm: () => controller.endSolicitation(),
+                              ),
+                            )
+                          else if (s.status == SolicitationStatus.done)
+                            _ActionButton(
+                              label: 'Ocultar da lista',
+                              icon: Icons.visibility_off_outlined,
+                              baseColor: const Color(0xFF475569),
+                              onPressed: () => confirmActionWithKeyword(
+                                keyword: 'ocultar',
+                                actionLabel: 'Ocultar da lista',
+                                onConfirm: () =>
+                                    controller.hideFinishedSolicitationFromList(),
                               ),
                             ),
 
@@ -637,18 +710,26 @@ class DashboardPage extends GetView<DashboardController> {
       backgroundColor: bg,
       endDrawer: DrawerWidget(),
       appBar: AppBar(
+        toolbarHeight: isNarrow ? 74 : 68,
+        titleSpacing: 14,
         leading: null,
         backgroundColor: bg2,
         elevation: 0,
         title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Logo(),
-            const SizedBox(width: 12),
             SizedBox(
-              width: 260,
-              height: 44,
-              child: TextFormField(decoration: _searchDec()),
+              width: isNarrow ? 86 : 122,
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Logo(height: isNarrow ? 30 : 38),
+              ),
+            ),
+            SizedBox(width: isNarrow ? 8 : 12),
+            Expanded(
+              child: SizedBox(
+                height: isNarrow ? 42 : 44,
+                child: TextFormField(decoration: _searchDec()),
+              ),
             ),
           ],
         ),
@@ -677,7 +758,7 @@ class DashboardPage extends GetView<DashboardController> {
                         child: ListView(
                           padding: EdgeInsets.zero,
                           children: [
-                            SizedBox(height: 380, child: leftList()),
+                            SizedBox(height: 430, child: leftList()),
                             const SizedBox(height: 14),
                             SizedBox(
                               height: 640,

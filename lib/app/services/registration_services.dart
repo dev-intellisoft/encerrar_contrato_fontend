@@ -10,7 +10,7 @@ class RegistrationServices {
   RegistrationServices(this.dio);
 
   Future<Agency> getAgencyLogo(String agencyId) async {
-    var response = await dio.get('/agency/logo/$agencyId');
+    var response = await dio.get('/registration/agencies/$agencyId');
     if (response.statusCode == 200) {
       return Agency.fromJson(response.data);
     }
