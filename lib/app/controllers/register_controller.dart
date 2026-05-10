@@ -230,13 +230,14 @@ class RegisterController extends GetxController {
     if (result == null) return;
 
     final file = result.files.first;
+    final safeFileName = file.name.trim().replaceAll(RegExp(r'\s+'), '_');
     if (!_isAllowedFileSize(file, 'Foto do documento')) return;
 
-    documents.update((a) => a!.documentPhotoName = file.name);
+    documents.update((a) => a!.documentPhotoName = safeFileName);
     documents.update(
       (a) => a!.documentPhotoByte = file.bytes,
     ); // Uint8List, works everywhere
-    _showUploadFeedback('Foto do documento', file.name);
+    _showUploadFeedback('Foto do documento', safeFileName);
   }
 
   Future<void> pickPhotoWithDocument() async {
@@ -249,13 +250,14 @@ class RegisterController extends GetxController {
     if (result == null) return;
 
     final file = result.files.first;
+    final safeFileName = file.name.trim().replaceAll(RegExp(r'\s+'), '_');
     if (!_isAllowedFileSize(file, 'Foto com documento')) return;
 
-    documents.update((a) => a!.photoWithDocumentName = file.name);
+    documents.update((a) => a!.photoWithDocumentName = safeFileName);
     documents.update(
       (a) => a!.photoWithDocumentByte = file.bytes,
     ); // Uint8List, works everywhere
-    _showUploadFeedback('Foto com documento', file.name);
+    _showUploadFeedback('Foto com documento', safeFileName);
   }
 
   Future<void> pickLastInvoice() async {
@@ -268,13 +270,14 @@ class RegisterController extends GetxController {
     if (result == null) return;
 
     final file = result.files.first;
+    final safeFileName = file.name.trim().replaceAll(RegExp(r'\s+'), '_');
     if (!_isAllowedFileSize(file, 'Ultima fatura')) return;
 
-    documents.update((a) => a!.lastInvoiceName = file.name);
+    documents.update((a) => a!.lastInvoiceName = safeFileName);
     documents.update(
       (a) => a!.lastInvoiceByte = file.bytes,
     ); // Uint8List, works everywhere
-    _showUploadFeedback('Ultima fatura', file.name);
+    _showUploadFeedback('Ultima fatura', safeFileName);
   }
 
   Future<void> pickContract() async {
@@ -287,12 +290,13 @@ class RegisterController extends GetxController {
     if (result == null) return;
 
     final file = result.files.first;
+    final safeFileName = file.name.trim().replaceAll(RegExp(r'\s+'), '_');
     if (!_isAllowedFileSize(file, 'Contrato')) return;
 
-    documents.update((a) => a!.contractName = file.name);
+    documents.update((a) => a!.contractName = safeFileName);
     documents.update(
       (a) => a!.contractByte = file.bytes,
     ); // Uint8List, works everywhere
-    _showUploadFeedback('Contrato', file.name);
+    _showUploadFeedback('Contrato', safeFileName);
   }
 }
